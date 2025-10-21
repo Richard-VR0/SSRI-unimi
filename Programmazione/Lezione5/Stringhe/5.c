@@ -5,7 +5,7 @@
 int main() {
     char s[N + 1];
     char c;
-    int i, finale = 0;
+    int i;
 
     printf("Inserisci una frase: ");
     fgets(s, sizeof(s), stdin);
@@ -13,14 +13,10 @@ int main() {
     printf("Inserisci un carattere: ");
     c = getchar(); getchar();
 
-    for (i = 0; s[i+1] != '\0'; i++);
+    for (i = 0; s[i+2] != '\0'; i++);
 
     if (s[i] == c) {
-        finale = 1;
-    }
-
-    if (finale) {
-        printf("\nEsito:\tSI\n\n%c", s[i]);
+        printf("\nEsito:\tSI\n\n");
     }
     else {
         printf("\nEsito:\tNO\n\n");
