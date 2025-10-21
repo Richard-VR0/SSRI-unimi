@@ -13,10 +13,10 @@ int main() {
     do {
 		printf("Inserisci n e k separati da spazio: ");
 		scanf("%d %d", &n, &k);
-    } while (n <= 0 && k <= 0);  
+    } while (n <= 0 || k <= 0);  
 
     for (i = 1; i < n; i++) {
-    	if ((n % i == 0) && (k % i == 0)) {
+    	if (k % i == 0) {
     		result = i;
 		}
 	}

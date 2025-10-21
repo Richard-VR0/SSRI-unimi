@@ -19,7 +19,7 @@ int main() {
                 risultato = a + b;
 
                 printf("Risultato: %lf\n", risultato);
-            break;
+                break;
 
             case 2:
                 risultato = a - b;
