@@ -24,7 +24,5 @@ int main() {
         }
     }
 
-    dahudaas
-
     return 0;
 }
