@@ -35,6 +35,8 @@ int main() {
 	for (i = 0; i < N; i++) {
 		printf("%d", v[i]);
 	}
+
+	printf("\n");
 	
 	return 0;
 }
