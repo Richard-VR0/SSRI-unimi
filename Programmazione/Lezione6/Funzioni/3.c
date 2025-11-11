@@ -37,7 +37,7 @@ int fattoriale(int n) {
 int cifre(int n) {
     int i;
 
-    for (i = 0; n != 0; n/= 10, i++);
+    for (i = 0; n != 0; n /= 10, i++);
 
     return i;
 }
