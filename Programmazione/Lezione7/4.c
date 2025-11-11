@@ -1,20 +1,28 @@
 #include <stdio.h>
 
-#define STOP 0
-
 void calcola_stats(double, double*, double*, double*);
 
 int main(int argc, char* argv[]) {
     double num_letto, min, max, somma = 0;
+    int primo = 1;
 
     do {
-        printf("Inserisci un numero: ");
+        printf("Inserisci un numero:\n>");
         scanf("%lf", &num_letto);
+
+        if (primo) {
+            min = num_letto;
+            max = num_letto;
+
+            primo = !primo;
+        }
 
         if (num_letto) {
             calcola_stats(num_letto, &min, &max, &somma);
+
+            printf("+--------------------+\nSomma: %lf\n\nMin: %lf\n\nMax: %lf\n+--------------------+\n\n", somma, min, max);
         }
-    } while (num_letto != STOP);
+    } while (num_letto);
     
     return 0;
 }
@@ -29,6 +37,4 @@ void calcola_stats(double n, double* min, double* max, double* somma) {
     }
 
     *somma = *somma + n;
-
-    printf("\n\nSomma: %lf\n\nMin: %lf\n\nMax: %lf\n\n", somma, min, max);
 }
