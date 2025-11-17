@@ -5,7 +5,7 @@
 
 void read_string(char*);
 void ordina(char**, int);
-int str_lung(char*);
+int lex(char*, char*);
 
 int main(void) {
     char *ptr[DIM], strings[DIM][BUFSIZ], lettura[BUFSIZ];
@@ -45,12 +45,28 @@ void read_string(char* str) {
     str[i] = '\0';
 }
 
-int  str_lung(char* s) {
-    int i;
+int lex(char* s1, char* s2) {
+    int uguale = 0, i;
 
-    for (i = 0; s[i] != '\0'; i++);
+    for (i = 0; *(s1+i) != '\0' && *(s2+i) != '\0'; i++) {
+        if (*(s1+i) < *(s2+i)) {
+            uguale = 1;
+        }
 
-    return i;
+        if (*(s1+i) > *(s2+i)) {
+            uguale = -1;
+        }
+    }
+
+    if (*(s1+i) == '\0' && *(s2+i) != '\0') {
+        uguale = 1;
+    }
+
+    if (*(s1+i) != '\0' && *(s2+i) == '\0') {
+        uguale = -1;
+    }
+
+    return uguale;
 }
 
 void ordina(char** s, int lung) {
@@ -61,7 +77,7 @@ void ordina(char** s, int lung) {
         scambio = 0;
 
         for (i = 0; i < DIM - 1; i++) {
-            if (str_lung(s[i]) > str_lung(s[i+1])) {
+            if (lex(s[i], s[i+1]) < 0) {
                 aux = s[i];
                 s[i] = s[i + 1];
                 s[i + 1] = aux;
