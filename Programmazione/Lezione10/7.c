@@ -30,11 +30,9 @@ int binom(int n, int k) {
 }
 
 int bell(int n) {
-
-
     if (n == 0 || n == 1) {
         return 1;
     }
 
-    return binom(n-1, k) * bell(k);
+    return binom(n-1, ) * bell(k);
 }
