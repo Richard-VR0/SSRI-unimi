@@ -38,13 +38,17 @@ int main(void) {
 
     stampaLista(lista);
 
+    cancella(lista);
+
+    stampaLista(lista);
+
     return 0;
 }
 
 void stampaLista(List* lista) {
     Node* current = lista->head;
     
-    printf("\n\n");
+    printf("\nDimensione lista: %d\t\n\nLista: \t", lista->size);
     while (current != NULL) {
         printf("%d > ", current->info);
 
@@ -70,6 +74,7 @@ int inserisciInTesta(List* lista, int numero) {
     }
 
     lista->head = newNode;
+
     lista->size++;
 
     return numero;
@@ -99,6 +104,8 @@ int  inserisciInCoda(List* lista, int numero) {
 
     newNode->next = NULL;
 
+    lista->size++;
+
     return numero;
 }
 
@@ -112,6 +119,8 @@ int rimuoviInTesta(List* lista) {
     lista->head = current->next;
 
     free(current);
+
+    lista->size--;
 
     return 0;
 }
@@ -136,19 +145,23 @@ int rimuoviInCoda(List* lista) {
 
     free(current);
 
+    lista->size--;
+
     return 0;
 }
 
 void cancella(List* lista) {
     Node* current = lista->head;
+    Node* successivo;
 
-    while(current->next != NULL) {
-        current = current->next;
+    while(current != NULL) {
+        successivo = current->next;
+        
+        free(current);
+
+        current = successivo;
     }
 
-    while(current != lista->head) {
-        current
-    }
-
-    free(current->next);
+    lista->head = NULL;
+    lista->size = 0;
 }
