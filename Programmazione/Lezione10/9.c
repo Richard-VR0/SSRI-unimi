@@ -1,0 +1,154 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int info;
+    struct Node* next;
+} Node;
+
+typedef struct {
+    Node* head;
+    int size;
+} List;
+
+int inserisciInTesta(List*, int);
+int inserisciInCoda(List*, int);
+
+int rimuoviInTesta(List*);
+int rimuoviInCoda(List*);
+
+void cancella(List*);
+
+void stampaLista(List*);
+
+int main(void) {
+    List* lista = (List*) malloc(sizeof(List));
+    lista->head = NULL;
+    lista->size = 0;
+
+    inserisciInTesta(lista, 5);
+
+    inserisciInTesta(lista, 2);
+
+    inserisciInCoda(lista, 9);
+
+    stampaLista(lista);
+
+    rimuoviInCoda(lista);
+
+    stampaLista(lista);
+
+    return 0;
+}
+
+void stampaLista(List* lista) {
+    Node* current = lista->head;
+    
+    printf("\n\n");
+    while (current != NULL) {
+        printf("%d > ", current->info);
+
+        current = current->next;
+    }
+    printf("NULL\n\n");
+}
+
+int inserisciInTesta(List* lista, int numero) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+
+    if (newNode == NULL) {
+        return -1;
+    }
+
+    newNode->info = numero;
+
+    if (lista->head == NULL) {
+        newNode->next = NULL;
+    }
+    else {
+        newNode->next = lista->head;
+    }
+
+    lista->head = newNode;
+    lista->size++;
+
+    return numero;
+}
+
+int  inserisciInCoda(List* lista, int numero) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+
+    if (newNode == NULL) {
+        return -1;
+    }
+
+    newNode->info = numero;
+
+    if (lista->head == NULL) {
+        lista->head = newNode;
+    }
+    else {
+        Node* current = lista->head;
+
+        while(current->next != NULL) {
+            current = current->next;
+        }
+
+        current->next = newNode;
+    }
+
+    newNode->next = NULL;
+
+    return numero;
+}
+
+int rimuoviInTesta(List* lista) {
+    if (lista->head == NULL) {
+        return -1;
+    }
+
+    Node* current = lista->head;
+
+    lista->head = current->next;
+
+    free(current);
+
+    return 0;
+}
+
+int rimuoviInCoda(List* lista) {
+    if (lista->head == NULL) {
+        return -1;
+    }
+
+    Node* current = lista->head;
+    Node* last = lista->head;
+
+    while(current->next != NULL) {
+        current = current->next;
+    }
+
+    while(last->next != current) {
+        last = last->next;
+    }
+
+    last->next = NULL;
+
+    free(current);
+
+    return 0;
+}
+
+void cancella(List* lista) {
+    Node* current = lista->head;
+
+    while(current->next != NULL) {
+        current = current->next;
+    }
+
+    while(current != lista->head) {
+        current
+    }
+
+    free(current->next);
+}
