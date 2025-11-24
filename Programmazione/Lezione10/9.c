@@ -26,11 +26,19 @@ int main(void) {
     lista->head = NULL;
     lista->size = 0;
 
-    inserisciInTesta(lista, 5);
+    inserisciInTesta(lista, 7);
+
+    stampaLista(lista);
 
     inserisciInTesta(lista, 2);
 
+    stampaLista(lista);
+
     inserisciInCoda(lista, 9);
+
+    stampaLista(lista);
+
+    inserisciInCoda(lista, 2);
 
     stampaLista(lista);
 
@@ -38,9 +46,19 @@ int main(void) {
 
     stampaLista(lista);
 
+    rimuoviInTesta(lista);
+
     cancella(lista);
 
     stampaLista(lista);
+
+    inserisciInCoda(lista, 9);
+
+    stampaLista(lista);
+
+    inserisciInCoda(lista, 2);
+
+    cancella(lista);
 
     return 0;
 }
@@ -50,11 +68,11 @@ void stampaLista(List* lista) {
     
     printf("\nDimensione lista: %d\t\n\nLista: \t", lista->size);
     while (current != NULL) {
-        printf("%d > ", current->info);
+        printf("> %d ", current->info);
 
         current = current->next;
     }
-    printf("NULL\n\n");
+    printf("> NULL\n\n");
 }
 
 int inserisciInTesta(List* lista, int numero) {
