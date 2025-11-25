@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Calcolatrice {
+public class CalcolatriceMod {
     public static double somma(double a, double b) {
         return a + b;
     }
@@ -29,11 +29,19 @@ public class Calcolatrice {
         b = in.nextDouble();
 
         do {
-            System.out.printf("\n1. Addizione\n2. Sottrazione\n3. Moltiplicazione\n4.Divisione\n5. Esci\n>");
+            System.out.printf("\n0. Cambia Operandi\n1. Addizione\n2. Sottrazione\n3. Moltiplicazione\n4.Divisione\n5. Esci\n>");
             scelta = in.nextInt();
 
             if (scelta != 5) {
                 switch(scelta) {
+                    case 0:
+                        System.out.printf("\nInserisci il primo numero: ");
+                        a = in.nextDouble();
+
+                        System.out.printf("\nInserisci il secondo numero: ");
+                        b = in.nextDouble();
+                        break;
+
                     case 1:
                         System.out.printf("\n%f + %f = %f\n", a, b, somma(a, b));
                         break;
