@@ -11,7 +11,22 @@ public class Complex {
         imm = i;
     }
 
-    public toString() {
-        return String.format("%f %f i", real, imm);
+    public String toString() {
+        return String.format("\n%f %f i\n", real, imm);
+    }
+
+    public void sumComplex(Complex n) {
+        real += n.real;
+        imm += n.real;
+    }
+
+    public void subComplex(Complex n) {
+        real -= n.real;
+        imm -= n.imm;
+    }
+
+    public void mulComplex(Complex n) {
+        real *= n.real;
+        imm *= n.imm;
     }
 }
