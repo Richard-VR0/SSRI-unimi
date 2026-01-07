@@ -15,16 +15,18 @@
 #define MIN_MID 7
 #define MAX_MID 9
 
+// Carte HIGH A - J - Q - K
+
 typedef struct {
     int valore;
     int seme;
 } Carta;
 
-void init_mazzo(Carta[]);                               // Inizializzazione del mazzo con N_MAZZI mischiati con metodo Fisher-Yates
-void trainer(Carta[]);                                  // Simulazione del mazzo e allenamento del conteggio
+void init_mazzo(Carta[]);                               // Inizializzazione del mazzo con N_MAZZI mischiati con il metodo Fisher-Yates
+void trainer(Carta[], int);                             // Simulazione del mazzo e allenamento del conteggio del running count
 void save_stats(float, float, float, float, int);       // Salvataggio delle statistiche della sessione di conteggio
 void stats();                                           // Lettura delle statistiche dal file stats.txt e stampa a video
-int read_risposta(FILE*);                               // Funzione per leggere i true count da file di testo ("input.txt")
+int read_risposta(FILE*);                               // Funzione per leggere i running count da file di testo ("input.txt") (da abilitare)
 
 int main(int argc, char* argv[]) {
     char risposta;
@@ -42,7 +44,7 @@ int main(int argc, char* argv[]) {
 
                 init_mazzo(mazzo);
 
-                trainer(mazzo);
+                trainer(mazzo, 0);
 
                 break;
 
@@ -82,17 +84,17 @@ void init_mazzo(Carta mazzo[]) {
     }
 }
 
-void trainer(Carta mazzo[]) {
+void trainer(Carta mazzo[], int modalita) {
     int running_count = 0, delta, carte_uscite = 0;
     int risposta;
-    float decks_rest = (float) N_MAZZI;
+    float decks_rest = (float) N_MAZZI, true_count = running_count / decks_rest;
     float accuracy_tot = 0.0f, accuracy_low = 0.0f, accuracy_mid = 0.0f, accuracy_high = 0.0f;
 
-    // ↓ Decommetare se si vogliono leggere i true count da file di testo
+    // ↓ Decommetare se si vogliono leggere i running count da file di testo
     //FILE* in = fopen("input.txt", "r");
 
     while (carte_uscite < N_MAZZI * CARTE_MAZZO) {
-        printf("\n\nRunning count: %d\tDecks rest: %.3f\tTrue count: %.3f", running_count, decks_rest, running_count / decks_rest);
+        printf("\n\nRunning count: %d\tDecks rest: %.3f\tTrue count: %.3f", running_count, decks_rest, true_count);
         printf("\n\nCarta uscita: ");
 
         if (mazzo[carte_uscite].valore == 1 || (mazzo[carte_uscite].valore >= 11 && mazzo[carte_uscite].valore <= 13)) {
@@ -141,10 +143,13 @@ void trainer(Carta mazzo[]) {
 
         decks_rest -= 1.0 / CARTE_MAZZO;
 
-        printf("\nInserisci il running count corrente: ");
-        scanf("%d", &risposta);
+        true_count = running_count / decks_rest;
 
-        // ↓ Decommentare se si vogliono leggere i true count da file di testo e commentare la scanf ↑
+        printf("\nInserisci il running count corrente: ");
+        //scanf("%d", &risposta);
+        risposta = 0;
+
+        // ↓ Decommentare se si vogliono leggere i running count da file di testo e commentare la scanf ↑
         //risposta = read_risposta(in);
 
         if (risposta == running_count) {
@@ -161,7 +166,7 @@ void trainer(Carta mazzo[]) {
         carte_uscite++;
     }
 
-    // ↓ Decommetare se si vogliono leggere i true count da file di testo
+    // ↓ Decommetare se si vogliono leggere i running count da file di testo
     //fclose(in);
 
     accuracy_tot /= (N_MAZZI * CARTE_MAZZO);
@@ -208,18 +213,31 @@ void stats() {
 
     char data[11];
     float acc_tot, acc_low, acc_mid, acc_high;
-    int drills;
+    float s_acc_tot = 0.0f, s_acc_low = 0.0f, s_acc_mid = 0.0f, s_acc_high = 0.0f;
+    int drills, cont = 0;
 
     printf("\nData\t\tOverall accuracy %%\tDrills\t\tLow %%\tMid %%\tHigh %%\n");
     printf("--------------------------------------------------------------------------------\n");
 
     while (fscanf(in, "%10[^,],%f,%d,%f,%f,%f\n", data, &acc_tot, &drills, &acc_low, &acc_mid, &acc_high) == 6) {
         printf("%s\t%3.1f\t\t\t%d\t\t%3.1f\t%3.1f\t%3.1f\n", data, acc_tot, drills, acc_low, acc_mid, acc_high);
+
+        s_acc_tot += acc_tot;
+        s_acc_low += acc_low;
+        s_acc_mid += acc_mid;
+        s_acc_high += acc_high;
+
+        cont++;
     }
 
     fclose(in);
 
-    printf("\n\n");
+    s_acc_tot /= cont;
+    s_acc_low /= cont;
+    s_acc_mid /= cont;
+    s_acc_high /= cont;
+
+    printf("\n\nAccuracy media\nOverall:\t%3.1f\nLow:\t\t%3.1f\nMid:\t\t%3.1f\nHigh:\t\t%3.1f\n\n", s_acc_tot, s_acc_low, s_acc_mid, s_acc_high);
 }
 
 int read_risposta(FILE* in) {
