@@ -1,11 +1,18 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define N_SEMI 4            // Quantità dei semi
 #define N_VALORI 13         // Quantità di carte per ogni seme
 #define CARTE_MAZZO 52      // Quantità di carte contenute in ogni mazzo della shoe
 #define N_MAZZI 1           // Quantità di mazzi che compongono la shoe
+
+// Semi
+#define PICCHE 0
+#define FIORI 1
+#define CUORI 2
+#define QUADRI 3
 
 // Carte LOW 2 - 6
 #define MIN_LOW 2
@@ -17,21 +24,27 @@
 
 // Carte HIGH A - J - Q - K
 
+#define TIMESTAMP 17        // Dimensione del timestamp
+
 typedef struct {
     int valore;
     int seme;
 } Carta;
 
-void init_mazzo(Carta[]);                               // Inizializzazione del mazzo con N_MAZZI mischiati con il metodo Fisher-Yates
-void trainer(Carta[], int);                             // Simulazione del mazzo e allenamento del conteggio del running count
-void save_stats(float, float, float, float, int);       // Salvataggio delle statistiche della sessione di conteggio
-void stats();                                           // Lettura delle statistiche dal file stats.txt e stampa a video
-int read_risposta(FILE*);                               // Funzione per leggere i running count da file di testo ("input.txt") (da abilitare)
+void init_mazzo(Carta[]);                                   // Inizializzazione del mazzo con N_MAZZI mischiati con il metodo Fisher-Yates
+void print_carta(Carta);                                    // Stampa della carta passata
+int delta_carta(int);                                       // Funzione che ritorna il delta inerente alla carta (-1,0,+1)
+void trainer(Carta[]);                                      // Simulazione del mazzo e allenamento del conteggio del running count
+void save_stats(double, float, float, float, float, int);   // Salvataggio delle statistiche della sessione di conteggio
+void stats();                                               // Lettura delle statistiche dal file stats.txt e stampa a video
+int read_risposta(FILE*);                                   // Funzione per leggere i running count da file di testo ("input.txt") (da abilitare)
 
 int main(int argc, char* argv[]) {
     char risposta;
 
     srand(time(NULL));
+
+    Carta mazzo[N_MAZZI * CARTE_MAZZO];
 
     do {
         printf("-----------------------------------\n A/a - Allenamento del conteggio\n S/s - Statistiche\n X/x - Esci\n-----------------------------------\n>");
@@ -40,17 +53,17 @@ int main(int argc, char* argv[]) {
         switch (risposta) {
             case 'A':
             case 'a':
-                Carta mazzo[N_MAZZI * CARTE_MAZZO];
-
                 init_mazzo(mazzo);
-
-                trainer(mazzo, 0);
-
+                trainer(mazzo);
                 break;
 
             case 'S':
             case 's':
                 stats();
+                break;
+
+            case 'X':
+            case 'x':
                 break;
 
             default:
@@ -64,6 +77,7 @@ int main(int argc, char* argv[]) {
 void init_mazzo(Carta mazzo[]) {
     int m, s, v, indice = 0, i, j;
 
+    // Caricamento del mazzo in ordine crescente (P → F → C → Q)
     for (m = 0; m < N_MAZZI; m++) {
         for (s = 0; s < N_SEMI; s++) {
             for (v = 1; v <= N_VALORI; v++) {
@@ -75,6 +89,7 @@ void init_mazzo(Carta mazzo[]) {
         }
     }
 
+    // Metodo Fisher-Yates
     for (i = (N_MAZZI * CARTE_MAZZO) - 1; i > 0; i--) {
         j = rand() % (i + 1);
 
@@ -84,70 +99,81 @@ void init_mazzo(Carta mazzo[]) {
     }
 }
 
-void trainer(Carta mazzo[], int modalita) {
-    int running_count = 0, delta, carte_uscite = 0;
-    int risposta;
+void print_carta(Carta carta) {
+    if (carta.valore == 1 || (carta.valore >= 11 && carta.valore <= 13)) {
+        switch (carta.valore) {
+            case 1:
+                printf("%c ", 'A');
+                break;
+
+            case 11:
+                printf("%c ", 'J');
+                break;
+
+            case 12:
+                printf("%c ", 'Q');
+                break;
+
+            case 13:
+                printf("%c ", 'K');
+                break;
+        }
+    }
+    else {
+        printf("%d ", carta.valore);
+    }
+
+    switch (carta.seme) {
+        case PICCHE:
+            printf("%s\n", "Picche");
+            break;
+
+        case FIORI:
+            printf("%s\n", "Fiori");
+            break;
+
+        case CUORI:
+            printf("%s\n", "Cuori");
+            break;
+
+        case QUADRI:
+            printf("%s\n", "Quadri");
+            break;
+    }
+}
+
+int delta_carta(int valore) {
+    return (valore >= MIN_LOW && valore <= MAX_LOW ? 1 : valore >= MIN_MID && valore <= MAX_MID ? 0 : -1);
+}
+
+void trainer(Carta mazzo[]) {
+    int running_count = 0, carte_uscite = 0, risposta;
     float decks_rest = (float) N_MAZZI, true_count = running_count / decks_rest;
     float accuracy_tot = 0.0f, accuracy_low = 0.0f, accuracy_mid = 0.0f, accuracy_high = 0.0f;
+    double tempo, tempo_sec;
+    int tempo_min;
+    struct timespec start, end;
 
     // ↓ Decommetare se si vogliono leggere i running count da file di testo
     //FILE* in = fopen("input.txt", "r");
+
+    clock_gettime(CLOCK_MONOTONIC, &start);
 
     while (carte_uscite < N_MAZZI * CARTE_MAZZO) {
         printf("\n\nRunning count: %d\tDecks rest: %.3f\tTrue count: %.3f", running_count, decks_rest, true_count);
         printf("\n\nCarta uscita: ");
 
-        if (mazzo[carte_uscite].valore == 1 || (mazzo[carte_uscite].valore >= 11 && mazzo[carte_uscite].valore <= 13)) {
-            switch (mazzo[carte_uscite].valore) {
-                case 1:
-                    printf("%c ", 'A');
-                    break;
+        print_carta(mazzo[carte_uscite]);
 
-                case 11:
-                    printf("%c ", 'J');
-                    break;
-
-                case 12:
-                    printf("%c ", 'Q');
-                    break;
-
-                case 13:
-                    printf("%c ", 'K');
-                    break;
-            }
-        }
-        else {
-            printf("%d ", mazzo[carte_uscite].valore);
-        }
-
-        switch (mazzo[carte_uscite].seme) {
-            case 0:
-                printf("%s\n", "Picche");
-                break;
-
-            case 1:
-                printf("%s\n", "Fiori");
-                break;
-
-            case 2:
-                printf("%s\n", "Cuori");
-                break;
-
-            case 3:
-                printf("%s\n", "Quadri");
-                break;
-        }
-
-        delta = (mazzo[carte_uscite].valore >= MIN_LOW && mazzo[carte_uscite].valore <= MAX_LOW ? 1 : mazzo[carte_uscite].valore >= MIN_MID && mazzo[carte_uscite].valore <= MAX_MID ? 0 : -1);
-        running_count += delta;
+        running_count += delta_carta(mazzo[carte_uscite].valore);
 
         decks_rest -= 1.0 / CARTE_MAZZO;
 
         true_count = running_count / decks_rest;
 
         printf("\nInserisci il running count corrente: ");
-        //scanf("%d", &risposta);
-        risposta = 0;
+        scanf("%d", &risposta);
+        //risposta = 0;
 
         // ↓ Decommentare se si vogliono leggere i running count da file di testo e commentare la scanf ↑
         //risposta = read_risposta(in);
@@ -166,6 +192,13 @@ void trainer(Carta mazzo[], int modalita) {
         carte_uscite++;
     }
 
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
+    tempo = (end.tv_sec - start.tv_sec) + ((end.tv_nsec - start.tv_nsec) / 1e9);
+
+    tempo_min = tempo / 60;
+    tempo_sec = fmod(tempo, 60);
+
     // ↓ Decommetare se si vogliono leggere i running count da file di testo
     //fclose(in);
 
@@ -181,12 +214,12 @@ void trainer(Carta mazzo[], int modalita) {
     accuracy_high /= 20;
     accuracy_high *= 100;
 
-    save_stats(accuracy_tot, accuracy_low, accuracy_mid, accuracy_high, N_MAZZI*CARTE_MAZZO);
+    save_stats(tempo, accuracy_tot, accuracy_low, accuracy_mid, accuracy_high, N_MAZZI*CARTE_MAZZO);
 
-    printf("\n\n\nSTATISTICHE\nOverall accuracy:\t%.2f %%\nLow accuracy:\t\t%.2f %%\nMid accuracy:\t\t%.2f %%\nHigh accuracy:\t\t%.2f %%\n\n\n", accuracy_tot, accuracy_low, accuracy_mid, accuracy_high);
+    printf("\n\n\nSTATISTICHE\nTempo:\t\t\t%02d:%05.2f\nOverall accuracy:\t%.2f %%\nLow accuracy:\t\t%.2f %%\nMid accuracy:\t\t%.2f %%\nHigh accuracy:\t\t%.2f %%\n\n\n", tempo_min, tempo_sec, accuracy_tot, accuracy_low, accuracy_mid, accuracy_high);
 }
 
-void save_stats(float acc_total, float acc_low, float acc_mid, float acc_high, int drills) {
+void save_stats(double tempo, float acc_total, float acc_low, float acc_mid, float acc_high, int drills) {
     FILE* in = fopen("stats.txt", "a");
     if (in == NULL) {
         perror("stats.txt");
@@ -194,11 +227,11 @@ void save_stats(float acc_total, float acc_low, float acc_mid, float acc_high, i
         return;
     }
 
-    char data[11];
+    char data[TIMESTAMP];
     time_t now = time(NULL);
-    strftime(data, sizeof(data), "%Y-%m-%d", localtime(&now));
+    strftime(data, sizeof(data), "%Y-%m-%d %H:%M", localtime(&now));
 
-    fprintf(in, "%s,%.1f,%d,%.1f,%.1f,%.1f\n", data, acc_total, drills, acc_low, acc_mid, acc_high);
+    fprintf(in, "%s,%.2f,%.1f,%d,%.1f,%.1f,%.1f\n", data, tempo, acc_total, drills, acc_low, acc_mid, acc_high);
 
     fclose(in);
 }
@@ -211,16 +244,19 @@ void stats() {
         return;
     }
 
-    char data[11];
+    char data[TIMESTAMP];
+    double tempo_sec;
+    int tempo_min;
     float acc_tot, acc_low, acc_mid, acc_high;
     float s_acc_tot = 0.0f, s_acc_low = 0.0f, s_acc_mid = 0.0f, s_acc_high = 0.0f;
     int drills, cont = 0;
 
-    printf("\nData\t\tOverall accuracy %%\tDrills\t\tLow %%\tMid %%\tHigh %%\n");
-    printf("--------------------------------------------------------------------------------\n");
+    printf("\nData\t\t\tTempo\t\tOverall accuracy %%\tDrills\t\tLow %%\tMid %%\tHigh %%\n");
+    printf("---------------------------------------------------------------------------------------------------------\n");
 
-    while (fscanf(in, "%10[^,],%f,%d,%f,%f,%f\n", data, &acc_tot, &drills, &acc_low, &acc_mid, &acc_high) == 6) {
-        printf("%s\t%3.1f\t\t\t%d\t\t%3.1f\t%3.1f\t%3.1f\n", data, acc_tot, drills, acc_low, acc_mid, acc_high);
+    while (fscanf(in, "%16[^,],%lf,%f,%d,%f,%f,%f\n", data, &tempo_sec, &acc_tot, &drills, &acc_low, &acc_mid, &acc_high) == 7) {
+        tempo_min = tempo_sec / 60;
+        tempo_sec = fmod(tempo_sec, 60);
 
         s_acc_tot += acc_tot;
         s_acc_low += acc_low;
@@ -228,6 +264,8 @@ void stats() {
         s_acc_high += acc_high;
 
         cont++;
+
+        printf("%s\t%02d:%05.2f\t%3.1f\t\t\t%d\t\t%3.1f\t%3.1f\t%3.1f\n", data, tempo_min, tempo_sec, acc_tot, drills, acc_low, acc_mid, acc_high);
     }
 
     fclose(in);
