@@ -3,13 +3,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define INPUT_FILE_TXT 0            // Utilizzo del file di testo come input
-#define FILENAME "input.txt"        // Nome del file di input
+#define INPUT_FILE_TXT 1    // Utilizzo del file di testo come input
 
+#define N_MAZZI 1           // Quantità di mazzi che compongono il sabot (1 - 8)
+#define CARTE_MAZZO 52      // Quantità di carte contenute in ogni mazzo del sabot
 #define N_SEMI 4            // Quantità dei semi
 #define N_VALORI 13         // Quantità di carte per ogni seme
-#define CARTE_MAZZO 52      // Quantità di carte contenute in ogni mazzo della shoe
-#define N_MAZZI 1           // Quantità di mazzi che compongono la shoe
 
 // Semi
 #define PICCHE 0
@@ -40,19 +39,18 @@ typedef struct {
     int seme;
 } Carta;
 
-void init_mazzo(Carta[]);                                               // Inizializzazione del mazzo con N_MAZZI mischiati con il metodo Fisher-Yates
-void print_status(int, float, float);                                   // Stampa del running count, deck rest, true count
-void print_carta(Carta);                                                // Stampa della carta passata
-int delta_carta(int);                                                   // Funzione che ritorna il delta inerente alla carta (-1,0,+1)
-void read_running_count(Carta, int, float*, float*, float*, float*, FILE*);    // Lettura del running count e controllo correttezza
-void read_bet(float, float*, FILE*);                                           // Lettura della bet e controllo correttezza
-int calculate_right_bet(float);                                         // Calcolo della bet consigliata per fare il confronto con quella inserita
-void trainer(Carta[]);                                                  // Simulazione del mazzo e allenamento del conteggio e del betting
-void save_stats(double, float, float, float, float, float, int);        // Salvataggio delle statistiche della sessione di conteggio
-void stats();                                                           // Lettura delle statistiche dal file stats.txt e stampa a video
-//int read_risposta(FILE*);                                               // (DA RIVEDERE) Funzione per leggere i running count da file di testo ("input.txt") (da abilitare)
+void init_mazzo(Carta[]);                                                       // Inizializzazione del sabot con N_MAZZI mischiati con il metodo Fisher-Yates
+void print_status(int, float, float);                                           // Stampa del running count, deck rest, true count
+void print_carta(Carta);                                                        // Stampa della carta passata
+int delta_carta(int);                                                           // Funzione che ritorna il delta inerente alla carta (-1,0,+1)
+void read_running_count(Carta, int, float*, float*, float*, float*, FILE*);     // Lettura del running count e controllo correttezza
+void read_bet(float, float*, FILE*);                                            // Lettura della bet e controllo correttezza
+int calculate_right_bet(float);                                                 // Calcolo della bet consigliata per fare il confronto con quella inserita
+void trainer(Carta[]);                                                          // Simulazione del sabot e allenamento del conteggio e del betting
+void save_stats(double, float, float, float, float, float, int);                // Salvataggio delle statistiche della sessione di conteggio in file di testo
+void stats();                                                                   // Lettura delle statistiche dal file "stats.txt" e stampa a video
 
-int main(int argc, char* argv[]) {
+int main(void) {
     char risposta;
 
     srand(time(NULL));
@@ -120,6 +118,7 @@ void print_status(int rc, float dr, float tc) {
 void print_carta(Carta carta) {
     printf("\n\nCarta uscita: ");
 
+    // Stampa del valore (2 - 10 - A - J - Q - K)
     if (carta.valore == 1 || (carta.valore >= 11 && carta.valore <= 13)) {
         switch (carta.valore) {
             case 1:
@@ -143,6 +142,7 @@ void print_carta(Carta carta) {
         printf("%d ", carta.valore);
     }
 
+    // Stampa del seme (♠ - ♣ - ♦ - ♥)
     switch (carta.seme) {
         case PICCHE:
             printf("%s\n", "Picche");
@@ -245,10 +245,14 @@ void trainer(Carta mazzo[]) {
 
     FILE* in;
     if (INPUT_FILE_TXT) {
-        in= fopen(FILENAME, "r");
+        char filename[15];
+
+        sprintf(filename, "input%d.txt", N_MAZZI);
+
+        in= fopen(filename, "r");
 
         if (in == NULL) {
-            perror(FILENAME);
+            perror(filename);
         }
     }
     else {
