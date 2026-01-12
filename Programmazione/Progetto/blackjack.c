@@ -183,19 +183,9 @@ void read_running_count(Carta carta, int running_count, float* accuracy_tot, flo
     if (risposta_rc == running_count) {
         printf("Running count corretto!\n");
 
-        *(accuracy_tot) += 1;
+        (*accuracy_tot)++;
 
-        if (carta.valore >= MIN_LOW && carta.valore <= MAX_LOW) {
-            *(accuracy_low) += 1;
-        }
-        else {
-            if (carta.valore >= MIN_MID && carta.valore <= MAX_MID) {
-                *(accuracy_mid) += 1;
-            }
-            else {
-                *(accuracy_high) += 1;
-            }
-        }
+        (carta.valore >= MIN_LOW && carta.valore <= MAX_LOW) ? (*accuracy_low)++ : (carta.valore >= MIN_MID && carta.valore <= MAX_MID) ? (*accuracy_mid)++ : (*accuracy_high)++;
     }
     else {
         printf("Running count sbagliato! -> Corretto: %d\n", running_count);
@@ -222,7 +212,7 @@ void read_bet(float true_count, float* accuracy_bet, FILE* in) {
     if (risposta_bet == calculate_right_bet(true_count)) {
         printf("Bet corretta\n--------------------------------------------------\n");
 
-        *(accuracy_bet) += 1;
+        (*accuracy_bet)++;
     }
     else {
         printf("Bet inserita sfavorevole -> Bet consigliata: %dx\n--------------------------------------------------\n", calculate_right_bet(true_count));
