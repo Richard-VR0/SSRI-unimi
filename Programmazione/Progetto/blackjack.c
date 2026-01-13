@@ -20,7 +20,7 @@
 #define CARTE_TOT N_MAZZI*CARTE_MAZZO
 #define CARTE_LOW 20                        // Numero di carte LOW (2 - 6)
 #define CARTE_MID 12                        // Numero di carte MID (7 - 9)
-#define CARTE_HIGH 20                       // Numero di carte HIGH (A - J - Q - K)
+#define CARTE_HIGH 20                       // Numero di carte HIGH (A - 10 - J - Q - K)
 
 // Carte LOW 2 - 6
 #define MIN_LOW 2
@@ -30,7 +30,7 @@
 #define MIN_MID 7
 #define MAX_MID 9
 
-// Carte HIGH A - J - Q - K
+// Carte HIGH A - 10 - J - Q - K
 
 #define TIMESTAMP 17        // Dimensione del timestamp
 
