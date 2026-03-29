@@ -1,0 +1,126 @@
+#container {
+    width: 50%;
+    margin: 50px auto;
+    display: flex;
+    flex-wrap: nowrap;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 10px 10px black;
+}
+
+/* Sfondi prefabbricati */
+.bg-lightblue {
+    background-color: #283593;
+}
+.bg-blue {
+    background-color: #1a237e;
+}
+
+/* Stili specifici */
+div h3{
+    color: #ffd30c;
+}
+
+div p {
+    color: blue;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+div span, div a {
+    color: white;
+    font-size: small;
+}
+
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+div li {
+    color: white;
+    font-size: small;
+    transition: 0.4s;
+}
+div li:hover {
+    font-size: medium;
+    transition: 0.4s;
+}
+
+/* Barra lateriale */
+#barra-laterale {
+    width: 25%;
+}
+
+/* Parte alta (foto + nome + cognome + professione) */
+#barra-laterale-h {
+    background-color: #ffd30c;
+    padding: 10px;
+}
+
+#foto {
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 5%;
+    border-radius: 100%;
+}
+
+/* Parte bassa (su di me - contattami - social */
+#barra-laterale-l {
+    padding: 5px 10px 10px 10px;
+}
+
+.box-icone {
+    display: flex;
+}
+
+.icon {
+    border-radius: 100%;
+    background-color: #ffd30c;
+    margin-right: 5px;
+    padding: 3px;
+}
+.icon:hover {
+    background-color: white;
+}
+
+/* Parte centrale */
+#contenuto-centrale {
+    width: 75%;
+    padding: 10px 10px;
+}
+
+/* Prima riga che contiene esperienze e formazione */
+#box {
+    display: flex;
+}
+
+#experience, #education {
+    width: 50%;
+    margin: 10px;
+    padding: 0px 10px 10px 20px;
+}
+
+.information-box {
+    margin: 0 0 5% 15%;
+}
+
+.information-info {
+    margin: 0 0 0 5%;
+    font-size: 0.7rem;
+}
+
+/* 2 - 3 - 4 riga che contengono le skill */
+.skills-box {
+    margin: 10px;
+    padding: 1px 10px 10px 10px;
+}
+
+.skills-list {
+    display: flex;
+    list-style: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
