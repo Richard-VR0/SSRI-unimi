@@ -1,0 +1,20 @@
+.icon {
+    width: min-content;
+    background-color: #ffc106;
+    transition: 0.3s;
+}
+
+.icon:hover {
+    background-color: rgb(187, 185, 185);
+    transition: 0.3s;
+
+}
+
+.skill {
+    font-size: medium;
+    transition: 0.4s;
+}
+.skill:hover {
+    font-size: x-large;
+    transition: 0.4s;
+}
