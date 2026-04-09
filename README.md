@@ -9,3 +9,4 @@ Projects of the bachelor’s degree in Computer Systems and Networks Security at
   * HTML
   * CSS
   * Bootstrap
+  * JavaScript
