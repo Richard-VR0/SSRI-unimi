@@ -8,5 +8,5 @@ Projects of the bachelor’s degree in Computer Systems and Networks Security at
 * Programmazione web e mobile
   * HTML
   * CSS
-  * Bootstrap
+    * Bootstrap
   * JavaScript
