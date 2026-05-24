@@ -12,3 +12,4 @@ Projects of the bachelor’s degree in Computer Systems and Networks Security at
   * JavaScript
     * Node.js
   * MongoDB
+  * Project: Delivery app
