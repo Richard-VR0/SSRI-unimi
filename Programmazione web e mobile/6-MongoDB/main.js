@@ -8,7 +8,7 @@ const cors = require('cors');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 
-const mongoURL = 'mongodb+srv://riccardovescio_db_user:xktFAM5tC2pJCtq5@cluster0.6sbufyq.mongodb.net/';
+const mongoURL = '';
 
 const app = express();
 const port = 3000;
