@@ -1,7 +1,7 @@
 # SSRI-unimi
 
 Projects of the bachelor’s degree in Computer Systems and Networks Security at UniMi
-* Programmazione
+* <span style="color: #1A86EA;">Programmazione</span>
   * C
     * Project: **Blackjack count**
   * Java
