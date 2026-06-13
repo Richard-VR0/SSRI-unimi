@@ -3,8 +3,8 @@
 Projects of the bachelor’s degree in Computer Systems and Networks Security at UniMi
 * Programmazione
   * C
-    * **Project**: Blackjack count
   * Java
+  * **Project**: Blackjack count
 * Programmazione web e mobile
   * HTML
   * CSS
