@@ -4,7 +4,7 @@ Projects of the bachelor’s degree in Computer Systems and Networks Security at
 * Programmazione
   * C
   * Java
-  * **Project**: Blackjack count
+  * **Project: Blackjack Card Counting Trainer**
 * Programmazione web e mobile
   * HTML
   * CSS
@@ -12,4 +12,4 @@ Projects of the bachelor’s degree in Computer Systems and Networks Security at
   * JavaScript
     * Node.js
   * MongoDB
-  * **Project**: **Delivery app**
+  * **Project: Food delivery web application**
