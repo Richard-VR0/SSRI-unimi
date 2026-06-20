@@ -48,7 +48,7 @@ void read_bet(float, float*, FILE*);                                            
 int calculate_right_bet(float);                                                 // Calcolo della bet consigliata per fare il confronto con quella inserita
 void trainer(Carta[]);                                                          // Simulazione del sabot e allenamento del conteggio e del betting
 void save_stats(double, float, float, float, float, float, int);                // Salvataggio delle statistiche della sessione di conteggio in file di testo
-void stats();                                                                   // Lettura delle statistiche dal file "stats.txt" e stampa a video
+void stats(void);                                                               // Lettura delle statistiche dal file "stats.txt" e stampa a video
 
 int main(void) {
     char risposta;
@@ -171,14 +171,13 @@ void read_running_count(Carta carta, int running_count, float* accuracy_tot, flo
 
     printf("\n--------------------------------------------------");
 
-    if (INPUT_FILE_TXT) {
+    #ifdef INPUT_FILE_TXT
         fscanf(in, "%d\n", &risposta_rc);
         printf("\n");
-    }
-    else {
+    #else
         printf("\nInserisci il running count corrente: ");
         scanf("%d", &risposta_rc);
-    }
+    #endif
 
     if (risposta_rc == running_count) {
         printf("Running count corretto!\n");
@@ -198,16 +197,15 @@ void read_bet(float true_count, float* accuracy_bet, FILE* in) {
 
     printf("\n--------------------------------------------------");
 
-    if (INPUT_FILE_TXT) {
+    #ifdef INPUT_FILE_TXT
         fscanf(in, "%d\n", &risposta_bet);
         printf("\n");
-    }
-    else {
+    #else
         do {
             printf("\nInserisci la bet (1/2/4/8): ");
             scanf("%d", &risposta_bet);
         } while (risposta_bet != 1 && risposta_bet != 2 && risposta_bet != 4 && risposta_bet != 8);
-    }
+    #endif
 
     if (risposta_bet == calculate_right_bet(true_count)) {
         printf("Bet corretta\n--------------------------------------------------\n");
@@ -234,7 +232,8 @@ void trainer(Carta mazzo[]) {
     clock_gettime(CLOCK_MONOTONIC, &start);         // Salvataggio del tempo iniziale
 
     FILE* in;
-    if (INPUT_FILE_TXT) {
+
+    #ifdef INPUT_FILE_TXT
         char filename[15];
 
         sprintf(filename, "input%d.txt", N_MAZZI);
@@ -243,11 +242,11 @@ void trainer(Carta mazzo[]) {
 
         if (in == NULL) {
             perror(filename);
+            return;
         }
-    }
-    else {
+    #else
         in = NULL;
-    }
+    #endif
 
     while (carte_uscite < CARTE_TOT) {
         print_status(running_count, deck_rest, true_count);
@@ -267,11 +266,11 @@ void trainer(Carta mazzo[]) {
         carte_uscite++;
     }
 
-    if (INPUT_FILE_TXT) {
+    #ifdef INPUT_FILE_TXT
         if (in != NULL) {
             fclose(in);
         }
-    }
+    #endif
 
     clock_gettime(CLOCK_MONOTONIC, &end);           // Salvataggio del tempo finale
 
@@ -313,7 +312,7 @@ void save_stats(double tempo, float acc_total, float acc_low, float acc_mid, flo
     fclose(in);
 }
 
-void stats() {
+void stats(void) {
     FILE* in = fopen("stats.txt", "r");
     if (in == NULL) {
         perror("\nstats.txt");
@@ -328,10 +327,12 @@ void stats() {
     float s_acc_tot = 0.0f, s_acc_low = 0.0f, s_acc_mid = 0.0f, s_acc_high = 0.0f, s_acc_bet = 0.0f;
     int drills, cont = 0;
 
-    printf("\nData\t\t\tTempo\t\tOverall accuracy %%\tDrills\tLow %%\tMid %%\tHigh %%\tBet %%\n");
-    printf("---------------------------------------------------------------------------------------------------------\n");
-
     while (fscanf(in, "%16[^,],%lf,%f,%d,%f,%f,%f,%f\n", data, &tempo_sec, &acc_tot, &drills, &acc_low, &acc_mid, &acc_high, &acc_bet) == 8) {
+        if (cont == 0) {
+            printf("\nData\t\t\tTempo\t\tOverall accuracy %%\tDrills\tLow %%\tMid %%\tHigh %%\t\tBet %%\n");
+            printf("-------------------------------------------------------------------------------------------------------------------\n");
+        }
+        
         tempo_min = tempo_sec / 60;
         tempo_sec = fmod(tempo_sec, 60);
 
@@ -344,10 +345,15 @@ void stats() {
 
         cont++;
 
-        printf("%s\t%02d:%05.2f\t%3.1f\t\t\t%d\t%3.1f\t%3.1f\t%3.1f\t%3.1f\n", data, tempo_min, tempo_sec, acc_tot, drills, acc_low, acc_mid, acc_high, acc_bet);
+        printf("%s\t%02d:%05.2f\t%3.1f\t\t\t%d\t%3.1f\t%3.1f\t%3.1f\t\t%3.1f\n", data, tempo_min, tempo_sec, acc_tot, drills, acc_low, acc_mid, acc_high, acc_bet);
     }
 
     fclose(in);
+
+    if (cont == 0) {
+        printf("\nNessuna statistica presente\n\n");
+        return;
+    }
 
     s_acc_tot /= cont;
     s_acc_low /= cont;
