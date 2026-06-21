@@ -34,6 +34,14 @@
 
 #define TIMESTAMP 17        // Dimensione del timestamp
 
+// Colori del testo
+#define ROSSO   "\033[31m"
+#define VERDE   "\033[32m"
+#define GIALLO  "\033[33m"
+#define BLU     "\033[34m"
+#define VIOLA   "\033[35m"
+#define RESET   "\033[0m"
+
 typedef struct {
     int valore;
     int seme;
@@ -59,8 +67,9 @@ int main(void) {
 
     // Menù
     do {
-        printf("-----------------------------------\n A/a - Allenamento del conteggio\n S/s - Statistiche\n X/x - Esci\n-----------------------------------\n>");
+        printf("+-----------------------------------+\n|              MENU                 |\n|                                   |\n|  A/a - Allenamento del conteggio  |\n|  S/s - Statistiche                |\n|  X/x - Esci                       |\n|                                   |\n+-----------------------------------+\n>");
         scanf(" %c", &risposta);
+        while (getchar() != '\n');
 
         switch (risposta) {
             case 'A':
@@ -79,7 +88,7 @@ int main(void) {
                 break;
 
             default:
-                printf("\nOperazione non disponibile!\n");
+                printf(ROSSO "\nOperazione non disponibile!\n\n" RESET);
         }
     } while(risposta != 'x' && risposta != 'X');
 
@@ -112,7 +121,7 @@ void init_mazzo(Carta mazzo[]) {
 }
 
 void print_status(int rc, float dr, float tc) {
-    printf("\n----------------------------------------------------------------------\nRunning count: %d\tDeck rest: %.2f\t\tTrue count: %.2f", rc, dr, tc);
+    printf("\n----------------------------------------------------------------------\nRunning count: %d\tDeck rest: %.2f\t\tTrue count: %.2f\n----------------------------------------------------------------------", rc, dr, tc);
 }
 
 void print_carta(Carta carta) {
@@ -122,42 +131,42 @@ void print_carta(Carta carta) {
     if (carta.valore == 1 || (carta.valore >= 11 && carta.valore <= 13)) {
         switch (carta.valore) {
             case 1:
-                printf("%c ", 'A');
+                printf(GIALLO "%c ", 'A');
                 break;
 
             case 11:
-                printf("%c ", 'J');
+                printf(GIALLO "%c " , 'J');
                 break;
 
             case 12:
-                printf("%c ", 'Q');
+                printf(GIALLO "%c ", 'Q');
                 break;
 
             case 13:
-                printf("%c ", 'K');
+                printf(GIALLO "%c ", 'K');
                 break;
         }
     }
     else {
-        printf("%d ", carta.valore);
+        printf(GIALLO "%d ", carta.valore);
     }
 
     // Stampa del seme (♠ - ♣ - ♦ - ♥)
     switch (carta.seme) {
         case PICCHE:
-            printf("%s\n", "Picche");
+            printf("%s\n" RESET, "Picche");
             break;
 
         case FIORI:
-            printf("%s\n", "Fiori");
+            printf("%s\n" RESET, "Fiori");
             break;
 
         case CUORI:
-            printf("%s\n", "Cuori");
+            printf("%s\n" RESET, "Cuori");
             break;
 
         case QUADRI:
-            printf("%s\n", "Quadri");
+            printf("%s\n" RESET, "Quadri");
             break;
     }
 }
@@ -169,9 +178,7 @@ int delta_carta(int valore) {
 void read_running_count(Carta carta, int running_count, float* accuracy_tot, float* accuracy_low, float* accuracy_mid, float* accuracy_high, FILE* in) {
     int risposta_rc;
 
-    printf("\n--------------------------------------------------");
-
-    #ifdef INPUT_FILE_TXT
+    #if defined(INPUT_FILE_TXT) && INPUT_FILE_TXT == 1
         fscanf(in, "%d\n", &risposta_rc);
         printf("\n");
     #else
@@ -180,24 +187,21 @@ void read_running_count(Carta carta, int running_count, float* accuracy_tot, flo
     #endif
 
     if (risposta_rc == running_count) {
-        printf("Running count corretto!\n");
+        printf(VERDE "\nRunning count corretto!\n" RESET);
 
         (*accuracy_tot)++;
 
         (carta.valore >= MIN_LOW && carta.valore <= MAX_LOW) ? (*accuracy_low)++ : (carta.valore >= MIN_MID && carta.valore <= MAX_MID) ? (*accuracy_mid)++ : (*accuracy_high)++;
     }
     else {
-        printf("Running count sbagliato! -> Corretto: %d\n", running_count);
+        printf(ROSSO "\nRunning count sbagliato! -> Corretto: %d\n" RESET, running_count);
     }
-    printf("--------------------------------------------------\n");
 }
 
 void read_bet(float true_count, float* accuracy_bet, FILE* in) {
     int risposta_bet;
 
-    printf("\n--------------------------------------------------");
-
-    #ifdef INPUT_FILE_TXT
+    #if defined(INPUT_FILE_TXT) && INPUT_FILE_TXT == 1
         fscanf(in, "%d\n", &risposta_bet);
         printf("\n");
     #else
@@ -208,17 +212,17 @@ void read_bet(float true_count, float* accuracy_bet, FILE* in) {
     #endif
 
     if (risposta_bet == calculate_right_bet(true_count)) {
-        printf("Bet corretta\n--------------------------------------------------\n");
+        printf(VERDE "\nBet corretta\n" RESET);
 
         (*accuracy_bet)++;
     }
     else {
-        printf("Bet inserita sfavorevole -> Bet consigliata: %dx\n--------------------------------------------------\n", calculate_right_bet(true_count));
+        printf(ROSSO "\nBet inserita sfavorevole -> Bet consigliata: %dx\n" RESET, calculate_right_bet(true_count));
     }
 }
 
 int calculate_right_bet(float true_count) {
-    return (true_count <= 0.0) ? 1 : ((true_count <= 1.0) ? 2 : ((true_count <= 2.0) ? 4 : 8));
+    return (true_count <= 0.0f) ? 1 : ((true_count <= 1.0f) ? 2 : ((true_count <= 2.0f) ? 4 : 8));
 }
 
 void trainer(Carta mazzo[]) {
@@ -233,7 +237,7 @@ void trainer(Carta mazzo[]) {
 
     FILE* in;
 
-    #ifdef INPUT_FILE_TXT
+    #if defined(INPUT_FILE_TXT) && INPUT_FILE_TXT == 1
         char filename[15];
 
         sprintf(filename, "input%d.txt", N_MAZZI);
@@ -266,7 +270,7 @@ void trainer(Carta mazzo[]) {
         carte_uscite++;
     }
 
-    #ifdef INPUT_FILE_TXT
+    #if defined(INPUT_FILE_TXT) && INPUT_FILE_TXT == 1
         if (in != NULL) {
             fclose(in);
         }
@@ -290,7 +294,7 @@ void trainer(Carta mazzo[]) {
 
     accuracy_bet /= CARTE_TOT; accuracy_bet *= 100;
 
-    printf("\n\n\nSTATISTICHE\nTempo:\t\t\t%02d:%05.2f\nOverall accuracy:\t%.2f %%\nLow accuracy:\t\t%.2f %%\nMid accuracy:\t\t%.2f %%\nHigh accuracy:\t\t%.2f %%\nAccuracy bet:\t\t%.2f %%\n\n\n", tempo_min, tempo_sec, accuracy_tot, accuracy_low, accuracy_mid, accuracy_high, accuracy_bet);
+    printf("\n\n\nSTATISTICHE ALLENAMENTO\nTempo:\t\t\t%02d:%05.2f\nOverall accuracy:\t%.2f %%\nLow accuracy:\t\t%.2f %%\nMid accuracy:\t\t%.2f %%\nHigh accuracy:\t\t%.2f %%\nAccuracy bet:\t\t%.2f %%\n\n\n", tempo_min, tempo_sec, accuracy_tot, accuracy_low, accuracy_mid, accuracy_high, accuracy_bet);
 
     save_stats(tempo, accuracy_tot, accuracy_low, accuracy_mid, accuracy_high, accuracy_bet, CARTE_TOT);
 }
@@ -313,13 +317,6 @@ void save_stats(double tempo, float acc_total, float acc_low, float acc_mid, flo
 }
 
 void stats(void) {
-    FILE* in = fopen("stats.txt", "r");
-    if (in == NULL) {
-        perror("\nstats.txt");
-        printf("\n");
-        return;
-    }
-
     char data[TIMESTAMP];
     double tempo_sec;
     int tempo_min;
@@ -327,31 +324,39 @@ void stats(void) {
     float s_acc_tot = 0.0f, s_acc_low = 0.0f, s_acc_mid = 0.0f, s_acc_high = 0.0f, s_acc_bet = 0.0f;
     int drills, cont = 0;
 
-    while (fscanf(in, "%16[^,],%lf,%f,%d,%f,%f,%f,%f\n", data, &tempo_sec, &acc_tot, &drills, &acc_low, &acc_mid, &acc_high, &acc_bet) == 8) {
-        if (cont == 0) {
-            printf("\nData\t\t\tTempo\t\tOverall accuracy %%\tDrills\tLow %%\tMid %%\tHigh %%\t\tBet %%\n");
-            printf("-------------------------------------------------------------------------------------------------------------------\n");
+    FILE* in = fopen("stats.txt", "r");
+
+    if (in != NULL) {
+        while (fscanf(in, "%16[^,],%lf,%f,%d,%f,%f,%f,%f\n", data, &tempo_sec, &acc_tot, &drills, &acc_low, &acc_mid, &acc_high, &acc_bet) == 8) {
+            if (cont == 0) {
+                printf("\nData\t\t\tTempo\t\tOverall accuracy %%\tDrills\tLow %%\tMid %%\tHigh %%\t\tBet %%\n");
+                printf("-------------------------------------------------------------------------------------------------------------------\n");
+            }
+            
+            tempo_min = tempo_sec / 60;
+            tempo_sec = fmod(tempo_sec, 60);
+
+            s_acc_tot += acc_tot;
+            s_acc_low += acc_low;
+            s_acc_mid += acc_mid;
+            s_acc_high += acc_high;
+
+            s_acc_bet += acc_bet;
+
+            cont++;
+
+            printf("%s\t%02d:%05.2f\t", data, tempo_min, tempo_sec);
+            printf(BLU "%3.1f\t\t\t" RESET, acc_tot);
+            printf(VIOLA "%d\t" RESET, drills);
+            printf("%3.1f\t%3.1f\t%3.1f\t\t", acc_low, acc_mid, acc_high);
+            printf(VERDE "%3.1f\n" RESET, acc_bet);
         }
-        
-        tempo_min = tempo_sec / 60;
-        tempo_sec = fmod(tempo_sec, 60);
 
-        s_acc_tot += acc_tot;
-        s_acc_low += acc_low;
-        s_acc_mid += acc_mid;
-        s_acc_high += acc_high;
-
-        s_acc_bet += acc_bet;
-
-        cont++;
-
-        printf("%s\t%02d:%05.2f\t%3.1f\t\t\t%d\t%3.1f\t%3.1f\t%3.1f\t\t%3.1f\n", data, tempo_min, tempo_sec, acc_tot, drills, acc_low, acc_mid, acc_high, acc_bet);
+        fclose(in);
     }
 
-    fclose(in);
-
     if (cont == 0) {
-        printf("\nNessuna statistica presente\n\n");
+        printf(ROSSO "\nNessuna statistica presente\n\n" RESET);
         return;
     }
 
