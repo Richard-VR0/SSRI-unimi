@@ -5,7 +5,7 @@
 
 #define INPUT_FILE_TXT 1    // Utilizzo del file di testo come input
 
-#define N_MAZZI 1           // Quantità di mazzi che compongono il sabot (1 - 8)
+#define N_MAZZI 2           // Quantità di mazzi che compongono il sabot (1 - 8)
 #define CARTE_MAZZO 52      // Quantità di carte contenute in ogni mazzo del sabot
 #define N_SEMI 4            // Quantità dei semi
 #define N_VALORI 13         // Quantità di carte per ogni seme
@@ -172,7 +172,7 @@ void print_carta(Carta carta) {
 }
 
 int delta_carta(int valore) {
-    return (valore >= MIN_LOW && valore <= MAX_LOW ? 1 : valore >= MIN_MID && valore <= MAX_MID ? 0 : -1);
+    return (valore >= MIN_LOW && valore <= MAX_LOW ? 1 : valore >= MIN_MID && valore <= MAX_MID ? 0 : -1);          // Sistema di conteggio Hi-Lo (low = +1, mid = 0, high = -1)
 }
 
 void read_running_count(Carta carta, int running_count, float* accuracy_tot, float* accuracy_low, float* accuracy_mid, float* accuracy_high, FILE* in) {
@@ -222,6 +222,12 @@ void read_bet(float true_count, float* accuracy_bet, FILE* in) {
 }
 
 int calculate_right_bet(float true_count) {
+    // Calcolo della bet corretta
+    // TC <= 0  -> 1x
+    // TC <= 1  -> 2x
+    // TC <= 2  -> 4x
+    // TC > 2   -> 8x
+
     return (true_count <= 0.0f) ? 1 : ((true_count <= 1.0f) ? 2 : ((true_count <= 2.0f) ? 4 : 8));
 }
 
@@ -259,7 +265,7 @@ void trainer(Carta mazzo[]) {
 
         running_count += delta_carta(mazzo[carte_uscite].valore);       // Aggiornamento del running count con il delta relativo alla carta uscita
 
-        deck_rest -= 1.0 / CARTE_MAZZO;                                 // Aggiornamento del deck rest
+        deck_rest -= 1.0 / CARTE_MAZZO;                                 // Aggiornamento del deck rest togliendo una frazione di mazzo
 
         true_count = running_count / deck_rest;                         // Aggiornamento del true count tenendo conto del running count e del deck rest
 
