@@ -3,24 +3,24 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define INPUT_FILE_TXT 1    // Utilizzo del file di testo come input
+#define INPUT_FILE_TXT 0    // Utilizzo del file di testo come input
 
-#define N_MAZZI 2           // Quantità di mazzi che compongono il sabot (1 - 8)
+#define N_MAZZI     7       // Quantità di mazzi che compongono il sabot (1 - 8)
 #define CARTE_MAZZO 52      // Quantità di carte contenute in ogni mazzo del sabot
-#define N_SEMI 4            // Quantità dei semi
-#define N_VALORI 13         // Quantità di carte per ogni seme
+#define N_SEMI      4       // Quantità dei semi
+#define N_VALORI    13      // Quantità di carte per ogni seme
 
 // Semi
-#define PICCHE 0
-#define FIORI 1
-#define CUORI 2
-#define QUADRI 3
+#define PICCHE  0
+#define FIORI   1
+#define CUORI   2
+#define QUADRI  3
 
 // Quantità carte (TOT - LOW - MID - HIGH)
-#define CARTE_TOT N_MAZZI*CARTE_MAZZO
-#define CARTE_LOW 20*N_MAZZI                        // Numero di carte LOW (2 - 6)
-#define CARTE_MID 12*N_MAZZI                        // Numero di carte MID (7 - 9)
-#define CARTE_HIGH 20*N_MAZZI                       // Numero di carte HIGH (A - 10 - J - Q - K)
+#define CARTE_TOT   N_MAZZI * CARTE_MAZZO
+#define CARTE_LOW   N_MAZZI * 20                // Numero di carte LOW (2 - 6)
+#define CARTE_MID   N_MAZZI * 12                // Numero di carte MID (7 - 9)
+#define CARTE_HIGH  N_MAZZI * 20                // Numero di carte HIGH (A - 10 - J - Q - K)
 
 // Carte LOW 2 - 6
 #define MIN_LOW 2
@@ -42,9 +42,10 @@
 #define VIOLA   "\033[35m"
 #define RESET   "\033[0m"
 
+// Struttura della carta da gioco
 typedef struct {
-    int valore;
-    int seme;
+    int valore;         // Valore della carta
+    int seme;           // Seme della carta
 } Carta;
 
 void init_mazzo(Carta[]);                                                       // Inizializzazione del sabot con N_MAZZI mischiati con il metodo Fisher-Yates
@@ -265,7 +266,7 @@ void trainer(Carta mazzo[]) {
 
         running_count += delta_carta(mazzo[carte_uscite].valore);       // Aggiornamento del running count con il delta relativo alla carta uscita
 
-        deck_rest -= 1.0 / CARTE_MAZZO;                                 // Aggiornamento del deck rest togliendo una frazione di mazzo
+        deck_rest -= 1.0 / CARTE_MAZZO;                                 // Aggiornamento del deck rest togliendo una frazione di mazzo (1/52)
 
         true_count = running_count / deck_rest;                         // Aggiornamento del true count tenendo conto del running count e del deck rest
 
