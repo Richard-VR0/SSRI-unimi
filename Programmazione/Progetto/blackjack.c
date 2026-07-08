@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define INPUT_FILE_TXT 0    // Utilizzo del file di testo come input
+#define INPUT_FILE_TXT 1    // Utilizzo del file di testo come input
 
 #define N_MAZZI     7       // Quantità di mazzi che compongono il sabot (1 - 8)
 #define CARTE_MAZZO 52      // Quantità di carte contenute in ogni mazzo del sabot
