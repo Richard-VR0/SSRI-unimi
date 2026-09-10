@@ -1,0 +1,117 @@
+Query da fare:
+ - movies
+    - Film che hanno una parola nel titolo
+    - Film per un dato anno
+    - Film compresi tra 2 anni
+    - Film compresi tra 2 anni che nel titolo contengono una parola
+    - Film compresi tra 2 anni e che nel titolo contengono una parola e non ne contengono un'altra
+ 
+ - users
+    - Utenti che hanno un nome utente e una password specificati
+ 
+ - comments
+    - Commenti in un certo anno
+
+__________________________________________________MOVIES__________________________________________________
+
+Film che hanno una parola nel titolo
+
+{ title: { $regex: "star wars", $options: "i" } }
+
+{
+   title: {
+      $regex: "train",
+      $options: "i"
+   }
+}
+
+__________________________________________________
+
+Film per un dato anno
+
+{ year: { $eq: 2005 } }
+
+{
+   year: {
+      $eq: 2005
+   }
+}
+
+__________________________________________________
+
+Film compresi tra 2 anni
+
+{ year: { $gte: 2004, $lte: 2005 } }
+
+{
+   year: {
+      $gte: 2004,
+      $lte: 2005
+   }
+}
+
+__________________________________________________
+
+Film compresi tra 2 anni che nel titolo contengono una parola
+
+{ title: { $regex: "star wars", $options: "i" }, year: { $gte: 1980, $lte: 2010 } }
+
+{
+   title: {
+      $regex: "star wars",
+      $options: "i"
+   },
+   year: {
+      $gte: 1980,
+      $lte: 2010
+   }
+}
+
+__________________________________________________
+
+Film compresi tra 2 anni e che nel titolo contengono una parola e non ne contengono un'altra
+
+{ title: { $regex: "star wars", $options: "i", $not: { $regex: "sith", $options: "i" } }, year: { $gte: 1999, $lte: 2005 } }
+
+{
+   title: {
+      $regex: "star wars",
+      $options: "i", 
+      $not: {
+         $regex: "sith",
+         $options: "i"
+      }
+   },
+   year: {
+      $gte: 1999,
+      $lte: 2005
+   }
+}
+
+__________________________________________________USERS__________________________________________________
+
+Utenti che hanno un nome utente e una password specificati
+
+{ name: { $eq: "Ned Stark" }, password: { $eq: "$2b$12$UREFwsRUoyF0CRqGNK0LzO0HM/jLhgUCNNIJ9RJAqMUQ74crlJ1Vu" } }
+
+{
+   name: {
+      $eq: "Ned Stark"
+   },
+   password: {
+      $eq: "$2b$12$UREFwsRUoyF0CRqGNK0LzO0HM/jLhgUCNNIJ9RJAqMUQ74crlJ1Vu"
+   }
+}
+
+__________________________________________________COMMENTS__________________________________________________
+
+Commenti in un certo anno
+
+{ date: { $gte: ISODate("2002-01-01T00:00:00Z"), $lte: ISODate("2002-12-31T23:59:59Z") } }
+
+{
+   date: {
+      $gte: ISODate("2002-01-01T00:00:00Z"),
+      $lte: ISODate("2002-12-31T23:59:59Z")
+   }
+}
