@@ -1,0 +1,622 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PWM API",
+    "description": "Swagger delle api pwm",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
+  "paths": {
+    "/user": {
+      "post": {
+        "tags": [
+          "Utente"
+        ],
+        "summary": "Registrazione",
+        "description": "Registra un nuovo utente nel sistema.<br>Il tipo di registrazione varia in base al campo <b>tipologia</b> (cliente e ristorante).<br>I 2 tipi di utenti possiedono dei campi in comune (nome, cognome, email, password), inoltre un <b>cliente</b> deve fornire i dati del metodo di pagamento, mentre un <b>ristorante</b> deve fornire i dati dell\\'attività, l\\'indirizzo e le coordinate geografiche.",
+        "responses": {
+          "201": {
+            "description": "Utente registrato con successo"
+          },
+          "400": {
+            "description": "Dati malformati"
+          },
+          "409": {
+            "description": "Email già in uso"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "title": "Cliente",
+                    "properties": {
+                      "nome": {
+                        "type": "string",
+                        "example": "Riccardo"
+                      },
+                      "cognome": {
+                        "type": "string",
+                        "example": "Vescio"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "riccardo@gmail.com"
+                      },
+                      "password": {
+                        "type": "string",
+                        "example": "riccardo123"
+                      },
+                      "tipologia": {
+                        "type": "string",
+                        "example": "cliente"
+                      },
+                      "pagamento": {
+                        "type": "object",
+                        "properties": {
+                          "numerocarta": {
+                            "type": "string",
+                            "example": "4321432143214321"
+                          },
+                          "scadenza": {
+                            "type": "string",
+                            "example": "12/26"
+                          },
+                          "cvv": {
+                            "type": "string",
+                            "example": "500"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "title": "Ristorante",
+                    "properties": {
+                      "nome": {
+                        "type": "string",
+                        "example": "Riccardo"
+                      },
+                      "cognome": {
+                        "type": "string",
+                        "example": "Vescio"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "ristorante@gmail.com"
+                      },
+                      "password": {
+                        "type": "string",
+                        "example": "ristorante123"
+                      },
+                      "tipologia": {
+                        "type": "string",
+                        "example": "ristorante"
+                      },
+                      "ristorante": {
+                        "type": "object",
+                        "properties": {
+                          "nome": {
+                            "type": "string",
+                            "example": "Locanda dello sbusto"
+                          },
+                          "descrizione": {
+                            "type": "string",
+                            "example": "Una locanda dove potrai trovare piatti disgustosi a prezzi esorbitanti"
+                          },
+                          "piva": {
+                            "type": "string",
+                            "example": "12345678901"
+                          },
+                          "url_foto": {
+                            "type": "string",
+                            "example": "https://esempio.it/foto.jpg"
+                          },
+                          "telefono": {
+                            "type": "string",
+                            "example": "3333333333"
+                          },
+                          "indirizzo": {
+                            "type": "object",
+                            "properties": {
+                              "via": {
+                                "type": "string",
+                                "example": "Via dei Guinceri"
+                              },
+                              "civico": {
+                                "type": "string",
+                                "example": "10"
+                              },
+                              "citta": {
+                                "type": "string",
+                                "example": "Collesalvetti"
+                              }
+                            }
+                          },
+                          "coordinate": {
+                            "type": "object",
+                            "properties": {
+                              "latitudine": {
+                                "type": "string",
+                                "example": "45.464"
+                              },
+                              "longitudine": {
+                                "type": "string",
+                                "example": "9.19"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "Utente"
+        ],
+        "summary": "Login",
+        "description": "Autentica un utente tramite email e password.<br>In caso di successo restituisce i dati completi del profilo, altrimenti un errore di credenziali non valide.",
+        "responses": {
+          "200": {
+            "description": "Accesso eseguito correttamente"
+          },
+          "401": {
+            "description": "Credenziali errate"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "put": {
+        "tags": [
+          "Utente"
+        ],
+        "summary": "Modifica",
+        "description": "Aggiorna i dati di un utente esistente, identificato tramite ID.<br>Accetta lo stesso formato dati previsto in fase di registrazione, in base alla tipologia dell\\'utente (cliente o ristorante).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID dell'utente da modificare"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dati dell'utente aggiornati con successo"
+          },
+          "400": {
+            "description": "Dati malformati"
+          },
+          "404": {
+            "description": "Utente non trovato"
+          },
+          "409": {
+            "description": "Email già in uso"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "title": "Cliente",
+                    "properties": {
+                      "nome": {
+                        "type": "string",
+                        "example": "Riccardo"
+                      },
+                      "cognome": {
+                        "type": "string",
+                        "example": "Vescio"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "riccardo@gmail.com"
+                      },
+                      "password": {
+                        "type": "string",
+                        "example": "riccardo123"
+                      },
+                      "tipologia": {
+                        "type": "string",
+                        "example": "cliente"
+                      },
+                      "pagamento": {
+                        "type": "object",
+                        "properties": {
+                          "numerocarta": {
+                            "type": "string",
+                            "example": "4321432143214321"
+                          },
+                          "scadenza": {
+                            "type": "string",
+                            "example": "12/26"
+                          },
+                          "cvv": {
+                            "type": "string",
+                            "example": "500"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "title": "Ristorante",
+                    "properties": {
+                      "nome": {
+                        "type": "string",
+                        "example": "Riccardo"
+                      },
+                      "cognome": {
+                        "type": "string",
+                        "example": "Vescio"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "ristorante@gmail.com"
+                      },
+                      "password": {
+                        "type": "string",
+                        "example": "ristorante123"
+                      },
+                      "tipologia": {
+                        "type": "string",
+                        "example": "ristorante"
+                      },
+                      "ristorante": {
+                        "type": "object",
+                        "properties": {
+                          "nome": {
+                            "type": "string",
+                            "example": "Locanda dello sbusto"
+                          },
+                          "descrizione": {
+                            "type": "string",
+                            "example": "Una locanda dove potrai trovare piatti disgustosi a prezzi esorbitanti"
+                          },
+                          "piva": {
+                            "type": "string",
+                            "example": "12345678901"
+                          },
+                          "url_foto": {
+                            "type": "string",
+                            "example": "https://esempio.it/foto.jpg"
+                          },
+                          "telefono": {
+                            "type": "string",
+                            "example": "3333333333"
+                          },
+                          "indirizzo": {
+                            "type": "object",
+                            "properties": {
+                              "via": {
+                                "type": "string",
+                                "example": "Via dei Guinceri"
+                              },
+                              "civico": {
+                                "type": "string",
+                                "example": "10"
+                              },
+                              "citta": {
+                                "type": "string",
+                                "example": "Collesalvetti"
+                              }
+                            }
+                          },
+                          "coordinate": {
+                            "type": "object",
+                            "properties": {
+                              "latitudine": {
+                                "type": "string",
+                                "example": "45.464"
+                              },
+                              "longitudine": {
+                                "type": "string",
+                                "example": "9.19"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Utente"
+        ],
+        "summary": "Cancellazione",
+        "description": "Elimina definitivamente un utente dal sistema, identificato tramite ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID dell'utente da eliminare"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dati dell'utente eliminati con successo"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Utente"
+        ],
+        "summary": "Dati utente",
+        "description": "Restituisce i dati completi di un singolo utente a partire dal suo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID dell'utente da recuperare"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dati del cliente"
+          },
+          "404": {
+            "description": "Utente non trovato"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/restaurant": {
+      "get": {
+        "tags": [
+          "Ristorante"
+        ],
+        "summary": "Lista dei ristoranti",
+        "description": "Restituisce l\\'elenco di tutti i ristoranti registrati sulla piattaforma, ovvero di tutti gli utenti con il campo tipologia uguale a <b>\"ristorante\"</b>",
+        "responses": {
+          "200": {
+            "description": "Lista dei ristoranti"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/restaurant/search": {
+      "get": {
+        "tags": [
+          "Ristorante"
+        ],
+        "summary": "Ricerca ristoranti",
+        "description": "Cerca tra i ristoranti registrati filtrando per nome del ristorante o città, tramite corrispondenza parziale e case-insensitive.<br>Se il parametro <b>query</b> non viene fornito, restituisce l\\'elenco completo dei ristoranti.",
+        "parameters": [
+          {
+            "name": "query",
+            "description": "Testo da cercare (nome ristorante o città)",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista ristoranti trovati"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/restaurant/{id}": {
+      "get": {
+        "tags": [
+          "Ristorante"
+        ],
+        "summary": "Dati ristorante",
+        "description": "Restituisce i dati completi di un singolo ristorante a partire dal suo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID del ristorante da recuperare"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dati del ristorante"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/restaurant/menu/{id}": {
+      "get": {
+        "tags": [
+          "Menu"
+        ],
+        "description": "Restituisce la lista completa dei piatti del catalogo arricchita con le informazioni del menu del ristorante specificato.<br>Per ogni piatto viene indicato se è presente nel menu (inMenu), il prezzo impostato dal ristoratore (prezzo) e il riferimento al documento nella collezione menu (menu_id).<br>Se il piatto non è nel menu, prezzo e menu_id sono null.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID del ristorante di cui si vuole ottenere il menu"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista di tutti i piatti del catalogo con i campi aggiuntivi inMenu, prezzo e menu_id"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/restaurant/menu/save": {
+      "post": {
+        "tags": [
+          "Menu"
+        ],
+        "description": "Salva il menu completo del ristorante.<br>Per ogni piatto ricevuto gestisce tre casi: se il piatto è selezionato e non era nel menu lo inserisce con il prezzo indicato; se il piatto è selezionato ed era già nel menu aggiorna il prezzo; se il piatto non è selezionato ma era nel menu lo rimuove.<br>I piatti selezionati senza prezzo o con prezzo non valido vengono ignorati.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ristorante_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "menu": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "piatto_id": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "menu_id": {
+                        "type": "string",
+                        "example": "string|null"
+                      },
+                      "incluso": {
+                        "type": "string",
+                        "example": "boolean"
+                      },
+                      "prezzo": {
+                        "type": "string",
+                        "example": "number|null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu salvato con successo"
+          },
+          "400": {
+            "description": "Campi mancanti nel body della richiesta"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/meals": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/meals/{id}": {
+      "get": {
+        "tags": [
+          "Meals"
+        ],
+        "description": "Dati di un piatto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID piatto"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}

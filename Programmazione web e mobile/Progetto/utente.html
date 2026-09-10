@@ -1,0 +1,323 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Login</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" href="img/icona.png" type="image/png">
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+        <script src="lib.js"></script>
+    </head>
+
+    <body onload="isLogged();" data-bs-theme="dark">
+        <!-- navbar -->
+        <nav class="navbar bg-light-subtle navbar-expand-md sticky-top" data-bs-theme="dark">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img src="img/icona.png" alt="Bootstrap" width="30" height="24">
+                    DomiCibo
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="index.html">
+                                <i class="bi bi-house"></i>
+                                Home
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="utente.html">
+                                <i class="bi bi-person-fill"></i>
+                                Utente
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="swagger.html">
+                                <i class="bi bi-cart3"></i>
+                                Carrello
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="row g-3 mt-1 mb-3">
+                <div class="col-lg-6 mx-auto bg-light-subtle shadow rounded p-3">
+
+                    <div id="errore" class="alert alert-danger d-none" role="alert"></div>
+
+                    <div id="successo" class="alert alert-success d-none" role="alert"></div>
+
+                    <div id="utente" class="d-none">
+                        <form name="utente">
+                            <h5 class="fs-4 text-center mb-3">
+                                Utente
+                            </h5>
+
+                            <h5 class="fs-6">
+                                <i class="bi bi-people"></i>
+                                Tipologia
+                            </h5>
+
+                            <div class="form-floating mb-3">
+                                <select id="tipologia" name="tipologia" class="form-select" disabled>
+                                    <option value="cliente" selected>
+                                        Cliente
+                                    </option>
+                                    
+                                    <option value="ristorante">
+                                        Ristorante
+                                    </option>
+                                </select>
+                                
+                                <label for="floatingSelect">
+                                    Seleziona la tipologia d'utente
+                                </label>
+                            </div>
+
+                            <h5 class="fs-6">
+                                <i class="bi bi-person"></i>
+                                Dati personali
+                            </h5>
+                            
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" style="width: 6rem;">
+                                    Nome
+                                </span>
+                                
+                                <input type="text" name="nome" class="form-control" maxlength="40">
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" style="width: 6rem;">
+                                    Cognome
+                                </span>
+                                
+                                <input type="text" name="cognome" class="form-control" maxlength="40">
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" style="width: 6rem;">
+                                    Email
+                                </span>
+                                
+                                <input type="email" name="email" class="form-control" maxlength="50">
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" style="width: 6rem;">
+                                    Password
+                                </span>
+                                
+                                <input type="password" name="password" id="psw-utente" class="form-control" maxlength="40">
+
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('utente')">
+                                    <i id="eye-utente" class="bi bi-eye-fill"></i>
+                                </button>
+                            </div>
+
+                            <div id="cliente">
+                                <h5 class="fs-6">
+                                    <i class="bi bi-credit-card-2-back"></i>
+                                    Metodo di pagamento
+                                </h5>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" style="width: 8rem;">
+                                        Numero carta
+                                    </span>
+                                    <input type="text" name="numerocarta" maxlength="16" class="form-control">
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" style="width: 8rem;">
+                                        Scadenza
+                                    </span>
+                                    <input type="text" name="scadenza" maxlength="5" class="form-control">
+
+                                    <span class="input-group-text">CVV</span>
+                                    <input type="text" name="cvv" maxlength="3" class="form-control">
+                                </div>
+                            </div>
+
+                            <div id="ristorante" class="">
+                                <h5 class="fs-6">
+                                    <i class="bi bi-info-circle"></i>
+                                    Dettagli ristorante
+                                </h5>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" style="width: 9rem;">
+                                        Nome ristorante
+                                    </span>
+                                    <input type="text" name="nomeristorante" maxlength="30" class="form-control">
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <textarea name="descrizioneristorante" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" maxlength="200" style="height: 100px"></textarea>
+                                    <label for="floatingTextarea2">
+                                        Descrizione ristorante
+                                    </label>
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" style="width: 9rem;">
+                                        Partita IVA
+                                    </span>
+                                    <input type="text" name="piva" maxlength="11" class="form-control">
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" style="width: 9rem;">
+                                        URL Immagine
+                                    </span>
+                                    <input type="text" name="url" maxlength="200" class="form-control">
+                                </div>
+
+                                <h5 class="fs-6">
+                                    <i class="bi bi-telephone"></i>
+                                    Contatti
+                                </h5>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" style="width: 9rem;">
+                                        Telefono
+                                    </span>
+                                    <input type="text" name="telefono" maxlength="18" class="form-control">
+                                </div>
+
+                                <h5 class="fs-6">
+                                    <i class="bi bi-geo-alt"></i>
+                                    Indirizzo
+                                </h5>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        Via
+                                    </span>
+                                    <input type="text" name="via" maxlength="50" class="form-control">
+
+                                    <span class="input-group-text">
+                                        Civico
+                                    </span>
+                                    <input type="text" name="civico" maxlength="8" class="form-control">
+
+                                    <span class="input-group-text">
+                                        Città
+                                    </span>
+                                    <input type="text" name="citta" maxlength="30" class="form-control">
+                                </div>
+
+                                <h5 class="fs-6">
+                                    <i class="bi bi-crosshair"></i>
+                                    Coordinate
+                                </h5>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        Latitudine
+                                    </span>
+                                    <input type="text" name="lat" maxlength="5" class="form-control">
+
+                                    <span class="input-group-text">
+                                        Longitudine
+                                    </span>
+                                    <input type="text" name="lng" maxlength="3" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-lg">
+                                    <button type="button" class="btn btn-primary d-flex mx-auto" onclick="aggiorna();">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                        Aggiorna
+                                    </button>
+                                </div>
+
+                                <div class="col-lg">
+                                    <button type="button" class="btn btn-warning d-flex mx-auto" onclick="logout();">
+                                        <i class="bi bi-door-closed"></i>
+                                        Logout
+                                    </button>
+                                </div>
+
+                                <div class="col-lg">
+                                    <button type="button" class="btn btn-danger d-flex mx-auto" onclick="elimina();">
+                                        <i class="bi bi-trash-fill"></i>
+                                        Elimina
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div id="accesso">
+                        <form name="accesso">
+                            <h5 class="fs-4 text-center mb-3">Login</h5>
+                            
+                            <div class="row justify-content-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" style="width: 6rem;">
+                                        Email
+                                    </span>
+                                    
+                                    <input type="email" name="email" class="form-control" maxlength="50">
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" style="width: 6rem;">
+                                        Password
+                                    </span>
+                                    
+                                    <input type="password" name="password" id="psw-login" class="form-control" maxlength="40">
+
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('login')">
+                                        <i id="eye-login" class="bi bi-eye-fill"></i>
+                                    </button>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg">
+                                        <button type="button" class="btn btn-success d-flex mx-auto mb-5" onclick="login();">
+                                            <i class="bi bi-door-open"></i>
+                                            Accedi
+                                        </button>
+
+                                        <p class="text-center">
+                                            <a class="link-opacity-100-hover" href="registrazione.html">
+                                                Non hai ancora un account? Registrati
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <script src="meals.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    </body>
+<html>
