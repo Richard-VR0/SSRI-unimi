@@ -379,7 +379,7 @@ function renderRistoranti(lista) {
 }
 
 // -----------------------------------------------------------------------------------------------
-//                                      DETTAGLI RISTORANTE
+//                                      VETRINA RISTORANTE
 // -----------------------------------------------------------------------------------------------
 
 function caricaDettagliRistorante() {
@@ -395,11 +395,11 @@ function caricaDettagliRistorante() {
 
         document.getElementById('nome-ristorante').innerHTML = dettagli.nome;
 
-        document.getElementById('indirizzo').innerHTML = "Indirizzo: " + dettagli.indirizzo.via + " " + dettagli.indirizzo.civico + ", " + dettagli.indirizzo.citta;
-        document.getElementById('coordinate').innerHTML = "Coordinate: " + dettagli.coordinate.lat + "° " + dettagli.coordinate.lng + "°";
+        document.getElementById('indirizzo').innerHTML = "<span class='fw-bolder'>Indirizzo: </span>" + dettagli.indirizzo.via + " " + dettagli.indirizzo.civico + ", " + dettagli.indirizzo.citta;
+        document.getElementById('coordinate').innerHTML = "<span class='fw-bolder'>Coordinate: </span>" + dettagli.coordinate.lat + "° " + dettagli.coordinate.lng + "°";
 
         const telefonocontainer = document.getElementById('telefono');
-        telefonocontainer.textContent = "Telefono: ";
+        telefonocontainer.innerHTML = "<span class='fw-bolder'>Telefono: </span>";
         const linktelefono = document.createElement('a');
         linktelefono.href = "tel:" + dettagli.telefono;
         linktelefono.className = "link-warning";
@@ -407,18 +407,68 @@ function caricaDettagliRistorante() {
         telefonocontainer.appendChild(linktelefono);
 
         const emailcontainer = document.getElementById('email');
-        emailcontainer.textContent = "Email: ";
+        emailcontainer.innerHTML = "<span class='fw-bolder'>Email: </span>";
         const linkemail = document.createElement('a');
         linkemail.href = "mailto:" + result.email;
         linkemail.className = "link-warning";
         linkemail.textContent = result.email;
         emailcontainer.appendChild(linkemail);
 
-        document.getElementById('piva').innerHTML = "Partita IVA: " + dettagli.piva;
+        document.getElementById('piva').innerHTML = "<span class='fw-bolder'>Partita IVA: </span>" + dettagli.piva;
 
         document.getElementById('descrizione').innerHTML = dettagli.descrizione;
     })
 }
+
+function caricaMenu() {
+    let params = new URLSearchParams(window.location.search);
+    const ristoranteId = params.get('id');
+
+    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/menu').then(res => res.json()).then(lista => renderMenu(lista));
+}
+
+function cercaMenu() {
+    let params = new URLSearchParams(window.location.search);
+    const ristoranteId = params.get('id');
+    const query = document.getElementById('ricerca').value;
+
+    if (query == "") {
+        caricaMenu();
+    }
+    else {
+        fetch("http://localhost:3000/restaurant/" + ristoranteId + "/menu/search?query=" + query).then(response => response.json()).then(lista => {renderMenu(lista)})
+    }
+}
+
+function renderMenu(lista) {
+    pulisciDiv("prodotto");
+
+    for (let i = 0; i < lista.length; i++) {
+        let piatto = lista[i];
+
+        let modello = document.getElementById('prodotto');
+        let clone = modello.cloneNode(true);
+
+        clone.getElementsByTagName('img')[0].src = piatto.foto;
+
+        clone.getElementsByTagName('h5')[0].textContent = piatto.nome;
+
+        clone.getElementsByTagName('small')[0].innerHTML = "<span class='fw-bolder'>Categoria: </span>" + piatto.categoria;
+        clone.getElementsByTagName('small')[1].innerHTML = "<span class='fw-bolder'>Area: </span>" + piatto.area;
+        clone.getElementsByTagName('small')[2].innerHTML = "<span class='fw-bolder'>Ingredienti: </span>" + piatto.ingredienti;
+
+        clone.getElementsByTagName('span')[3].textContent = piatto.prezzo + " €";
+
+        clone.classList.remove('d-none');
+        clone.id += i;
+
+        modello.before(clone);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------
+//                                      GESTIONE RISTORANTE
+// -----------------------------------------------------------------------------------------------
 
 function dashboard() {
     caricaGestionePiatti();
@@ -427,7 +477,7 @@ function dashboard() {
 function caricaGestionePiatti() {
     const ristoranteId = localStorage.getItem('user_id');
 
-    fetch('http://localhost:3000/restaurant/menu/' + ristoranteId).then(res => res.json()).then(lista => renderGestionePiatti(lista));
+    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/menu/gestione').then(res => res.json()).then(lista => renderGestionePiatti(lista));
 }
 
 function renderGestionePiatti(lista) {
@@ -487,12 +537,10 @@ function aggiornaMenu() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ristorante_id: ristoranteId, menu })
+        body: JSON.stringify({ menu })
     };
 
-    console.log(JSON.stringify({ ristorante_id: ristoranteId, menu }));
-
-    fetch('http://localhost:3000/restaurant/menu/save', options).then(res => res.json()).then(result => {
+    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/menu/save', options).then(res => res.json()).then(result => {
         if (result.error) {
             alert(result.error);
         } else {

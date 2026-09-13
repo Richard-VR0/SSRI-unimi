@@ -12,10 +12,9 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
         <script src="lib.js"></script>
-        <script src="meals.js"></script>
     </head>
 
-    <body onload="caricaDettagliRistorante(); caricaProdotti();" data-bs-theme="dark">
+    <body onload="caricaDettagliRistorante(); caricaMenu();" data-bs-theme="dark">
         <!-- navbar -->
         <nav class="navbar bg-light-subtle navbar-expand-md sticky-top" data-bs-theme="dark">
             <div class="container">
@@ -67,24 +66,26 @@
                 <div class="col-lg-9">
                     <h5 id="nome-ristorante" class="fs-5"></h5>
 
-                    <div class="my-2">
-                        <small class="text-warning">
-                            <span id="indirizzo"></span>
-                            <br>
-                            <span id="coordinate"></span>
-                        </small>
-                    </div>
+                    <div class="text-warning">
+                        <div class="my-2">
+                            <small>
+                                <span id="indirizzo"></span>
+                                <br>
+                                <span id="coordinate"></span>
+                            </small>
+                        </div>
 
-                    <div class="my-2">
-                        <small id="telefono" class="text-warning"></small>
-                    </div>
+                        <div class="my-2">
+                            <small id="telefono"></small>
+                        </div>
 
-                    <div class="my-2">
-                        <small id="email" class="text-warning"></small>
-                    </div>
+                        <div class="my-2">
+                            <small id="email"></small>
+                        </div>
 
-                    <div class="my-2">
-                        <small id="piva" class="text-warning"></small>
+                        <div class="my-2">
+                            <small id="piva"></small>
+                        </div>
                     </div>
 
                     <div id="descrizione" class="my-2"></div>
@@ -96,13 +97,16 @@
             <div class="row my-3">
                 <div class="col-lg-4">
                     <div class="input-group flex-nowrap">
-                        <span class="input-group-text" id="addon-wrapping">Cerca</span>
-                        <input type="text" id="ricerca" class="form-control" placeholder="Cerca qualcosa..." aria-label="Username" aria-describedby="addon-wrapping" oninput="cercaRistoranti();">
+                        <span class="input-group-text" id="addon-wrapping">
+                            Cerca
+                        </span>
+                        
+                        <input type="text" id="ricerca" class="form-control" placeholder="Cerca qualcosa..." oninput="cercaMenu();">
                     </div>
                 </div>
             </div>
 
-            <div class="row row-cols-2 g-3">
+            <div id="container-prodotto" class="row row-cols-2 g-3">
                 
                 <!-- Modello carta prodotto -->
                 <div id="prodotto" class="col d-none">
@@ -119,6 +123,18 @@
 
                                     <div class="card-text text-body-secondary mb-3">
                                         <small></small>
+                                        
+                                        <br>
+                                        
+                                        <small></small>
+
+                                        <br>
+
+                                        <small></small>
+                                        
+                                        <br>
+                                        
+                                        <span class="text-primary fw-bold "></span>
                                     </div>
                                     
                                     <button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">

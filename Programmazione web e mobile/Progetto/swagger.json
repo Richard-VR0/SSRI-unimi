@@ -381,6 +381,9 @@
           "200": {
             "description": "Dati dell'utente eliminati con successo"
           },
+          "404": {
+            "description": "Utente non trovato"
+          },
           "500": {
             "description": "Errore interno del server"
           }
@@ -489,11 +492,84 @@
         }
       }
     },
-    "/restaurant/menu/{id}": {
+    "/restaurant/{id}/menu": {
       "get": {
         "tags": [
           "Menu"
         ],
+        "summary": "Lista piatti disponibili",
+        "description": "Restituisce solo i piatti presenti nel menu del ristorante specificato, con il prezzo impostato dal ristoratore. Utilizzato lato cliente per visualizzare il menu del ristorante.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID del ristorante"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista piatti nel menu"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/restaurant/{id}/menu/search": {
+      "get": {
+        "tags": [
+          "Menu"
+        ],
+        "summary": "Ricerca piatti nel menu del ristorante",
+        "description": "Ricerca i piatti disponibili nel menu del ristorante per nome o categoria.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID del ristorante"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nome",
+            "in": "query",
+            "description": "Testo da cercare nel nome o categoria del piatto",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/restaurant/{id}/menu/gestione": {
+      "get": {
+        "tags": [
+          "Menu"
+        ],
+        "summary": "Lista piatti del catalogo con stato del piatto",
         "description": "Restituisce la lista completa dei piatti del catalogo arricchita con le informazioni del menu del ristorante specificato.<br>Per ogni piatto viene indicato se è presente nel menu (inMenu), il prezzo impostato dal ristoratore (prezzo) e il riferimento al documento nella collezione menu (menu_id).<br>Se il piatto non è nel menu, prezzo e menu_id sono null.",
         "parameters": [
           {
@@ -516,13 +592,22 @@
         }
       }
     },
-    "/restaurant/menu/save": {
+    "/restaurant/{id}/menu/save": {
       "post": {
         "tags": [
           "Menu"
         ],
+        "summary": "Salvataggio delle modifiche del menu",
         "description": "Salva il menu completo del ristorante.<br>Per ogni piatto ricevuto gestisce tre casi: se il piatto è selezionato e non era nel menu lo inserisce con il prezzo indicato; se il piatto è selezionato ed era già nel menu aggiorna il prezzo; se il piatto non è selezionato ma era nel menu lo rimuove.<br>I piatti selezionati senza prezzo o con prezzo non valido vengono ignorati.",
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "body",
             "in": "body",
@@ -593,7 +678,7 @@
         "tags": [
           "Meals"
         ],
-        "description": "Dati di un piatto",
+        "description": "Restituisce i dati completi di un singolo piatto del catalogo identificato dal suo ID, inclusi nome, categoria, area geografica, istruzioni di preparazione, foto, ingredienti e dosi.<br>Se il piatto non viene trovato restituisce un errore 404.",
         "parameters": [
           {
             "name": "id",
@@ -602,18 +687,18 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID piatto"
+            "description": "ID del piatto da recuperare"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Dati completi del piatto"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Piatto non trovato"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Errore interno del server"
           }
         }
       }

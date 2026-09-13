@@ -493,6 +493,7 @@ app.delete('/user/:id', async (req, res) => {
         type: 'string'
     } */
     // #swagger.responses[200] = { description: 'Dati dell\'utente eliminati con successo' }
+    // #swagger.responses[404] = { description: 'Utente non trovato' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const id = req.params.id;
@@ -501,12 +502,24 @@ app.delete('/user/:id', async (req, res) => {
 
     try {
         client = await MongoClient.connect(process.env.MONGOURL);
-        const coll = client.db(process.env.DB_NAME).collection(process.env.COLL_USERS);
+        const db = client.db(process.env.DB_NAME);
 
-        await coll.deleteOne( { _id: { $eq: new ObjectID(id) } } );
+        const coll_user = db.collection(process.env.COLL_USERS);
+        const coll_menu = db.collection(process.env.COLL_MENU);
 
-        res.status(200).json({ message: 'Utente eliminato con successo' });
+        const utente = await coll_user.findOne({ _id: { $eq: new ObjectID(id) } });
+        if (!utente) {
+            res.status(404).json({ message: 'Utente non trovato' });
+        }
+        else {
+            if (utente.tipologia == "ristorante") {
+                await coll_menu.deleteMany({ ristorante_id: { $eq: new ObjectID(id) } });
+            }
 
+            await coll_user.deleteOne( { _id: { $eq: new ObjectID(id) } } );
+
+            res.status(200).json({ message: 'Utente eliminato con successo' });
+        }
     } catch (error) {
         console.error(error);
 
@@ -655,9 +668,128 @@ app.get('/restaurant/:id', async (req, res) => {
 //                                          MENU
 // -----------------------------------------------------------------------------------------------
 
-app.get('/restaurant/menu/:id', async (req, res) => {
+app.get('/restaurant/:id/menu', async (req, res) => {
+    // #swagger.tags = ['Menu']
+    // #swagger.summary = 'Lista piatti disponibili'
+    // #swagger.description = 'Restituisce solo i piatti presenti nel menu del ristorante specificato, con il prezzo impostato dal ristoratore. Utilizzato lato cliente per visualizzare il menu del ristorante.'
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID del ristorante',
+        required: true,
+        type: 'string'
+    }*/
+    /* #swagger.responses[200] = { description: 'Lista piatti nel menu' } */
+    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
+
+    const ristorante_id = req.params.id;
+
+    let client;
+
+    try {
+        client = await MongoClient.connect(process.env.MONGOURL);
+        const db = client.db(process.env.DB_NAME);
+
+        const result = await db.collection(process.env.COLL_MENU).aggregate([
+            { $match: { ristorante_id: new ObjectID(ristorante_id), disponibile: true } },
+            {
+                $lookup: {
+                    from: process.env.COLL_MEALS,
+                    localField: 'piatto_id',
+                    foreignField: '_id',
+                    as: 'piatto'
+                }
+            },
+            { $unwind: '$piatto' },
+            {
+                $project: {
+                    _id: 1,
+                    prezzo: 1,
+                    disponibile: 1,
+                    nome: '$piatto.strMeal',
+                    categoria: '$piatto.strCategory',
+                    area: '$piatto.strArea',
+                    foto: '$piatto.strMealThumb',
+                    ingredienti: '$piatto.ingredients',
+                    misure: '$piatto.measures'
+                }
+            }
+        ]).toArray();
+
+        res.status(200).json(result);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Errore interno del server' });
+    } finally {
+        if (client) await client.close();
+    }
+})
+
+app.get('/restaurant/:id/menu/search', async (req, res) => {
+    // #swagger.tags = ['Menu']
+    // #swagger.summary = 'Ricerca piatti nel menu del ristorante'
+    // #swagger.description = 'Ricerca i piatti disponibili nel menu del ristorante per nome o categoria.'
+    // #swagger.parameters['id'] = { in: 'path', description: 'ID del ristorante', required: true, type: 'string' }
+    // #swagger.parameters['nome'] = { in: 'query', description: 'Testo da cercare nel nome o categoria del piatto', required: false, type: 'string' }
+
+    const ristorante_id = req.params.id;
+    const query = req.query.query;
+
+    let client;
+    try {
+        client = await MongoClient.connect(process.env.MONGOURL);
+        const db = client.db(process.env.DB_NAME);
+
+        const result = await db.collection(process.env.COLL_MENU).aggregate([
+            { $match: { ristorante_id: new ObjectID(ristorante_id), disponibile: true } },
+            {
+                $lookup: {
+                    from: process.env.COLL_MEALS,
+                    localField: 'piatto_id',
+                    foreignField: '_id',
+                    as: 'piatto'
+                }
+            },
+            { $unwind: '$piatto' },
+            {
+                $match: {
+                    ...(query && {
+                        $or: [
+                            { 'piatto.strMeal': { $regex: query, $options: 'i' } },
+                            { 'piatto.strCategory': { $regex: query, $options: 'i' } }
+                        ]
+                    })
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    prezzo: 1,
+                    disponibile: 1,
+                    nome: '$piatto.strMeal',
+                    categoria: '$piatto.strCategory',
+                    area: '$piatto.strArea',
+                    foto: '$piatto.strMealThumb',
+                    ingredienti: '$piatto.ingredients',
+                    misure: '$piatto.measures'
+                }
+            }
+        ]).toArray();
+
+        res.status(200).json(result);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Errore interno del server' });
+    } finally {
+        if (client) await client.close();
+    }
+})
+
+app.get('/restaurant/:id/menu/gestione', async (req, res) => {
     // #swagger.description = 'Restituisce la lista completa dei piatti del catalogo arricchita con le informazioni del menu del ristorante specificato.<br>Per ogni piatto viene indicato se è presente nel menu (inMenu), il prezzo impostato dal ristoratore (prezzo) e il riferimento al documento nella collezione menu (menu_id).<br>Se il piatto non è nel menu, prezzo e menu_id sono null.'
     // #swagger.tags = ['Menu']
+    // #swagger.summary = 'Lista piatti del catalogo con stato del piatto'
     /* #swagger.parameters['id'] = {
         in: 'path',
         description: 'ID del ristorante di cui si vuole ottenere il menu',
@@ -703,9 +835,10 @@ app.get('/restaurant/menu/:id', async (req, res) => {
     }
 })
 
-app.post('/restaurant/menu/save', async (req, res) => {
+app.post('/restaurant/:id/menu/save', async (req, res) => {
     // #swagger.description = 'Salva il menu completo del ristorante.<br>Per ogni piatto ricevuto gestisce tre casi: se il piatto è selezionato e non era nel menu lo inserisce con il prezzo indicato; se il piatto è selezionato ed era già nel menu aggiorna il prezzo; se il piatto non è selezionato ma era nel menu lo rimuove.<br>I piatti selezionati senza prezzo o con prezzo non valido vengono ignorati.'
     // #swagger.tags = ['Menu']
+    // #swagger.summary = 'Salvataggio delle modifiche del menu'
     /* #swagger.parameters['body'] = {
         in: 'body',
         required: true,
@@ -723,7 +856,8 @@ app.post('/restaurant/menu/save', async (req, res) => {
     /* #swagger.responses[400] = { description: 'Campi mancanti nel body della richiesta' } */
     /* #swagger.responses[500] = { description: 'Errore interno del server' } */
 
-    const { ristorante_id, menu } = req.body;
+    const ristorante_id = req.params.id;
+    const { menu } = req.body;
 
     if (!ristorante_id || !menu) {
         return res.status(400).json({ error: 'Campi mancanti' });
@@ -769,6 +903,10 @@ app.post('/restaurant/menu/save', async (req, res) => {
     }
 })
 
+// -----------------------------------------------------------------------------------------------
+//                                          PIATTI
+// -----------------------------------------------------------------------------------------------
+
 app.get('/meals', async (req, res) => {
     let client;
 
@@ -787,9 +925,17 @@ app.get('/meals', async (req, res) => {
 })
 
 app.get('/meals/:id', async (req, res) => {
-    // #swagger.description = 'Dati di un piatto'
+    // #swagger.description = 'Restituisce i dati completi di un singolo piatto del catalogo identificato dal suo ID, inclusi nome, categoria, area geografica, istruzioni di preparazione, foto, ingredienti e dosi.<br>Se il piatto non viene trovato restituisce un errore 404.'
     // #swagger.tags = ['Meals']
-    // #swagger.parameters['id'] = { description: 'ID piatto' }
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID del piatto da recuperare',
+        required: true,
+        type: 'string'
+    } */
+    /* #swagger.responses[200] = { description: 'Dati completi del piatto' } */
+    /* #swagger.responses[404] = { description: 'Piatto non trovato' } */
+    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
 
     const id = req.params.id;
 
