@@ -14,7 +14,7 @@
         <script src="lib.js"></script>
     </head>
 
-    <body onload="dashboard();" data-bs-theme="dark">
+    <body onload="isRightLogged('ristorante'); controlloRistorante();" data-bs-theme="dark">
         <!-- navbar -->
         <nav class="navbar bg-light-subtle navbar-expand-md sticky-top" data-bs-theme="dark">
             <div class="container">
@@ -40,14 +40,14 @@
 
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="utente.html">
-                                <i class="bi bi-person-fill"></i>
+                            <a class="nav-link" aria-current="page" href="utente.html">
+                                <i class="bi bi-person"></i>
                                 Utente
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="swagger.html">
+                            <a class="nav-link" aria-current="page" href="carrello.html">
                                 <i class="bi bi-cart3"></i>
                                 Carrello
                             </a>
@@ -79,16 +79,18 @@
                         <div id="flush-collapseOne" class="accordion-collapse collapse p-3">
 
                             <div id="container-piatto" class="row g-3">
+
+                                <!-- Modello carta prodotto -->
                                 <div id="piatto" class="col d-none">
 
                                     <div class="card mx-auto h-100" style="width: 13rem;">
-                                        <label for="checkpiatto">
-                                            <img class="img-thumbnail">
+                                        <label id="label-foto-prodotto" for="checkpiatto">
+                                            <img id="foto-prodotto" class="img-thumbnail">
                                         </label>
 
                                         <div class="card-body text-center">
 
-                                            <label class="form-check-label" for="checkpiatto"></label>
+                                            <label id="nome-prodotto" class="form-check-label" for="checkpiatto"></label>
 
                                             <br>
 
@@ -99,7 +101,7 @@
                                                     Prezzo
                                                 </span>
 
-                                                <input type="text" class="form-control">
+                                                <input type="text" id="prezzo-piatto" class="form-control" min="0" step="0.01">
                                             </div>
 
                                         </div>

@@ -14,7 +14,7 @@
         <script src="lib.js"></script>
     </head>
 
-    <body onload="caricaDettagliRistorante(); caricaMenu();" data-bs-theme="dark">
+    <body onload="caricaDettagliRistorante(); caricaMenu(); aggiornaBadge();" data-bs-theme="dark">
         <!-- navbar -->
         <nav class="navbar bg-light-subtle navbar-expand-md sticky-top" data-bs-theme="dark">
             <div class="container">
@@ -47,9 +47,11 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="swagger.html">
+                            <a class="nav-link" aria-current="page" href="carrello.html">
                                 <i class="bi bi-cart3"></i>
                                 Carrello
+
+                                <span id="badge-carrello" class="badge rounded-pill bg-danger">0</span>
                             </a>
                         </li>
                     </ul>
@@ -92,6 +94,26 @@
                 </div>
             </div>
 
+            <div class="modal fade" id="ricetta" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ricettaTitle"></h5>
+
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body" id="ricettaBody"></div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Chiudi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h5 class="fs-5">Prodotti</h5>
 
             <div class="row my-3">
@@ -110,32 +132,33 @@
                 
                 <!-- Modello carta prodotto -->
                 <div id="prodotto" class="col d-none">
+
                     <div class="card h-100" style="max-width: 100%;">
                         <div class="row g-0">
 
                             <div class="col-lg-4">
-                                <img src="" class="img-fluid rounded">
+                                <img id="foto-prodotto" class="img-fluid rounded">
                             </div>
                             
                             <div class="col-lg-8">
                                 <div class="card-body">
-                                    <h5 class="card-title text-dark-emphasis fs-6"></h5>
+                                    <h5 id="nome-prodotto" class="card-title text-dark-emphasis fs-6"></h5>
 
                                     <div class="card-text text-body-secondary mb-3">
-                                        <small></small>
+                                        <small id="categoria-prodotto"></small>
                                         
                                         <br>
                                         
-                                        <small></small>
-
-                                        <br>
-
-                                        <small></small>
+                                        <small id="area-prodotto"></small>
                                         
                                         <br>
                                         
-                                        <span class="text-primary fw-bold "></span>
+                                        <span id="prezzo-prodotto" class="text-primary fw-bold"></span>
                                     </div>
+
+                                    <button type="button" class="btn btn-secondary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" onclick="apriRicetta(this)">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
                                     
                                     <button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                                         <i class="bi bi-plus-lg"></i>
@@ -146,6 +169,7 @@
 
                         </div>
                     </div>
+
                 </div>
 
             </div>

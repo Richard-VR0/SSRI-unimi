@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Login</title>
+        <title>Utente</title>
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,7 +47,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="swagger.html">
+                            <a class="nav-link" aria-current="page" href="carrello.html">
                                 <i class="bi bi-cart3"></i>
                                 Carrello
                             </a>
@@ -155,9 +155,18 @@
                                     <span class="input-group-text">CVV</span>
                                     <input type="text" name="cvv" maxlength="3" class="form-control">
                                 </div>
+
+                                <p>
+                                    <a class="link-opacity-100" href="ordini.html">
+                                        <button type="button" class="btn btn-primary">
+                                            <i class="bi bi-bag"></i>
+                                            Ordini
+                                        </button>
+                                    </a>
+                                </p>
                             </div>
 
-                            <div id="ristorante" class="">
+                            <div id="ristorante">
                                 <h5 class="fs-6">
                                     <i class="bi bi-info-circle"></i>
                                     Dettagli ristorante
@@ -234,18 +243,27 @@
                                     <span class="input-group-text">
                                         Latitudine
                                     </span>
-                                    <input type="text" name="lat" maxlength="5" class="form-control">
+                                    <input type="text" name="lat" maxlength="10" class="form-control">
 
                                     <span class="input-group-text">
                                         Longitudine
                                     </span>
-                                    <input type="text" name="lng" maxlength="3" class="form-control">
+                                    <input type="text" name="lng" maxlength="10" class="form-control">
                                 </div>
+
+                                <p>
+                                    <a class="link-opacity-100" href="dashboard.html">
+                                        <button type="button" class="btn btn-primary">
+                                            <i class="bi bi-clipboard-data"></i>
+                                            Dashboard
+                                        </button>
+                                    </a>
+                                </p>
                             </div>
 
                             <div class="row g-3">
                                 <div class="col-lg">
-                                    <button type="button" class="btn btn-primary d-flex mx-auto" onclick="aggiorna();">
+                                    <button type="button" class="btn btn-success d-flex mx-auto" onclick="aggiorna();">
                                         <i class="bi bi-arrow-clockwise"></i>
                                         Aggiorna
                                     </button>
@@ -279,7 +297,7 @@
                                         Email
                                     </span>
                                     
-                                    <input type="email" name="email" class="form-control" maxlength="50">
+                                    <input type="email" name="email" class="form-control" maxlength="50" value="@gmail.com">
                                 </div>
 
                                 <div class="input-group mb-3">
@@ -287,7 +305,8 @@
                                         Password
                                     </span>
                                     
-                                    <input type="password" name="password" id="psw-login" class="form-control" maxlength="40">
+                                    <!-- DA ELIMINARE IL VALUE -->
+                                    <input type="password" name="password" id="psw-login" class="form-control" maxlength="40" value="password">
 
                                     <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('login')">
                                         <i id="eye-login" class="bi bi-eye-fill"></i>

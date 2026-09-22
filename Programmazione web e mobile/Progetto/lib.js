@@ -122,6 +122,8 @@ function registra() {
         const successo = document.getElementById('successo');
 
         if (result.error) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             successo.classList.add('d-none');
 
             errore.innerHTML = '<i class="bi bi-exclamation-triangle"></i> ' + result.error;
@@ -132,6 +134,8 @@ function registra() {
             }, 3000);
         }
         else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
             errore.classList.add('d-none');
 
             successo.innerHTML = '<i class="bi bi-check-lg"></i> Profilo creato con successo, <a href="utente.html">vai alla pagina di accesso</a>';
@@ -162,6 +166,8 @@ function aggiorna() {
         const successo = document.getElementById('successo');
 
         if (result.error) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             successo.classList.add('d-none');
 
             errore.innerHTML = '<i class="bi bi-exclamation-triangle"></i> ' + result.error;
@@ -172,6 +178,8 @@ function aggiorna() {
             }, 3000);
         }
         else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             errore.classList.add('d-none');
 
             successo.innerHTML = '<i class="bi bi-check-lg"></i> Dati aggiornati con successo';
@@ -290,9 +298,21 @@ function isLogged() {
     }
 }
 
+function isRightLogged(user) {
+    if (!(localStorage.getItem('user_id')) || !(localStorage.getItem('tipologia')) || localStorage.getItem('tipologia') != user) {        
+        window.location.href = 'utente.html';
+
+        return;
+    }
+}
+
 function logout() {
     localStorage.removeItem('user_id');
     localStorage.removeItem('tipologia');
+    localStorage.removeItem('carrello');
+    localStorage.removeItem('ristorante_id');
+    localStorage.removeItem('ristorante_nome');
+
     isLogged();
 }
 
@@ -363,12 +383,12 @@ function renderRistoranti(lista) {
         let modello = document.getElementById('ristorante');
 
         let clone = modello.cloneNode(true);
-        
-        clone.getElementsByTagName('h5')[0].innerHTML = ristorante.nome;
-        clone.getElementsByTagName('p')[0].innerHTML = ristorante.descrizione;
-        clone.getElementsByTagName('img')[0].src = ristorante.url_foto;
-        clone.getElementsByTagName('a')[0].href = "ristorante.html?id=" + id;
-        clone.getElementsByTagName('a')[1].href = "ristorante.html?id=" + id;
+
+        clone.querySelector("#nome-ristorante").textContent = ristorante.nome;
+        clone.querySelector("#descrizione-ristorante").textContent = ristorante.descrizione;
+        clone.querySelector("#foto-ristorante").src = ristorante.url_foto;
+        clone.querySelector("#link-foto-ristorante").href = "ristorante.html?id=" + id;
+        clone.querySelector("#link-testo-ristorante").href = "ristorante.html?id=" + id;
 
         clone.classList.remove('d-none');
 
@@ -390,6 +410,8 @@ function caricaDettagliRistorante() {
         let dettagli = result.ristorante;
 
         document.getElementById('tab-title').innerHTML = dettagli.nome;
+        
+        localStorage.setItem('ristorante_nome', dettagli.nome);
 
         document.getElementById('poster').src = dettagli.url_foto;
 
@@ -440,6 +462,7 @@ function cercaMenu() {
     }
 }
 
+
 function renderMenu(lista) {
     pulisciDiv("prodotto");
 
@@ -449,15 +472,17 @@ function renderMenu(lista) {
         let modello = document.getElementById('prodotto');
         let clone = modello.cloneNode(true);
 
-        clone.getElementsByTagName('img')[0].src = piatto.foto;
+        clone.querySelector("#foto-prodotto").src = piatto.foto;
+        clone.querySelector("#nome-prodotto").textContent = piatto.nome;
+        clone.querySelector("#categoria-prodotto").innerHTML = "<span class='fw-bolder'>Categoria:</span> " + piatto.categoria;
+        clone.querySelector("#area-prodotto").innerHTML = "<span class='fw-bolder'>Area:</span> " + piatto.area;
+        clone.querySelector("#prezzo-prodotto").textContent = piatto.prezzo.toFixed(2) + " €";
 
-        clone.getElementsByTagName('h5')[0].textContent = piatto.nome;
+        clone.dataset.ricetta = piatto.istruzioni || 'Ricetta non disponibile';
+        clone.dataset.ingredienti = JSON.stringify(piatto.ingredienti || []);
+        clone.dataset.misure = JSON.stringify(piatto.misure || []);
 
-        clone.getElementsByTagName('small')[0].innerHTML = "<span class='fw-bolder'>Categoria: </span>" + piatto.categoria;
-        clone.getElementsByTagName('small')[1].innerHTML = "<span class='fw-bolder'>Area: </span>" + piatto.area;
-        clone.getElementsByTagName('small')[2].innerHTML = "<span class='fw-bolder'>Ingredienti: </span>" + piatto.ingredienti;
-
-        clone.getElementsByTagName('span')[3].textContent = piatto.prezzo + " €";
+        clone.querySelector('.btn-primary').onclick = (event) => aggiungiAlCarrello(piatto, event);
 
         clone.classList.remove('d-none');
         clone.id += i;
@@ -466,9 +491,260 @@ function renderMenu(lista) {
     }
 }
 
+function apriRicetta(pulsante) {
+    const card = pulsante.closest('.col');
+    const ricetta = card.dataset.ricetta;
+
+    let ingredienti = [];
+    let misure = [];
+
+    try {
+        ingredienti = JSON.parse(card.dataset.ingredienti || '[]');
+        misure = JSON.parse(card.dataset.misure || '[]');
+    } catch (e) {
+        ingredienti = [];
+        misure = [];
+    }
+
+    const modalEl = document.getElementById('ricetta');
+    const modalTitle = document.getElementById('ricettaTitle');
+    const modalBody = document.getElementById('ricettaBody');
+
+    const nomePiatto = card.querySelector('h5')?.textContent || 'Ricetta';
+    modalTitle.textContent = nomePiatto;
+
+    let htmlRicetta = '<h5 class="fs-5">Ingredienti</h5><ul class="mb-3">';
+
+    if (ingredienti.length === 0) {
+        htmlRicetta += '<li>Nessun ingrediente disponibile</li>';
+    }
+    else {
+        for (let i = 0; i < ingredienti.length; i++) {
+            const dose = misure[i] && misure[i].trim() !== '' ? misure[i] : 'q.b.';
+
+            htmlRicetta += '<li>' + dose + ' ' + ingredienti[i] + '</li>';
+        }
+    }
+
+    htmlRicetta += '</ul>';
+
+    htmlRicetta += '<h5 class="fs-5">Preparazione</h5>';
+    htmlRicetta += '<div style="white-space: pre-line;">' + (ricetta || 'Ricetta non disponibile') + '</div>';
+
+    modalBody.innerHTML = htmlRicetta;
+
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+}
+
+// -----------------------------------------------------------------------------------------------
+//                                      CARRELLO RISTORANTE
+// -----------------------------------------------------------------------------------------------
+
+function aggiungiAlCarrello(piatto) {
+    let params = new URLSearchParams(window.location.search);
+    let ristoranteId = params.get('id');
+    
+    let carrello = JSON.parse(localStorage.getItem('carrello')) || [];
+    const ristoranteAttuale = localStorage.getItem('ristorante_id');
+
+    // se il carrello non è vuoto e il ristorante è diverso
+    if (carrello.length > 0 && ristoranteAttuale !== ristoranteId) {
+        const conferma = confirm('Hai già piatti di un altro ristorante nel carrello.\nVuoi svuotarlo e aggiungere questo piatto?');
+        if (conferma) {
+            carrello = [];
+        } else {
+            return;
+        }
+    }
+
+    localStorage.setItem('ristorante_id', ristoranteId);
+
+    const esistente = carrello.find(p => p._id === piatto._id);
+
+    if (esistente) {
+        esistente.quantita++;
+    }
+    else {
+        carrello.push({
+            _id: piatto._id,
+            nome: piatto.nome,
+            prezzo: piatto.prezzo,
+            foto: piatto.foto,
+            quantita: 1
+        });
+    }
+
+    localStorage.setItem('carrello', JSON.stringify(carrello));
+
+    aggiornaBadge();
+}
+
+function aggiornaBadge() {
+    const carrello = JSON.parse(localStorage.getItem('carrello')) || [];
+
+    const totale = carrello.reduce((acc, p) => acc + p.quantita, 0);
+    
+    document.getElementById('badge-carrello').textContent = totale;
+}
+
+function caricaCarrello() {
+    document.getElementById('nome-ristorante').innerHTML += localStorage.getItem('ristorante_nome');
+
+    const carrello = JSON.parse(localStorage.getItem('carrello')) || [];
+
+    if (carrello.length === 0) {
+        document.getElementById('carrello-vuoto').classList.remove('d-none');
+        return;
+    }
+
+    let totale = 0;
+
+    for (let i = 0; i < carrello.length; i++) {
+        let piatto = carrello[i];
+        totale += piatto.prezzo * piatto.quantita;
+
+        let modello = document.getElementById('prodotto');
+        let clone = modello.cloneNode(true);
+
+        clone.querySelector("#foto-prodotto").src = piatto.foto;
+        clone.querySelector("#nome-prodotto").textContent = piatto.nome;
+        clone.querySelector("#prezzo-prodotto").innerHTML = "<span class='fw-bolder'>Prezzo piatto:</span> " + piatto.prezzo.toFixed(2) + " €";
+        clone.querySelector("#quantita-prodotto").innerHTML = "<span class='fw-bolder'>Quantità:</span> " + piatto.quantita;
+        clone.querySelector("#totale-prodotto").innerHTML = "<span class='fw-bolder'>Prezzo:</span> " + (piatto.prezzo * piatto.quantita).toFixed(2) + " €";
+
+        clone.querySelector('.btn-danger').onclick = () => rimuoviDalCarrello(piatto._id);
+
+        clone.classList.remove('d-none');
+        clone.id += i;
+        modello.before(clone);
+    }
+
+    document.getElementById('totale').textContent = totale.toFixed(2) + " €";
+}
+
+function rimuoviDalCarrello(id) {
+    let carrello = JSON.parse(localStorage.getItem('carrello')) || [];
+    
+    carrello = carrello.filter(p => p._id !== id);
+    
+    localStorage.setItem('carrello', JSON.stringify(carrello));
+    
+    window.location.reload();
+}
+
+// -----------------------------------------------------------------------------------------------
+//                                      ORDINI UTENTE
+// -----------------------------------------------------------------------------------------------
+
+function concludiOrdine() {
+    const carrello = JSON.parse(localStorage.getItem('carrello')) || [];
+    const ristoranteId = localStorage.getItem('ristorante_id');
+    const clienteId = localStorage.getItem('user_id');
+
+    if (!clienteId) {
+        window.location.href = 'utente.html';
+
+        return;
+    }
+
+    if (carrello.length === 0) {
+        alert('Il carrello è vuoto!');
+
+        return;
+    }
+
+    const totale = carrello.reduce((acc, p) => acc + p.prezzo * p.quantita, 0);
+
+    const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            cliente_id: clienteId,
+            ristorante_id: ristoranteId,
+            piatti: carrello,
+            totale: parseFloat(totale.toFixed(2))
+        })
+    }
+
+    fetch('http://localhost:3000/order', options).then(res => res.json()).then(result => {
+        if (result.error) {
+            alert(result.error);
+        }
+        else {
+            localStorage.removeItem('carrello');
+            localStorage.removeItem('ristorante_id');
+            localStorage.removeItem('ristorante_nome');
+            
+            window.location.href = 'ordini.html';
+        }
+    });
+}
+
+function caricaOrdini() {
+    const clienteId = localStorage.getItem('user_id');
+
+    fetch('http://localhost:3000/orders/client/' + clienteId).then(res => res.json()).then(lista => renderOrdini(lista));
+}
+
+function renderOrdini(lista) {
+    pulisciDiv('ordine');
+
+    if (lista.length === 0) {
+        document.getElementById('nessun-ordine').classList.remove('d-none');
+
+        return;
+    }
+
+    for (let i = 0; i < lista.length; i++) {
+        let ordine = lista[i];
+
+        let modello = document.getElementById('ordine');
+        let clone = modello.cloneNode(true);
+
+        clone.querySelector('#nome-ristorante-ordine').textContent = ordine.nome_ristorante || 'Ristorante';
+
+        const badge = clone.querySelector('#stato-ordine');
+        badge.textContent = ordine.stato.replace('_', ' ');
+        badge.className = 'badge ' + coloreStato(ordine.stato);
+
+        const piatti = ordine.piatti.map(p => '<span class="fw-bold">' + p.quantita + 'x</span> ' + p.nome).join('<br>');
+        clone.querySelector('#piatti-ordine').innerHTML = piatti;
+
+        clone.querySelector('#totale-ordine').textContent = ordine.totale.toFixed(2) + ' €';
+
+        const data = new Date(ordine.createdAt).toLocaleDateString('it-IT');
+        const ora = new Date(ordine.createdAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+        clone.querySelector('#data-ordine').textContent = "Ordine del " + data + " alle " + ora;
+
+        clone.classList.remove('d-none');
+        clone.id += i;
+        modello.before(clone);
+    }
+}
+
+function coloreStato(stato) {
+    switch (stato) {
+        case 'Ordinato': return 'bg-warning text-dark';
+        case 'In_preparazione': return 'bg-primary';
+        case 'In_consegna': return 'bg-success';
+        default: return 'bg-secondary';
+    }
+}
+
 // -----------------------------------------------------------------------------------------------
 //                                      GESTIONE RISTORANTE
 // -----------------------------------------------------------------------------------------------
+
+function controlloRistorante() {
+    if (localStorage.getItem('tipologia') == "ristorante") {
+        dashboard();
+    }
+    else {
+        window.location.href = "index.html";
+    }
+}
 
 function dashboard() {
     caricaGestionePiatti();
@@ -491,20 +767,19 @@ function renderGestionePiatti(lista) {
         let modello = document.getElementById('piatto');
         let clone = modello.cloneNode(true);
 
-        clone.getElementsByTagName('img')[0].src = piatto.strMealThumb;
-        clone.getElementsByTagName('label')[0].htmlFor += i;
-        
-        clone.getElementsByTagName('label')[1].innerHTML = piatto.strMeal;
-        clone.getElementsByTagName('label')[1].htmlFor += i;
+        clone.querySelector("#foto-prodotto").src = piatto.strMealThumb;
+        clone.querySelector("#label-foto-prodotto").htmlFor += i;
 
-        clone.getElementsByTagName('input')[0].id += i;
+        clone.querySelector("#nome-prodotto").textContent = piatto.strMeal;
+        clone.querySelector("#nome-prodotto").htmlFor += i;
 
+        clone.querySelector("#checkpiatto").id += i;
         clone.getElementsByTagName('input')[0].dataset.piattoId = piatto._id;
         clone.getElementsByTagName('input')[0].dataset.menuId = piatto.menu_id || '';
 
         if (piatto.inMenu) {
             clone.getElementsByTagName('input')[0].checked = true;
-            clone.getElementsByTagName('input')[1].value = piatto.prezzo;
+            clone.getElementsByTagName('input')[1].value = piatto.prezzo.toFixed(2);
         }
 
         clone.classList.remove('d-none');
