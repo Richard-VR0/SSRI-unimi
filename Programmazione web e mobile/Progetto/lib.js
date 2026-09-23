@@ -298,11 +298,35 @@ function isLogged() {
     }
 }
 
-function isRightLogged(user) {
-    if (!(localStorage.getItem('user_id')) || !(localStorage.getItem('tipologia')) || localStorage.getItem('tipologia') != user) {        
+function controlloRistorante() {
+    if (!(localStorage.getItem('user_id')) || !(localStorage.getItem('tipologia')) || localStorage.getItem('tipologia') != "ristorante") {
         window.location.href = 'utente.html';
 
         return;
+    }
+    else {
+        dashboard();
+    }
+}
+
+function controlloCliente() {
+    if (!(localStorage.getItem('user_id')) || !(localStorage.getItem('tipologia')) || localStorage.getItem('tipologia') != "cliente") {
+        window.location.href = 'utente.html';
+
+        return;
+    }
+    else {
+        const pagina = window.location.pathname.split('/').pop();
+
+        if (pagina == "ordini.html") {
+            caricaOrdiniInviati();
+        }
+        else {
+            if (pagina == "carrello.html") {
+                caricaCarrello();
+                aggiornaBadge();
+            }
+        }
     }
 }
 
@@ -542,6 +566,12 @@ function apriRicetta(pulsante) {
 // -----------------------------------------------------------------------------------------------
 
 function aggiungiAlCarrello(piatto) {
+    if (localStorage.getItem('tipologia') !== 'cliente') {
+        alert('Solo i clienti possono aggiungere al carrello!');
+
+        return;
+    }
+
     let params = new URLSearchParams(window.location.search);
     let ristoranteId = params.get('id');
     
@@ -681,13 +711,13 @@ function concludiOrdine() {
     });
 }
 
-function caricaOrdini() {
+function caricaOrdiniInviati() {
     const clienteId = localStorage.getItem('user_id');
 
-    fetch('http://localhost:3000/orders/client/' + clienteId).then(res => res.json()).then(lista => renderOrdini(lista));
+    fetch('http://localhost:3000/orders/client/' + clienteId).then(res => res.json()).then(lista => renderOrdiniInviati(lista));
 }
 
-function renderOrdini(lista) {
+function renderOrdiniInviati(lista) {
     pulisciDiv('ordine');
 
     if (lista.length === 0) {
@@ -727,8 +757,8 @@ function renderOrdini(lista) {
 function coloreStato(stato) {
     switch (stato) {
         case 'Ordinato': return 'bg-warning text-dark';
-        case 'In_preparazione': return 'bg-primary';
-        case 'In_consegna': return 'bg-success';
+        case 'In preparazione': return 'bg-primary';
+        case 'In consegna': return 'bg-success';
         default: return 'bg-secondary';
     }
 }
@@ -737,17 +767,111 @@ function coloreStato(stato) {
 //                                      GESTIONE RISTORANTE
 // -----------------------------------------------------------------------------------------------
 
-function controlloRistorante() {
-    if (localStorage.getItem('tipologia') == "ristorante") {
-        dashboard();
+function dashboard() {
+    caricaGestionePiatti();
+    caricaOrdiniRicevuti();
+}
+
+function caricaOrdiniRicevuti() {
+    const ristoranteId = localStorage.getItem('user_id');
+
+    fetch('http://localhost:3000/orders/restaurant/' + ristoranteId).then(res => res.json()).then(lista => renderOrdiniRicevuti(lista));
+}
+
+function renderOrdiniRicevuti(lista) {
+    pulisciDiv('ordine');
+
+    if (lista.length === 0) {
+        document.getElementById('nessun-ordine').classList.remove('d-none');
+
+        return;
     }
-    else {
-        window.location.href = "index.html";
+
+    for (let i = 0; i < lista.length; i++) {
+        let ordine = lista[i];
+
+        let modello = document.getElementById('ordine');
+        let clone = modello.cloneNode(true);
+
+        clone.querySelector('#nome-cliente-ordine').textContent = ordine.nome_cliente + " " + ordine.cognome_cliente;
+
+        const badge = clone.querySelector('#stato-ordine');
+        badge.textContent = ordine.stato.replace('_', ' ');
+        badge.className = 'badge ' + coloreStato(ordine.stato);
+
+        const piatti = ordine.piatti.map(p => '<span class="fw-bold">' + p.quantita + 'x</span> ' + p.nome).join('<br>');
+        clone.querySelector('#piatti-ordine').innerHTML = piatti;
+
+        clone.querySelector('#totale-ordine').textContent = ordine.totale.toFixed(2) + ' €';
+
+        const data = new Date(ordine.createdAt).toLocaleDateString('it-IT');
+        const ora = new Date(ordine.createdAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+        clone.querySelector('#data-ordine').textContent = "Ordine del " + data + " alle " + ora;
+
+        const pulsante = clone.querySelector(".btn-avanza");
+
+        if (ordine.stato === "Consegnato") {
+            pulsante.disabled = true;
+            pulsante.innerHTML = '<i class="bi bi-check-lg"></i> Ordine consegnato';
+        }
+        else {
+            pulsante.onclick = function () {
+                avanzaStato(ordine);
+            };
+        }
+
+        clone.classList.remove('d-none');
+        clone.id += i;
+        modello.before(clone);
     }
 }
 
-function dashboard() {
-    caricaGestionePiatti();
+function avanzaStato(ordine) {
+    const stati = [
+        'Ordinato',
+        'In preparazione',
+        'In consegna',
+        'Consegnato'
+    ];
+
+    const posizione = stati.indexOf(ordine.stato);
+
+    if (posizione === -1) {
+        alert('Stato dell\'ordine non valido');
+
+        return;
+    }
+
+    if (posizione === stati.length - 1) {
+        alert('L\'ordine è già consegnato');
+
+        return;
+    }
+
+    const nuovoStato = stati[posizione + 1];
+
+    const options = {
+        method: 'PATCH',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ stato: nuovoStato })
+    }
+
+    fetch('http://localhost:3000/orders/' + ordine._id + '/status', options).then(response => response.json()).then(result => {
+        if (result.error) {
+            alert(result.error);
+            
+            return;
+        }
+
+        caricaOrdiniRicevuti();
+        })
+        .catch(error => {
+        console.error(error);
+        alert('Errore durante l\'aggiornamento dello stato');
+        });
 }
 
 function caricaGestionePiatti() {

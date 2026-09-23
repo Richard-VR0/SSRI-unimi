@@ -14,7 +14,7 @@
         <script src="lib.js"></script>
     </head>
 
-    <body onload="isRightLogged('ristorante'); controlloRistorante();" data-bs-theme="dark">
+    <body onload="controlloRistorante();" data-bs-theme="dark">
         <!-- navbar -->
         <nav class="navbar bg-light-subtle navbar-expand-md sticky-top" data-bs-theme="dark">
             <div class="container">
@@ -62,17 +62,17 @@
                 Dashboard
             </h5>
 
-            <div class="bg-light-subtle rounded py-3">
+            <div class="bg-light-subtle rounded py-3 mb-3">
                 <h5 class="fs-5 text-center">
                     <i class="bi bi-fork-knife"></i>
-                    Menu
+                    Gestione menu
                 </h5>
 
                 <div class="accordion accordion-flush m-3 rounded">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                Gestione menu
+                                Lista piatti
                             </button>
                         </h2>
 
@@ -124,6 +124,57 @@
                     </div>
                 </div>
                 
+            </div>
+
+            <div class="bg-light-subtle rounded py-3 mb-3">
+                <h5 class="fs-5 text-center mb-3">
+                    <i class="bi bi-border-width"></i>
+                    Gestione ordini
+                </h5>
+
+                <div id="nessun-ordine" class="d-none">
+                    <p class="text-muted text-center">
+                        Non hai ancora ricevuto ordini
+                    </p>
+                </div>
+
+                <div id="container-ordine" class="row g-3 px-3">
+                    
+                    <!-- Modello carta ordine -->
+                    <div id="ordine" class="col-12 d-none">
+
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold" id="nome-cliente-ordine"></span>
+                                
+                                <span class="badge" id="stato-ordine"></span>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <p class="card-text" id="piatti-ordine"></p>
+                                    </div>
+                                    
+                                    <div class="col-md-4 text-end">
+                                        <h5 class="text-primary fw-bold" id="totale-ordine"></h5>
+
+                                        <small class="text-body-secondary" id="data-ordine"></small>
+
+                                        <br>
+
+                                        <button class="btn btn-primary btn-sm mt-2 btn-avanza">
+                                            <i class="bi bi-node-plus"></i>
+                                            Avanza stato
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
         </div>
 

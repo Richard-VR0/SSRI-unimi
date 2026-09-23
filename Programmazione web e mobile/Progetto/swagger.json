@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "PWM API",
-    "description": "Swagger delle api pwm",
+    "description": "Swagger DomiCibo",
     "version": "1.0.0"
   },
   "servers": [
@@ -662,6 +662,9 @@
     },
     "/meals": {
       "get": {
+        "tags": [
+          "Altro (da verificare)"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -676,9 +679,9 @@
     "/meals/{id}": {
       "get": {
         "tags": [
-          "Meals"
+          "Altro (da verificare)"
         ],
-        "description": "Restituisce i dati completi di un singolo piatto del catalogo identificato dal suo ID, inclusi nome, categoria, area geografica, istruzioni di preparazione, foto, ingredienti e dosi.<br>Se il piatto non viene trovato restituisce un errore 404.",
+        "description": "",
         "parameters": [
           {
             "name": "id",
@@ -686,16 +689,111 @@
             "required": true,
             "schema": {
               "type": "string"
-            },
-            "description": "ID del piatto da recuperare"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Dati completi del piatto"
+            "description": "OK"
           },
           "404": {
-            "description": "Piatto non trovato"
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/order": {
+      "post": {
+        "tags": [
+          "Ordini"
+        ],
+        "summary": "Crea un nuovo ordine",
+        "description": "Crea un nuovo ordine con i piatti nel carrello del cliente. Lo stato iniziale è \"ordinato\".",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cliente_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "ristorante_id": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "piatti": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "nome": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "prezzo": {
+                        "type": "string",
+                        "example": "number"
+                      },
+                      "quantita": {
+                        "type": "string",
+                        "example": "number"
+                      }
+                    }
+                  }
+                },
+                "totale": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ordine creato con successo"
+          },
+          "400": {
+            "description": "Campi mancanti"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/orders/client/{cliente_id}": {
+      "get": {
+        "tags": [
+          "Ordini"
+        ],
+        "summary": "Lista ordini del cliente",
+        "description": "Restituisce tutti gli ordini del cliente ordinati dal più recente al più vecchio, con il nome del ristorante.",
+        "parameters": [
+          {
+            "name": "cliente_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID del cliente"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista ordini del cliente con nome ristorante"
           },
           "500": {
             "description": "Errore interno del server"

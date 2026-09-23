@@ -1062,6 +1062,117 @@ app.get('/orders/client/:cliente_id', async (req, res) => {
     }
 })
 
+app.get('/orders/restaurant/:ristorante_id', async (req, res) => {
+    // #swagger.tags = ['Ordini']
+    // #swagger.summary = 'Lista ordini del ristorante'
+    // #swagger.description = 'Restituisce tutti gli ordini ricevuti dal ristorante ordinati dal più recente al più vecchio, con il nome del cliente.'
+    // #swagger.parameters['ristorante_id'] = { in: 'path', description: 'ID del ristorante', required: true, type: 'string' }
+    /* #swagger.responses[200] = { description: 'Lista ordini del ristorante con nome cliente' } */
+    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
+
+    const ristorante_id = req.params.ristorante_id;
+
+    let client;
+
+    try {
+        client = await MongoClient.connect(process.env.MONGOURL);
+        const db = client.db(process.env.DB_NAME);
+
+        const result = await db.collection(process.env.COLL_ORDERS).aggregate([
+        { $match: { ristorante_id: new ObjectID(ristorante_id) } },
+        {
+            $lookup: {
+            from: process.env.COLL_USERS,
+            localField: 'cliente_id',
+            foreignField: '_id',
+            as: 'cliente'
+            }
+        },
+        { $unwind: '$cliente' },
+        {
+            $project: {
+            _id: 1,
+            piatti: 1,
+            stato: 1,
+            totale: 1,
+            createdAt: 1,
+            nome_cliente: '$cliente.nome',
+            cognome_cliente: '$cliente.cognome'
+            }
+        },
+        { $sort: { createdAt: -1 } }
+        ]).toArray();
+
+        res.status(200).json(result);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Errore interno del server' });
+    } finally {
+        if (client) await client.close();
+    }
+})
+
+app.patch('/orders/:id/status', async (req, res) => {
+    const ordine_id = req.params.id;
+    const nuovo_stato = req.body.stato;
+
+    const statiValidi = [
+        'Ordinato',
+        'In preparazione',
+        'In consegna',
+        'Consegnato'
+    ];
+
+    if (!statiValidi.includes(nuovo_stato)) {
+        return res.status(400).json({
+        error: 'Stato non valido'
+        });
+    }
+
+    let client;
+
+    try {
+        client = await MongoClient.connect(process.env.MONGOURL);
+
+        const coll = client
+        .db(process.env.DB_NAME)
+        .collection(process.env.COLL_ORDERS);
+
+        const result = await coll.updateOne(
+        {
+            _id: new ObjectID(ordine_id)
+        },
+        {
+            $set: {
+            stato: nuovo_stato,
+            updatedAt: new Date()
+            }
+        }
+        );
+
+        if (result.matchedCount === 0) {
+        return res.status(404).json({
+            error: 'Ordine non trovato'
+        });
+        }
+
+        res.status(200).json({
+        message: 'Stato aggiornato con successo',
+        stato: nuovo_stato
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+        error: 'Errore interno del server'
+        });
+    } finally {
+        if (client) await client.close();
+    }
+})
+
 // -----------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------
 
