@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------------------------
-//                                          FORM UTENTI
+//                                          FORM DATI
 // -----------------------------------------------------------------------------------------------
 
 function cambioForm() {
@@ -64,7 +64,7 @@ function getDatiForm(nomeForm) {
     }
 }
 
-function dati_profilo() {
+function datiProfilo() {
     const id_utente = localStorage.getItem('user_id');
 
     fetch("http://localhost:3000/user/" + id_utente).then(response => response.json()).then(result => {
@@ -101,7 +101,8 @@ function dati_profilo() {
 }
 
 // -----------------------------------------------------------------------------------------------
-//                      REGISTRAZIONE - MODIFICA - CANCELLAZIONE UTENTE
+//                                  GESTIONE DATI UTENTE
+//                          REGISTRAZIONE - MODIFICA - CANCELLAZIONE
 // -----------------------------------------------------------------------------------------------
 
 function registra() {
@@ -191,7 +192,7 @@ function aggiorna() {
 
             console.log(result);
 
-            dati_profilo();
+            datiProfilo();
         }
     });
 }
@@ -236,7 +237,7 @@ function elimina() {
 }
 
 // -----------------------------------------------------------------------------------------------
-//                                         LOGIN / LOGOUT
+//                                  LOGIN - LOGOUT - CONTROLLI
 // -----------------------------------------------------------------------------------------------
 
 function login() {
@@ -277,7 +278,7 @@ function login() {
             localStorage.setItem('user_id', result._id);
             localStorage.setItem('tipologia', result.tipologia);
 
-            dati_profilo();
+            datiProfilo();
         }
     });
 }
@@ -290,7 +291,7 @@ function isLogged() {
         form_login.classList.add('d-none');
         scheda_profilo.classList.remove('d-none');
 
-        dati_profilo();
+        datiProfilo();
     }
     else {
         form_login.classList.remove('d-none');
@@ -341,7 +342,7 @@ function logout() {
 }
 
 // -----------------------------------------------------------------------------------------------
-//                                      TOGGLE PASSWORD
+//                                      GENERICHE
 // -----------------------------------------------------------------------------------------------
 
 function togglePassword(form) {
@@ -364,10 +365,6 @@ function togglePassword(form) {
         eye.classList.add("bi-eye-fill");
     }
 }
-
-// -----------------------------------------------------------------------------------------------
-//                                          GENERICHE
-// -----------------------------------------------------------------------------------------------
 
 function pulisciDiv(modello) {
     let container = document.getElementById('container-' + modello);
@@ -423,12 +420,14 @@ function renderRistoranti(lista) {
 }
 
 // -----------------------------------------------------------------------------------------------
-//                                      VETRINA RISTORANTE
+//                                      DATI RISTORANTE
 // -----------------------------------------------------------------------------------------------
 
 function caricaDettagliRistorante() {
     let params = new URLSearchParams(window.location.search);
     let id = params.get('id');
+
+    caricaMediaRecensioni(id);
 
     fetch("http://localhost:3000/restaurant/" + id).then(response => response.json()).then(result => {
         let dettagli = result.ristorante;
@@ -465,6 +464,33 @@ function caricaDettagliRistorante() {
         document.getElementById('descrizione').innerHTML = dettagli.descrizione;
     })
 }
+
+function caricaMediaRecensioni(ristoranteId) {
+    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/reviews').then(response => response.json()).then(result => {
+        const contenitore = document.getElementById('media-recensioni');
+
+        if (!contenitore) {
+            return;
+        }
+
+        if (result.numeroRecensioni === 0) {
+            contenitore.innerHTML = '<i class="bi bi-star"></i> Nessuna recensione';
+            
+            return;
+        }
+
+        const media = result.media.toFixed(1);
+
+        contenitore.innerHTML = '<i class="bi bi-star-fill"></i> ' + media + '/5 (' + result.numeroRecensioni + ' recensioni)';
+    })
+    .catch(error => {
+        console.error('Errore nel caricamento delle recensioni:', error);
+    })
+}
+
+// -----------------------------------------------------------------------------------------------
+//                                      MENU RISTORANTE
+// -----------------------------------------------------------------------------------------------
 
 function caricaMenu() {
     let params = new URLSearchParams(window.location.search);
@@ -562,7 +588,7 @@ function apriRicetta(pulsante) {
 }
 
 // -----------------------------------------------------------------------------------------------
-//                                      CARRELLO RISTORANTE
+//                                      GESTIONE CARRELLO
 // -----------------------------------------------------------------------------------------------
 
 function aggiungiAlCarrello(piatto) {
@@ -663,10 +689,6 @@ function rimuoviDalCarrello(id) {
     window.location.reload();
 }
 
-// -----------------------------------------------------------------------------------------------
-//                                      ORDINI UTENTE
-// -----------------------------------------------------------------------------------------------
-
 function concludiOrdine() {
     const carrello = JSON.parse(localStorage.getItem('carrello')) || [];
     const ristoranteId = localStorage.getItem('ristorante_id');
@@ -711,6 +733,10 @@ function concludiOrdine() {
     });
 }
 
+// -----------------------------------------------------------------------------------------------
+//                                      ORDINI CLIENTE
+// -----------------------------------------------------------------------------------------------
+
 function caricaOrdiniInviati() {
     const clienteId = localStorage.getItem('user_id');
 
@@ -743,15 +769,85 @@ function renderOrdiniInviati(lista) {
 
         clone.querySelector('#totale-ordine').textContent = ordine.totale.toFixed(2) + ' €';
 
+        const tempo = clone.querySelector('#tempo-ordine');
+
+        if (tempo) {
+            if (ordine.tempoStimato) {
+                tempo.innerHTML = 'Tempo stimato: circa <span class="fw-bold text-primary">' + ordine.tempoStimato + ' minuti</span>';
+            }
+            else {
+                tempo.textContent = 'Tempo stimato non disponibile';
+            }
+        }
+
         const data = new Date(ordine.createdAt).toLocaleDateString('it-IT');
         const ora = new Date(ordine.createdAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
         clone.querySelector('#data-ordine').textContent = "Ordine del " + data + " alle " + ora;
 
+        const pulsanteRecensione = clone.querySelector('.btn-recensione');
+
+        if (ordine.stato !== 'Consegnato') {
+            pulsanteRecensione.classList.add('d-none');
+        }
+        else {
+            if (ordine.recensione) {
+                pulsanteRecensione.disabled = true;
+                pulsanteRecensione.innerHTML = '<i class="bi bi-star"></i> ' + ordine.recensione + '/5';
+            }
+            else {
+                pulsanteRecensione.onclick = function () {
+                    chiediRecensione(ordine);
+                };
+            }
+        }
+
         clone.classList.remove('d-none');
         clone.id += i;
         modello.before(clone);
     }
+}
+
+function chiediRecensione(ordine) {
+    const input = prompt(
+        'Dai una recensione da 1 a 5 stelle al ristorante ' + ordine.nome_ristorante
+    );
+
+    if (input === null) {
+        return;
+    }
+
+    const recensione = Number(input);
+
+    if (!Number.isInteger(recensione) || recensione < 1 || recensione > 5) {
+        alert('Inserisci un numero intero da 1 a 5');
+
+        return;
+    }
+
+    const options = {
+        method: 'PATCH',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ recensione: recensione })
+    };
+
+    fetch('http://localhost:3000/order/' + ordine._id + '/review', options).then(response => response.json()).then(result => {
+        if (result.error) {
+            alert(result.error);
+
+            return;
+        }
+
+        alert('Recensione inviata: ' + recensione + '/5');
+
+        caricaOrdiniInviati();
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Errore durante l\'invio della recensione');
+    });
 }
 
 function coloreStato(stato) {
@@ -764,7 +860,7 @@ function coloreStato(stato) {
 }
 
 // -----------------------------------------------------------------------------------------------
-//                                      GESTIONE RISTORANTE
+//                                      ORDINI RISTORANTE
 // -----------------------------------------------------------------------------------------------
 
 function dashboard() {
@@ -859,7 +955,7 @@ function avanzaStato(ordine) {
         body: JSON.stringify({ stato: nuovoStato })
     }
 
-    fetch('http://localhost:3000/orders/' + ordine._id + '/status', options).then(response => response.json()).then(result => {
+    fetch('http://localhost:3000/order/' + ordine._id + '/status', options).then(response => response.json()).then(result => {
         if (result.error) {
             alert(result.error);
             
@@ -873,6 +969,10 @@ function avanzaStato(ordine) {
         alert('Errore durante l\'aggiornamento dello stato');
         });
 }
+
+// -----------------------------------------------------------------------------------------------
+//                                      GESTIONE MENU
+// -----------------------------------------------------------------------------------------------
 
 function caricaGestionePiatti() {
     const ristoranteId = localStorage.getItem('user_id');

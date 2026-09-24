@@ -1,0 +1,95 @@
+lib.js
+    FORM DATI
+        cambioForm();
+        getDatiForm();
+        datiProfilo();
+
+    GESTIONE UTENTE
+        registra();
+        aggiorna();
+        elimina();
+
+    LOGIN E CONTROLLI
+        login();
+        isLogged();
+        controlloRistorante();
+        controlloCliente();
+        logout();
+
+    GENERICHE
+        togglePassword();
+        pulisciDiv();
+
+    LISTA RISTORANTI
+        mostraRistoranti();
+        cercaRistoranti();
+        renderRistoranti();
+
+    DATI RISTORANTE
+        caricaDettagliRistorante();
+        caricaMediaRistorante();
+
+    MENU RISTORANTE
+        caricaMenu();
+        cercaMenu();
+        renderMenu();
+        apriRicetta();
+
+    GESTIONE CARRELLO
+        aggiungiAlCarrello();
+        aggiornaBadge();
+        caricaCarrello();
+        rimuoviDalCarrello();
+        concludiOrdine();
+
+    ORDINI CLIENTE
+        caricaOrdiniInviati();
+        renderordiniInviati();
+        chiediRecensione();
+        coloreStato();
+
+    ORDINI RISTORANTE
+        dashboard();
+        caricaOrdiniRicevuti();
+        renderOrdiniRicevuti();
+        avanzaStato();
+
+    GESTIONE MENU
+        caricaGestionePiatti();
+        renderGestionePiatti();
+        aggiornaMenu();
+
+main.js
+    GESTIONE UTENTE
+        POST    /user
+        POST    /user/login
+        PUT     /user/:id
+        DELETE  /user/:id
+        GET     /user/:id
+
+    LISTA RISTORANTI
+        GET     /restaurant
+        GET     /restaurant/search
+
+    VETRINA RISTORANTE
+        GET     /restaurant/:id
+        GET     /restaurant/:id/menu
+        GET     /restaurant/:id/menu/search
+
+    GESTIONE MENU
+        GET     /restaurant/:id/menu/gestione
+        POST    /restaurant/:id/menu/save
+
+    ORDINI CLIENTE
+        POST    /order
+        GET     /orders/client/:id
+        PATCH   /orders/:id/review
+
+    ORDINI RISTORANTE
+        GET     /orders/restaurant/:id
+        PATCH   /orders/:id/status
+        GET     /restaurant/:id/reviews
+        
+    INFORMAZIONI PIATTI
+        GET     /meals
+        GET     /meals/:id
