@@ -4,7 +4,7 @@ Projects of the bachelor’s degree in Computer Systems and Networks Security at
 * Programmazione
   * C
   * Java
-  * **Project: Blackjack Card Counting Trainer**
+  * **Project: Blackjack card counting trainer**
 * Programmazione web e mobile
   * HTML
   * CSS
