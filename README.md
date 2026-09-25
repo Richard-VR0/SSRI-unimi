@@ -13,3 +13,4 @@ Projects of the bachelor’s degree in Computer Systems and Networks Security at
     * Node.js
   * MongoDB
   * **Project: Food delivery web application**
+* Statistica e analisi dei dati
