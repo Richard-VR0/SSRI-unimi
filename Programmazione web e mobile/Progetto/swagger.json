@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "PWM API",
-    "description": "Swagger DomiCibo",
+    "title": "PWM - DomiCibo API",
+    "description": "Swagger di DomiCibo",
     "version": "1.0.0"
   },
   "servers": [
@@ -422,7 +422,7 @@
     "/restaurant": {
       "get": {
         "tags": [
-          "Ristorante"
+          "Ristorante - Lista"
         ],
         "summary": "Lista dei ristoranti",
         "description": "Restituisce l\\'elenco di tutti i ristoranti registrati sulla piattaforma, ovvero di tutti gli utenti con il campo tipologia uguale a <b>\"ristorante\"</b>",
@@ -439,7 +439,7 @@
     "/restaurant/search": {
       "get": {
         "tags": [
-          "Ristorante"
+          "Ristorante - Lista"
         ],
         "summary": "Ricerca ristoranti",
         "description": "Cerca tra i ristoranti registrati filtrando per nome del ristorante o città, tramite corrispondenza parziale e case-insensitive.<br>Se il parametro <b>query</b> non viene fornito, restituisce l\\'elenco completo dei ristoranti.",
@@ -467,7 +467,7 @@
     "/restaurant/{id}": {
       "get": {
         "tags": [
-          "Ristorante"
+          "Ristorante - Vetrina"
         ],
         "summary": "Dati ristorante",
         "description": "Restituisce i dati completi di un singolo ristorante a partire dal suo ID.",
@@ -495,10 +495,10 @@
     "/restaurant/{id}/menu": {
       "get": {
         "tags": [
-          "Menu"
+          "Menu - Vetrina"
         ],
         "summary": "Lista piatti disponibili",
-        "description": "Restituisce solo i piatti presenti nel menu del ristorante specificato, con il prezzo impostato dal ristoratore. Utilizzato lato cliente per visualizzare il menu del ristorante.",
+        "description": "Restituisce tutti i piatti disponibili del menu del ristorante identificato dall\\'ID.<br>Per ogni piatto vengono restituiti il prezzo configurato dal ristoratore e le informazioni del catalogo, come nome, categoria, area, foto, ingredienti, dosi e istruzioni.",
         "parameters": [
           {
             "name": "id",
@@ -507,12 +507,12 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID del ristorante"
+            "description": "ID del ristorante di cui recuperare il menu"
           }
         ],
         "responses": {
           "200": {
-            "description": "Lista piatti nel menu"
+            "description": "Lista dei piatti disponibili nel menu del ristorante"
           },
           "500": {
             "description": "Errore interno del server"
@@ -523,10 +523,10 @@
     "/restaurant/{id}/menu/search": {
       "get": {
         "tags": [
-          "Menu"
+          "Menu - Vetrina"
         ],
-        "summary": "Ricerca piatti nel menu del ristorante",
-        "description": "Ricerca i piatti disponibili nel menu del ristorante per nome o categoria.",
+        "summary": "Ricerca piatti nel menu",
+        "description": "Cerca tra i piatti disponibili del menu di un ristorante.<br>La ricerca può filtrare per nome del piatto tramite il parametro <b>query</b>, per categoria tramite il parametro <b>categoria</b>, oppure per entrambi i parametri contemporaneamente.",
         "parameters": [
           {
             "name": "id",
@@ -535,19 +535,21 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID del ristorante"
+            "description": "ID del ristorante nel cui menu effettuare la ricerca"
           },
           {
             "name": "query",
             "in": "query",
+            "description": "Testo da cercare nel nome del piatto.",
+            "required": false,
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "nome",
+            "name": "categoria",
             "in": "query",
-            "description": "Testo da cercare nel nome o categoria del piatto",
+            "description": "Categoria del piatto da filtrare.",
             "required": false,
             "schema": {
               "type": "string"
@@ -556,10 +558,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Lista dei piatti disponibili che corrispondono ai filtri richiesti"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Errore interno del server"
           }
         }
       }
@@ -567,10 +569,10 @@
     "/restaurant/{id}/menu/gestione": {
       "get": {
         "tags": [
-          "Menu"
+          "Menu - Gestione"
         ],
-        "summary": "Lista piatti del catalogo con stato del piatto",
-        "description": "Restituisce la lista completa dei piatti del catalogo arricchita con le informazioni del menu del ristorante specificato.<br>Per ogni piatto viene indicato se è presente nel menu (inMenu), il prezzo impostato dal ristoratore (prezzo) e il riferimento al documento nella collezione menu (menu_id).<br>Se il piatto non è nel menu, prezzo e menu_id sono null.",
+        "summary": "Gestione menu del ristorante",
+        "description": "Restituisce tutti i piatti disponibili nel catalogo comune.<br>Ogni piatto viene arricchito con le informazioni relative al menu del ristorante indicato: <b>inMenu</b> specifica se il piatto è già presente nel menu, <b>prezzo</b> contiene il prezzo definito dal ristoratore e <b>menu_id</b> identifica il documento del piatto nella collezione del menu.<br>Se il piatto non è presente nel menu, i campi <b>prezzo</b> e <b>menu_id</b> sono <b>null</b>.",
         "parameters": [
           {
             "name": "id",
@@ -579,12 +581,12 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID del ristorante di cui si vuole ottenere il menu"
+            "description": "ID del ristorante di cui recuperare la configurazione del menu"
           }
         ],
         "responses": {
           "200": {
-            "description": "Lista di tutti i piatti del catalogo con i campi aggiuntivi inMenu, prezzo e menu_id"
+            "description": "Catalogo dei piatti con informazioni sulla presenza nel menu del ristorante"
           },
           "500": {
             "description": "Errore interno del server"
@@ -595,10 +597,10 @@
     "/restaurant/{id}/menu/save": {
       "post": {
         "tags": [
-          "Menu"
+          "Menu - Gestione"
         ],
-        "summary": "Salvataggio delle modifiche del menu",
-        "description": "Salva il menu completo del ristorante.<br>Per ogni piatto ricevuto gestisce tre casi: se il piatto è selezionato e non era nel menu lo inserisce con il prezzo indicato; se il piatto è selezionato ed era già nel menu aggiorna il prezzo; se il piatto non è selezionato ma era nel menu lo rimuove.<br>I piatti selezionati senza prezzo o con prezzo non valido vengono ignorati.",
+        "summary": "Salvataggio menu del ristorante",
+        "description": "Salva la configurazione completa del menu di un ristorante.<br>I piatti nuovi senza prezzo valido o con prezzo minore o uguale a zero non vengono inseriti.<br>Per ogni piatto ricevuto gestisce tre casi:<ul><li>Se il piatto è selezionato e non era già nel menu, viene inserito con il prezzo indicato</li><li>Se il piatto è selezionato ed è già nel menu, viene aggiornato il prezzo</li><li>Se il piatto non è selezionato ma è presente nel menu, viene rimosso.</li></ul>",
         "parameters": [
           {
             "name": "id",
@@ -606,45 +608,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "ristorante_id": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "menu": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "piatto_id": {
-                        "type": "string",
-                        "example": "string"
-                      },
-                      "menu_id": {
-                        "type": "string",
-                        "example": "string|null"
-                      },
-                      "incluso": {
-                        "type": "string",
-                        "example": "boolean"
-                      },
-                      "prezzo": {
-                        "type": "string",
-                        "example": "number|null"
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            },
+            "description": "ID del ristorante di cui salvare il menu"
           }
         ],
         "responses": {
@@ -652,7 +617,373 @@
             "description": "Menu salvato con successo"
           },
           "400": {
-            "description": "Campi mancanti nel body della richiesta"
+            "description": "Campo menu mancante nel body della richiesta oppure ID ristorante non valido"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "menu"
+                ],
+                "properties": {
+                  "menu": {
+                    "type": "array",
+                    "description": "Lista completa dei piatti del catalogo con le modifiche effettuate dal ristoratore",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "piatto_id": {
+                          "type": "string",
+                          "example": "66e2e8cb5c34459a0b7a1234"
+                        },
+                        "menu_id": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": null,
+                          "description": "ID del documento nella collezione menu. Vale null se il piatto non era già presente nel menu."
+                        },
+                        "incluso": {
+                          "type": "boolean",
+                          "example": true,
+                          "description": "Indica se il piatto deve essere presente nel menu del ristorante"
+                        },
+                        "prezzo": {
+                          "type": "number",
+                          "nullable": true,
+                          "example": 8.5,
+                          "description": "Prezzo definito dal ristoratore"
+                        }
+                      }
+                    },
+                    "example": [
+                      {
+                        "piatto_id": "66e2e8cb5c34459a0b7a1234",
+                        "menu_id": null,
+                        "incluso": true,
+                        "prezzo": 8.5
+                      },
+                      {
+                        "piatto_id": "66e2e8cb5c34459a0b7a5678",
+                        "menu_id": "66e2e8cb5c34459a0b7a9876",
+                        "incluso": true,
+                        "prezzo": 10
+                      },
+                      {
+                        "piatto_id": "66e2e8cb5c34459a0b7a1111",
+                        "menu_id": "66e2e8cb5c34459a0b7a2222",
+                        "incluso": false,
+                        "prezzo": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/order": {
+      "post": {
+        "tags": [
+          "Ordine - Cliente"
+        ],
+        "summary": "Creazione ordine",
+        "description": "Crea un nuovo ordine per un cliente presso un ristorante.<br>L\\'ordine viene creato nello stato iniziale <b>Ordinato</b>.<br>Il backend calcola automaticamente il <b>tempoStimato</b> considerando il numero di ordini dello stesso ristorante ancora negli stati <b>Ordinato</b> e <b>In preparazione</b>.",
+        "responses": {
+          "201": {
+            "description": "Ordine creato con successo"
+          },
+          "400": {
+            "description": "Campi obbligatori mancanti oppure carrello vuoto"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "cliente_id",
+                  "ristorante_id",
+                  "piatti",
+                  "totale"
+                ],
+                "properties": {
+                  "cliente_id": {
+                    "type": "string",
+                    "example": "66e2e8cb5c34459a0b7a1111",
+                    "description": "ID del cliente che effettua l'ordine"
+                  },
+                  "ristorante_id": {
+                    "type": "string",
+                    "example": "66e2e8cb5c34459a0b7a2222",
+                    "description": "ID del ristorante presso cui viene effettuato l'ordine"
+                  },
+                  "piatti": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "Piatti presenti nel carrello del cliente",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "66e2e8cb5c34459a0b7a3333",
+                          "description": "ID del piatto"
+                        },
+                        "nome": {
+                          "type": "string",
+                          "example": "Chicken Handi"
+                        },
+                        "prezzo": {
+                          "type": "number",
+                          "example": 8.5
+                        },
+                        "foto": {
+                          "type": "string",
+                          "example": "https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg"
+                        },
+                        "quantita": {
+                          "type": "integer",
+                          "example": 2,
+                          "minimum": 1
+                        }
+                      }
+                    },
+                    "example": [
+                      {
+                        "_id": "66e2e8cb5c34459a0b7a3333",
+                        "nome": "Chicken Handi",
+                        "prezzo": 8.5,
+                        "foto": "https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg",
+                        "quantita": 2
+                      },
+                      {
+                        "_id": "66e2e8cb5c34459a0b7a4444",
+                        "nome": "Apple Frangipane Tart",
+                        "prezzo": 4.5,
+                        "foto": "https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg",
+                        "quantita": 1
+                      }
+                    ]
+                  },
+                  "totale": {
+                    "type": "number",
+                    "example": 21.5,
+                    "description": "Totale dell'ordine calcolato dal frontend"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/client/{id}": {
+      "get": {
+        "tags": [
+          "Ordine - Cliente"
+        ],
+        "summary": "Lista ordini del cliente",
+        "description": "Restituisce tutti gli ordini effettuati da un cliente, ordinati dal più recente al più vecchio.<br>Per ogni ordine restituisce anche il nome del ristorante, lo stato di avanzamento, il tempo di attesa stimato e l\\'eventuale recensione inserita dal cliente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID del cliente di cui recuperare gli ordini"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista degli ordini del cliente"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/order/{id}/review": {
+      "patch": {
+        "tags": [
+          "Ordine - Cliente"
+        ],
+        "summary": "Inserimento recensione",
+        "description": "Salva la recensione numerica di un ordine.<br>La recensione deve essere un numero intero compreso tra <b>1</b> e <b>5</b> e può essere inserita solo quando l\\'ordine si trova nello stato <b>Consegnato</b>.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID dell'ordine da recensire"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recensione salvata con successo"
+          },
+          "400": {
+            "description": "Recensione non valida"
+          },
+          "404": {
+            "description": "Ordine non trovato oppure ordine non ancora consegnato"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "recensione"
+                ],
+                "properties": {
+                  "recensione": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "example": 5,
+                    "description": "Valutazione intera assegnata dal cliente all'ordine"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/restaurant/{id}": {
+      "get": {
+        "tags": [
+          "Ordine - Ristorante"
+        ],
+        "summary": "Lista ordini del ristorante",
+        "description": "Restituisce tutti gli ordini ricevuti dal ristorante indicato, ordinati dal più recente al più vecchio.<br>Per ogni ordine restituisce i piatti ordinati, il totale, lo stato dell\\'ordine, la data di creazione e il nome completo del cliente che ha effettuato l\\'acquisto.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID del ristorante di cui recuperare gli ordini ricevuti"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista degli ordini ricevuti dal ristorante"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        }
+      }
+    },
+    "/order/{id}/status": {
+      "patch": {
+        "tags": [
+          "Ordine - Ristorante"
+        ],
+        "summary": "Aggiornamento stato ordine",
+        "description": "Aggiorna lo stato di un ordine esistente.<br>Ad ogni aggiornamento viene modificato automaticamente anche il campo <b>updatedAt</b>.<br>Gli stati ammessi sono: <ul><li>Ordinato</li> <li>In preparazione</li> <li>In consegna</li> <li>Consegnato</li></ul>",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID dell'ordine di cui aggiornare lo stato"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stato dell'ordine aggiornato con successo"
+          },
+          "400": {
+            "description": "Stato non valido"
+          },
+          "404": {
+            "description": "Ordine non trovato"
+          },
+          "500": {
+            "description": "Errore interno del server"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "stato"
+                ],
+                "properties": {
+                  "stato": {
+                    "type": "string",
+                    "enum": [
+                      "Ordinato",
+                      "In preparazione",
+                      "In consegna",
+                      "Consegnato"
+                    ],
+                    "example": "In preparazione",
+                    "description": "Nuovo stato da assegnare all'ordine"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/restaurant/{id}/reviews": {
+      "get": {
+        "tags": [
+          "Ristorante - Vetrina"
+        ],
+        "summary": "Media recensioni del ristorante",
+        "description": "Calcola la media delle recensioni ricevute dagli ordini di un ristorante.<br>Vengono considerati soltanto gli ordini che possiedono il campo <b>recensione</b>.<br>Se il ristorante non ha ancora ricevuto recensioni, restituisce <b>media: null</b> e <b>numeroRecensioni: 0</b>.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID del ristorante di cui calcolare la media delle recensioni"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media delle recensioni e numero totale di recensioni del ristorante"
           },
           "500": {
             "description": "Errore interno del server"
@@ -663,109 +994,13 @@
     "/meals": {
       "get": {
         "tags": [
-          "Altro (da verificare)"
+          "Piatti (extra)"
         ],
-        "description": "",
+        "summary": "Lista completa dei piatti",
+        "description": "Restituisce tutti i piatti presenti nel catalogo comune dell\\'applicazione.<br>I piatti del catalogo possono essere selezionati dai ristoratori per creare o aggiornare il proprio menu.",
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/meals/{id}": {
-      "get": {
-        "tags": [
-          "Altro (da verificare)"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/order": {
-      "post": {
-        "tags": [
-          "Ordini"
-        ],
-        "summary": "Crea un nuovo ordine",
-        "description": "Crea un nuovo ordine con i piatti nel carrello del cliente. Lo stato iniziale è \"ordinato\".",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "cliente_id": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "ristorante_id": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "piatti": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "_id": {
-                        "type": "string",
-                        "example": "string"
-                      },
-                      "nome": {
-                        "type": "string",
-                        "example": "string"
-                      },
-                      "prezzo": {
-                        "type": "string",
-                        "example": "number"
-                      },
-                      "quantita": {
-                        "type": "string",
-                        "example": "number"
-                      }
-                    }
-                  }
-                },
-                "totale": {
-                  "type": "string",
-                  "example": "number"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Ordine creato con successo"
-          },
-          "400": {
-            "description": "Campi mancanti"
+            "description": "Lista completa dei piatti del catalogo"
           },
           "500": {
             "description": "Errore interno del server"
@@ -773,27 +1008,30 @@
         }
       }
     },
-    "/orders/client/{cliente_id}": {
+    "/meals/{id}": {
       "get": {
         "tags": [
-          "Ordini"
+          "Piatti (extra)"
         ],
-        "summary": "Lista ordini del cliente",
-        "description": "Restituisce tutti gli ordini del cliente ordinati dal più recente al più vecchio, con il nome del ristorante.",
+        "summary": "Dettaglio di un piatto",
+        "description": "Restituisce tutte le informazioni di un singolo piatto del catalogo comune, identificato dal relativo ID.<br>La risposta include nome, categoria, area geografica, foto, ingredienti, dosi, tag e istruzioni di preparazione.",
         "parameters": [
           {
-            "name": "cliente_id",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
             },
-            "description": "ID del cliente"
+            "description": "ID del piatto da recuperare"
           }
         ],
         "responses": {
           "200": {
-            "description": "Lista ordini del cliente con nome ristorante"
+            "description": "Informazioni complete del piatto"
+          },
+          "404": {
+            "description": "Piatto non trovato"
           },
           "500": {
             "description": "Errore interno del server"

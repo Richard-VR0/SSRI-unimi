@@ -380,7 +380,9 @@ function pulisciDiv(modello) {
 // -----------------------------------------------------------------------------------------------
 
 function mostraRistoranti() {
-    fetch("http://localhost:3000/restaurant").then(response => response.json()).then(lista => {renderRistoranti(lista)})
+    fetch("http://localhost:3000/restaurant").then(response => response.json()).then(lista => {
+        renderRistoranti(lista)
+    });
 }
 
 function cercaRistoranti() {
@@ -390,7 +392,9 @@ function cercaRistoranti() {
         mostraRistoranti();
     }
     else {
-        fetch("http://localhost:3000/restaurant/search?query=" + query).then(response => response.json()).then(lista => {renderRistoranti(lista)})
+        fetch("http://localhost:3000/restaurant/search?query=" + query).then(response => response.json()).then(lista => {
+            renderRistoranti(lista)
+        });
     }
 }
 
@@ -447,7 +451,7 @@ function caricaDettagliRistorante() {
         telefonocontainer.innerHTML = "<span class='fw-bolder'>Telefono: </span>";
         const linktelefono = document.createElement('a');
         linktelefono.href = "tel:" + dettagli.telefono;
-        linktelefono.className = "link-warning";
+        linktelefono.className = "link-light";
         linktelefono.textContent = dettagli.telefono;
         telefonocontainer.appendChild(linktelefono);
 
@@ -455,14 +459,14 @@ function caricaDettagliRistorante() {
         emailcontainer.innerHTML = "<span class='fw-bolder'>Email: </span>";
         const linkemail = document.createElement('a');
         linkemail.href = "mailto:" + result.email;
-        linkemail.className = "link-warning";
+        linkemail.className = "link-light";
         linkemail.textContent = result.email;
         emailcontainer.appendChild(linkemail);
 
         document.getElementById('piva').innerHTML = "<span class='fw-bolder'>Partita IVA: </span>" + dettagli.piva;
 
         document.getElementById('descrizione').innerHTML = dettagli.descrizione;
-    })
+    });
 }
 
 function caricaMediaRecensioni(ristoranteId) {
@@ -474,7 +478,7 @@ function caricaMediaRecensioni(ristoranteId) {
         }
 
         if (result.numeroRecensioni === 0) {
-            contenitore.innerHTML = '<i class="bi bi-star"></i> Nessuna recensione';
+            contenitore.innerHTML = '<i class="bi bi-star-fill"></i> Nessuna recensione';
             
             return;
         }
@@ -482,10 +486,7 @@ function caricaMediaRecensioni(ristoranteId) {
         const media = result.media.toFixed(1);
 
         contenitore.innerHTML = '<i class="bi bi-star-fill"></i> ' + media + '/5 (' + result.numeroRecensioni + ' recensioni)';
-    })
-    .catch(error => {
-        console.error('Errore nel caricamento delle recensioni:', error);
-    })
+    });
 }
 
 // -----------------------------------------------------------------------------------------------
@@ -496,20 +497,37 @@ function caricaMenu() {
     let params = new URLSearchParams(window.location.search);
     const ristoranteId = params.get('id');
 
-    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/menu').then(res => res.json()).then(lista => renderMenu(lista));
+    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/menu').then(res => res.json()).then(lista => {
+        renderMenu(lista)
+    });
 }
 
 function cercaMenu() {
-    let params = new URLSearchParams(window.location.search);
-    const ristoranteId = params.get('id');
-    const query = document.getElementById('ricerca').value;
+    const paramsUrl = new URLSearchParams(window.location.search);
+    const ristoranteId = paramsUrl.get('id');
 
-    if (query == "") {
+    const query = document.getElementById('ricerca').value.trim();
+    const categoria = document.getElementById('categoria').value;    
+
+    if (!query && !categoria) {
         caricaMenu();
+
+        return;
     }
-    else {
-        fetch("http://localhost:3000/restaurant/" + ristoranteId + "/menu/search?query=" + query).then(response => response.json()).then(lista => {renderMenu(lista)})
+
+    const params = new URLSearchParams();
+
+    if (query) {
+        params.append('query', query);
     }
+
+    if (categoria) {
+        params.append('categoria', categoria);
+    }
+
+    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/menu/search?' + params.toString()).then(res => res.json()).then(lista => {
+        renderMenu(lista);
+    });
 }
 
 
@@ -740,7 +758,9 @@ function concludiOrdine() {
 function caricaOrdiniInviati() {
     const clienteId = localStorage.getItem('user_id');
 
-    fetch('http://localhost:3000/orders/client/' + clienteId).then(res => res.json()).then(lista => renderOrdiniInviati(lista));
+    fetch('http://localhost:3000/orders/client/' + clienteId).then(res => res.json()).then(lista => {
+        renderOrdiniInviati(lista)
+    });
 }
 
 function renderOrdiniInviati(lista) {
@@ -843,10 +863,6 @@ function chiediRecensione(ordine) {
         alert('Recensione inviata: ' + recensione + '/5');
 
         caricaOrdiniInviati();
-    })
-    .catch(error => {
-        console.error(error);
-        alert('Errore durante l\'invio della recensione');
     });
 }
 
@@ -871,7 +887,9 @@ function dashboard() {
 function caricaOrdiniRicevuti() {
     const ristoranteId = localStorage.getItem('user_id');
 
-    fetch('http://localhost:3000/orders/restaurant/' + ristoranteId).then(res => res.json()).then(lista => renderOrdiniRicevuti(lista));
+    fetch('http://localhost:3000/orders/restaurant/' + ristoranteId).then(res => res.json()).then(lista => {
+        renderOrdiniRicevuti(lista)
+    });
 }
 
 function renderOrdiniRicevuti(lista) {
@@ -963,11 +981,7 @@ function avanzaStato(ordine) {
         }
 
         caricaOrdiniRicevuti();
-        })
-        .catch(error => {
-        console.error(error);
-        alert('Errore durante l\'aggiornamento dello stato');
-        });
+    });
 }
 
 // -----------------------------------------------------------------------------------------------
@@ -977,7 +991,9 @@ function avanzaStato(ordine) {
 function caricaGestionePiatti() {
     const ristoranteId = localStorage.getItem('user_id');
 
-    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/menu/gestione').then(res => res.json()).then(lista => renderGestionePiatti(lista));
+    fetch('http://localhost:3000/restaurant/' + ristoranteId + '/menu/gestione').then(res => res.json()).then(lista => {
+        renderGestionePiatti(lista)
+    });
 }
 
 function renderGestionePiatti(lista) {

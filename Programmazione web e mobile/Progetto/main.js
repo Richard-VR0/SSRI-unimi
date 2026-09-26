@@ -276,6 +276,8 @@ app.post('/user', async (req, res) => {
         res.status(201).json(result);
       
     } catch (error) {
+        console.error(error);
+
         if (error.code == 11000) {
             res.status(409).json({ error: "Email già in uso" });
         }
@@ -283,7 +285,9 @@ app.post('/user', async (req, res) => {
             res.status(500).json({ error: "Errore non gestito" + error.error });
         }
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 
 })
@@ -313,9 +317,13 @@ app.post('/user/login', async (req, res) => {
             res.status(401).json( { error: "Credenziali errate!" } );
         }
     } catch (error) {
+        console.error(error);
+
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
@@ -323,11 +331,13 @@ app.put('/user/:id', async (req, res) => {
     // #swagger.description = 'Aggiorna i dati di un utente esistente, identificato tramite ID.<br>Accetta lo stesso formato dati previsto in fase di registrazione, in base alla tipologia dell\'utente (cliente o ristorante).'
     // #swagger.tags = ['Utente']
     // #swagger.summary = 'Modifica'
+    
     /* #swagger.parameters['id'] = {
         description: 'ID dell\'utente da modificare',
         required: true,
         type: 'string'
     } */
+    
     /* #swagger.requestBody = {
         required: true,
         content: {
@@ -475,6 +485,8 @@ app.put('/user/:id', async (req, res) => {
         res.status(200).json({ message: 'Dati aggiornati con successo' });
 
     } catch (error) {
+        console.error(error);
+
         if (error.code == 11000) {
             res.status(409).json({ error: "Email già in uso" });
         }
@@ -482,7 +494,9 @@ app.put('/user/:id', async (req, res) => {
             res.status(500).json({ error: 'Errore interno del server' });
         }
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 
 })
@@ -491,11 +505,13 @@ app.delete('/user/:id', async (req, res) => {
     // #swagger.description = 'Elimina definitivamente un utente dal sistema, identificato tramite ID.'
     // #swagger.tags = ['Utente']
     // #swagger.summary = 'Cancellazione'
+
     /* #swagger.parameters['id'] = {
         description: 'ID dell\'utente da eliminare',
         required: true,
         type: 'string'
     } */
+
     // #swagger.responses[200] = { description: 'Dati dell\'utente eliminati con successo' }
     // #swagger.responses[404] = { description: 'Utente non trovato' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
@@ -529,7 +545,9 @@ app.delete('/user/:id', async (req, res) => {
 
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 
 })
@@ -538,11 +556,13 @@ app.get('/user/:id', async (req, res) => {
     // #swagger.description = 'Restituisce i dati completi di un singolo utente a partire dal suo ID.'
     // #swagger.tags = ['Utente']
     // #swagger.summary = 'Dati utente'
+
     /* #swagger.parameters['id'] = {
         description: 'ID dell\'utente da recuperare',
         required: true,
         type: 'string'
     } */
+
     // #swagger.responses[200] = { description: 'Dati del cliente' }
     // #swagger.responses[404] = { description: 'Utente non trovato' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
@@ -565,9 +585,12 @@ app.get('/user/:id', async (req, res) => {
         }
     } catch (error) {
         console.error(error);
+
         res.status(500).json( { error: 'Errore interno del server' } );
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 
 })
@@ -578,7 +601,7 @@ app.get('/user/:id', async (req, res) => {
 
 app.get('/restaurant', async (req, res) => {
     // #swagger.description = 'Restituisce l\'elenco di tutti i ristoranti registrati sulla piattaforma, ovvero di tutti gli utenti con il campo tipologia uguale a <b>"ristorante"</b>'
-    // #swagger.tags = ['Ristorante']
+    // #swagger.tags = ['Ristorante - Lista']
     // #swagger.summary = 'Lista dei ristoranti'
     // #swagger.responses[200] = { description: 'Lista dei ristoranti' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
@@ -593,21 +616,27 @@ app.get('/restaurant', async (req, res) => {
 
         res.status(200).json(result);
     } catch (error) {
+        console.error(error);
+
         res.status(500).json( { error: 'Errore interno del server' } );
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
 app.get('/restaurant/search', async (req, res) => {
     // #swagger.description = 'Cerca tra i ristoranti registrati filtrando per nome del ristorante o città, tramite corrispondenza parziale e case-insensitive.<br>Se il parametro <b>query</b> non viene fornito, restituisce l\'elenco completo dei ristoranti.'
-    // #swagger.tags = ['Ristorante']
+    // #swagger.tags = ['Ristorante - Lista']
     // #swagger.summary = 'Ricerca ristoranti'
+
     /* #swagger.parameters['query'] = {
         description: 'Testo da cercare (nome ristorante o città)',
         required: false,
         type: 'string'
     } */
+
     /* #swagger.responses[200] = { description: 'Lista ristoranti trovati' } */
     /* #swagger.responses[500] = { description: 'Errore interno del server' } */
 
@@ -631,10 +660,13 @@ app.get('/restaurant/search', async (req, res) => {
 
         res.status(200).json(result);
     } catch (error) {
-            console.error(error);
+        console.error(error);
+        
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
@@ -644,13 +676,15 @@ app.get('/restaurant/search', async (req, res) => {
 
 app.get('/restaurant/:id', async (req, res) => {
     // #swagger.description = 'Restituisce i dati completi di un singolo ristorante a partire dal suo ID.'
-    // #swagger.tags = ['Ristorante']
+    // #swagger.tags = ['Ristorante - Vetrina']
     // #swagger.summary = 'Dati ristorante'
+
     /* #swagger.parameters['id'] = {
         description: 'ID del ristorante da recuperare',
         required: true,
         type: 'string'
     } */
+
     // #swagger.responses[200] = { description: 'Dati del ristorante' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
@@ -666,24 +700,30 @@ app.get('/restaurant/:id', async (req, res) => {
 
         res.status(200).json(result);
     } catch (error) {
+        console.error(error);
+
         res.status(500).json( { error: 'Errore interno del server' } );
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
 app.get('/restaurant/:id/menu', async (req, res) => {
-    // #swagger.tags = ['Menu']
+    // #swagger.description = 'Restituisce tutti i piatti disponibili del menu del ristorante identificato dall\'ID.<br>Per ogni piatto vengono restituiti il prezzo configurato dal ristoratore e le informazioni del catalogo, come nome, categoria, area, foto, ingredienti, dosi e istruzioni.'
+    // #swagger.tags = ['Menu - Vetrina']
     // #swagger.summary = 'Lista piatti disponibili'
-    // #swagger.description = 'Restituisce solo i piatti presenti nel menu del ristorante specificato, con il prezzo impostato dal ristoratore. Utilizzato lato cliente per visualizzare il menu del ristorante.'
+
     /* #swagger.parameters['id'] = {
         in: 'path',
-        description: 'ID del ristorante',
+        description: 'ID del ristorante di cui recuperare il menu',
         required: true,
         type: 'string'
-    }*/
-    /* #swagger.responses[200] = { description: 'Lista piatti nel menu' } */
-    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
+    } */
+
+    // #swagger.responses[200] = { description: 'Lista dei piatti disponibili nel menu del ristorante' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ristorante_id = req.params.id;
 
@@ -694,7 +734,11 @@ app.get('/restaurant/:id/menu', async (req, res) => {
         const db = client.db(process.env.DB_NAME);
 
         const result = await db.collection(process.env.COLL_MENU).aggregate([
-            { $match: { ristorante_id: new ObjectID(ristorante_id), disponibile: true } },
+            {
+                $match: {
+                    ristorante_id: new ObjectID(ristorante_id), disponibile: true
+                }
+            },
             {
                 $lookup: {
                     from: process.env.COLL_MEALS,
@@ -725,29 +769,62 @@ app.get('/restaurant/:id/menu', async (req, res) => {
 
     } catch (error) {
         console.error(error);
+
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
 app.get('/restaurant/:id/menu/search', async (req, res) => {
-    // #swagger.tags = ['Menu']
-    // #swagger.summary = 'Ricerca piatti nel menu del ristorante'
-    // #swagger.description = 'Ricerca i piatti disponibili nel menu del ristorante per nome o categoria.'
-    // #swagger.parameters['id'] = { in: 'path', description: 'ID del ristorante', required: true, type: 'string' }
-    // #swagger.parameters['nome'] = { in: 'query', description: 'Testo da cercare nel nome o categoria del piatto', required: false, type: 'string' }
+    // #swagger.description = 'Cerca tra i piatti disponibili del menu di un ristorante.<br>La ricerca può filtrare per nome del piatto tramite il parametro <b>query</b>, per categoria tramite il parametro <b>categoria</b>, oppure per entrambi i parametri contemporaneamente.'
+    // #swagger.tags = ['Menu - Vetrina']
+    // #swagger.summary = 'Ricerca piatti nel menu'
+
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID del ristorante nel cui menu effettuare la ricerca',
+        required: true,
+        type: 'string'
+    } */
+
+    /* #swagger.parameters['query'] = {
+        in: 'query',
+        description: 'Testo da cercare nel nome del piatto.',
+        required: false,
+        type: 'string'
+    } */
+
+    /* #swagger.parameters['categoria'] = {
+        in: 'query',
+        description: 'Categoria del piatto da filtrare.',
+        required: false,
+        type: 'string'
+    } */
+
+    // #swagger.responses[200] = { description: 'Lista dei piatti disponibili che corrispondono ai filtri richiesti' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' } */
 
     const ristorante_id = req.params.id;
     const query = req.query.query;
+    const categoria = req.query.categoria;
 
     let client;
+
     try {
         client = await MongoClient.connect(process.env.MONGOURL);
+
         const db = client.db(process.env.DB_NAME);
 
         const result = await db.collection(process.env.COLL_MENU).aggregate([
-            { $match: { ristorante_id: new ObjectID(ristorante_id), disponibile: true } },
+            {
+                $match: {
+                    ristorante_id: new ObjectID(ristorante_id),
+                    disponibile: true
+                }
+            },
             {
                 $lookup: {
                     from: process.env.COLL_MEALS,
@@ -756,21 +833,29 @@ app.get('/restaurant/:id/menu/search', async (req, res) => {
                     as: 'piatto'
                 }
             },
-            { $unwind: '$piatto' },
+            {
+                $unwind: '$piatto'
+            },
             {
                 $match: {
-                    ...(query && {
-                        $or: [
-                            { 'piatto.strMeal': { $regex: query, $options: 'i' } },
-                            { 'piatto.strCategory': { $regex: query, $options: 'i' } },
-                            { 'prezzo': { $eq: parseFloat(query) } }
-                        ]
-                    })
+                    ...(query
+                    ? {
+                        'piatto.strMeal': {
+                            $regex: query,
+                            $options: 'i'
+                        }
+                        }
+                    : {}),
+                    ...(categoria
+                    ? {
+                        'piatto.strCategory': categoria
+                        }
+                    : {})
                 }
             },
             {
                 $project: {
-                    _id: 1,
+                    id: '$piatto.id',
                     prezzo: 1,
                     disponibile: 1,
                     nome: '$piatto.strMeal',
@@ -789,28 +874,34 @@ app.get('/restaurant/:id/menu/search', async (req, res) => {
 
     } catch (error) {
         console.error(error);
+
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
+
 
 // -----------------------------------------------------------------------------------------------
 //                                      GESTIONE MENU
 // -----------------------------------------------------------------------------------------------
 
 app.get('/restaurant/:id/menu/gestione', async (req, res) => {
-    // #swagger.description = 'Restituisce la lista completa dei piatti del catalogo arricchita con le informazioni del menu del ristorante specificato.<br>Per ogni piatto viene indicato se è presente nel menu (inMenu), il prezzo impostato dal ristoratore (prezzo) e il riferimento al documento nella collezione menu (menu_id).<br>Se il piatto non è nel menu, prezzo e menu_id sono null.'
-    // #swagger.tags = ['Menu']
-    // #swagger.summary = 'Lista piatti del catalogo con stato del piatto'
+    // #swagger.description = 'Restituisce tutti i piatti disponibili nel catalogo comune.<br>Ogni piatto viene arricchito con le informazioni relative al menu del ristorante indicato: <b>inMenu</b> specifica se il piatto è già presente nel menu, <b>prezzo</b> contiene il prezzo definito dal ristoratore e <b>menu_id</b> identifica il documento del piatto nella collezione del menu.<br>Se il piatto non è presente nel menu, i campi <b>prezzo</b> e <b>menu_id</b> sono <b>null</b>.'
+    // #swagger.tags = ['Menu - Gestione']
+    // #swagger.summary = 'Gestione menu del ristorante'
+
     /* #swagger.parameters['id'] = {
         in: 'path',
-        description: 'ID del ristorante di cui si vuole ottenere il menu',
+        description: 'ID del ristorante di cui recuperare la configurazione del menu',
         required: true,
         type: 'string'
-    }*/
-    /* #swagger.responses[200] = { description: 'Lista di tutti i piatti del catalogo con i campi aggiuntivi inMenu, prezzo e menu_id' } */
-    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
+    } */
+
+    // #swagger.responses[200] = { description: 'Catalogo dei piatti con informazioni sulla presenza nel menu del ristorante' } */
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ristorante_id = req.params.id;
 
@@ -842,33 +933,95 @@ app.get('/restaurant/:id/menu/gestione', async (req, res) => {
 
     } catch (error) {
         console.error(error);
+
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
 app.post('/restaurant/:id/menu/save', async (req, res) => {
-    // #swagger.description = 'Salva il menu completo del ristorante.<br>Per ogni piatto ricevuto gestisce tre casi: se il piatto è selezionato e non era nel menu lo inserisce con il prezzo indicato; se il piatto è selezionato ed era già nel menu aggiorna il prezzo; se il piatto non è selezionato ma era nel menu lo rimuove.<br>I piatti selezionati senza prezzo o con prezzo non valido vengono ignorati.'
-    // #swagger.tags = ['Menu']
-    // #swagger.summary = 'Salvataggio delle modifiche del menu'
-    /* #swagger.parameters['body'] = {
-        in: 'body',
+    // #swagger.description = 'Salva la configurazione completa del menu di un ristorante.<br>I piatti nuovi senza prezzo valido o con prezzo minore o uguale a zero non vengono inseriti.<br>Per ogni piatto ricevuto gestisce tre casi:<ul><li>Se il piatto è selezionato e non era già nel menu, viene inserito con il prezzo indicato</li><li>Se il piatto è selezionato ed è già nel menu, viene aggiornato il prezzo</li><li>Se il piatto non è selezionato ma è presente nel menu, viene rimosso.</li></ul>'
+    // #swagger.tags = ['Menu - Gestione']
+    // #swagger.summary = 'Salvataggio menu del ristorante'
+
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID del ristorante di cui salvare il menu',
         required: true,
-        schema: {
-            ristorante_id: 'string',
-            menu: [{
-                piatto_id: 'string',
-                menu_id: 'string|null',
-                incluso: 'boolean',
-                prezzo: 'number|null'
-            }]
+        type: 'string'
+    } */
+
+    /* #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: 'object',
+                    required: ['menu'],
+                    properties: {
+                        menu: {
+                            type: 'array',
+                            description: 'Lista completa dei piatti del catalogo con le modifiche effettuate dal ristoratore',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    piatto_id: {
+                                    type: 'string',
+                                    example: '66e2e8cb5c34459a0b7a1234'
+                                    },
+                                    menu_id: {
+                                    type: 'string',
+                                    nullable: true,
+                                    example: null,
+                                    description: 'ID del documento nella collezione menu. Vale null se il piatto non era già presente nel menu.'
+                                    },
+                                    incluso: {
+                                    type: 'boolean',
+                                    example: true,
+                                    description: 'Indica se il piatto deve essere presente nel menu del ristorante'
+                                    },
+                                    prezzo: {
+                                    type: 'number',
+                                    nullable: true,
+                                    example: 8.5,
+                                    description: 'Prezzo definito dal ristoratore'
+                                    }
+                                }
+                            },
+                            example: [
+                                {
+                                    piatto_id: '66e2e8cb5c34459a0b7a1234',
+                                    menu_id: null,
+                                    incluso: true,
+                                    prezzo: 8.5
+                                },
+                                {
+                                    piatto_id: '66e2e8cb5c34459a0b7a5678',
+                                    menu_id: '66e2e8cb5c34459a0b7a9876',
+                                    incluso: true,
+                                    prezzo: 10
+                                },
+                                {
+                                    piatto_id: '66e2e8cb5c34459a0b7a1111',
+                                    menu_id: '66e2e8cb5c34459a0b7a2222',
+                                    incluso: false,
+                                    prezzo: null
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     } */
-    /* #swagger.responses[200] = { description: 'Menu salvato con successo' } */
-    /* #swagger.responses[400] = { description: 'Campi mancanti nel body della richiesta' } */
-    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
 
+    // #swagger.responses[200] = { description: 'Menu salvato con successo' }
+    // #swagger.responses[400] = { description: 'Campo menu mancante nel body della richiesta oppure ID ristorante non valido' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
+    
     const ristorante_id = req.params.id;
     const { menu } = req.body;
 
@@ -884,25 +1037,27 @@ app.post('/restaurant/:id/menu/save', async (req, res) => {
         for (let piatto of menu) {
 
             if (piatto.incluso && !piatto.menu_id) {
-                // checkbox spuntata e non era nel menu → INSERISCI
-                if (!piatto.prezzo || piatto.prezzo <= 0) continue;
-                await coll.insertOne({
-                    ristorante_id: new ObjectID(ristorante_id),
-                    piatto_id: new ObjectID(piatto.piatto_id),
-                    prezzo: parseFloat(parseFloat(piatto.prezzo).toFixed(2)),
-                    disponibile: true
-                });
-
-            } else if (piatto.incluso && piatto.menu_id) {
-                // checkbox spuntata e era già nel menu → AGGIORNA PREZZO
-                await coll.updateOne(
-                    { _id: new ObjectID(piatto.menu_id) },
-                    { $set: { prezzo: parseFloat(parseFloat(piatto.prezzo).toFixed(2)) } }
-                );
-
-            } else if (!piatto.incluso && piatto.menu_id) {
-                // checkbox non spuntata e era nel menu → RIMUOVI
-                await coll.deleteOne({ _id: new ObjectID(piatto.menu_id) });
+                if (piatto.prezzo && piatto.prezzo > 0) {
+                    await coll.insertOne({
+                        ristorante_id: new ObjectID(ristorante_id),
+                        piatto_id: new ObjectID(piatto.piatto_id),
+                        prezzo: parseFloat(parseFloat(piatto.prezzo).toFixed(2)),
+                        disponibile: true
+                    });
+                }
+            }
+            else {
+                if (piatto.incluso && piatto.menu_id) {
+                    await coll.updateOne(
+                        { _id: new ObjectID(piatto.menu_id) },
+                        { $set: { prezzo: parseFloat(parseFloat(piatto.prezzo).toFixed(2)) } }
+                    );
+                }
+                else {
+                    if (!piatto.incluso && piatto.menu_id) {
+                        await coll.deleteOne({ _id: new ObjectID(piatto.menu_id) });
+                    }
+                }
             }
         }
 
@@ -910,9 +1065,12 @@ app.post('/restaurant/:id/menu/save', async (req, res) => {
 
     } catch (error) {
         console.error(error);
+
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
@@ -921,23 +1079,90 @@ app.post('/restaurant/:id/menu/save', async (req, res) => {
 // -----------------------------------------------------------------------------------------------
 
 app.post('/order', async (req, res) => {
-    // #swagger.description = 'Crea un nuovo ordine con i piatti nel carrello del cliente. Lo stato iniziale è "ordinato".'
-    // #swagger.tags = ['Ordini']
-    // #swagger.summary = 'Crea un nuovo ordine'
-    /* #swagger.parameters['body'] = {
-        in: 'body',
+    // #swagger.description = 'Crea un nuovo ordine per un cliente presso un ristorante.<br>L\'ordine viene creato nello stato iniziale <b>Ordinato</b>.<br>Il backend calcola automaticamente il <b>tempoStimato</b> considerando il numero di ordini dello stesso ristorante ancora negli stati <b>Ordinato</b> e <b>In preparazione</b>.'
+    // #swagger.tags = ['Ordine - Cliente']
+    // #swagger.summary = 'Creazione ordine'
+
+    /* #swagger.requestBody = {
         required: true,
-        schema: {
-            cliente_id: 'string',
-            ristorante_id: 'string',
-            piatti: [{ _id: 'string', nome: 'string', prezzo: 'number', quantita: 'number' }],
-            totale: 'number'
+        content: {
+            "application/json": {
+                schema: {
+                    type: 'object',
+                    required: ['cliente_id', 'ristorante_id', 'piatti', 'totale'],
+                    properties: {
+                    cliente_id: {
+                        type: 'string',
+                        example: '66e2e8cb5c34459a0b7a1111',
+                        description: 'ID del cliente che effettua l\'ordine'
+                    },
+                    ristorante_id: {
+                        type: 'string',
+                        example: '66e2e8cb5c34459a0b7a2222',
+                        description: 'ID del ristorante presso cui viene effettuato l\'ordine'
+                    },
+                    piatti: {
+                        type: 'array',
+                        minItems: 1,
+                        description: 'Piatti presenti nel carrello del cliente',
+                        items: {
+                        type: 'object',
+                        properties: {
+                            _id: {
+                            type: 'string',
+                            example: '66e2e8cb5c34459a0b7a3333',
+                            description: 'ID del piatto'
+                            },
+                            nome: {
+                            type: 'string',
+                            example: 'Chicken Handi'
+                            },
+                            prezzo: {
+                            type: 'number',
+                            example: 8.5
+                            },
+                            foto: {
+                            type: 'string',
+                            example: 'https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg'
+                            },
+                            quantita: {
+                            type: 'integer',
+                            example: 2,
+                            minimum: 1
+                            }
+                        }
+                        },
+                        example: [
+                        {
+                            _id: '66e2e8cb5c34459a0b7a3333',
+                            nome: 'Chicken Handi',
+                            prezzo: 8.5,
+                            foto: 'https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg',
+                            quantita: 2
+                        },
+                        {
+                            _id: '66e2e8cb5c34459a0b7a4444',
+                            nome: 'Apple Frangipane Tart',
+                            prezzo: 4.5,
+                            foto: 'https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg',
+                            quantita: 1
+                        }
+                        ]
+                    },
+                    totale: {
+                        type: 'number',
+                        example: 21.5,
+                        description: 'Totale dell\'ordine calcolato dal frontend'
+                    }
+                    }
+                }
+            }
         }
     } */
-    /* #swagger.responses[201] = { description: 'Ordine creato con successo' } */
-    /* #swagger.responses[400] = { description: 'Campi mancanti' } */
-    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
 
+    // #swagger.responses[201] = { description: 'Ordine creato con successo' }
+    // #swagger.responses[400] = { description: 'Campi obbligatori mancanti oppure carrello vuoto' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const { cliente_id, ristorante_id, piatti, totale } = req.body;
 
@@ -975,19 +1200,29 @@ app.post('/order', async (req, res) => {
 
     } catch (error) {
         console.error(error);
+
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
 app.get('/orders/client/:id', async (req, res) => {
-    // #swagger.tags = ['Ordini']
+    // #swagger.description = 'Restituisce tutti gli ordini effettuati da un cliente, ordinati dal più recente al più vecchio.<br>Per ogni ordine restituisce anche il nome del ristorante, lo stato di avanzamento, il tempo di attesa stimato e l\'eventuale recensione inserita dal cliente.'
+    // #swagger.tags = ['Ordine - Cliente']
     // #swagger.summary = 'Lista ordini del cliente'
-    // #swagger.description = 'Restituisce tutti gli ordini del cliente ordinati dal più recente al più vecchio, con il nome del ristorante.'
-    // #swagger.parameters['cliente_id'] = { in: 'path', description: 'ID del cliente', required: true, type: 'string' }
-    /* #swagger.responses[200] = { description: 'Lista ordini del cliente con nome ristorante' } */
-    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
+
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID del cliente di cui recuperare gli ordini',
+        required: true,
+        type: 'string'
+    } */
+
+    // #swagger.responses[200] = { description: 'Lista degli ordini del cliente' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const cliente_id = req.params.id;
 
@@ -997,7 +1232,11 @@ app.get('/orders/client/:id', async (req, res) => {
         const db = client.db(process.env.DB_NAME);
 
         const result = await db.collection(process.env.COLL_ORDERS).aggregate([
-            { $match: { cliente_id: new ObjectID(cliente_id) } },
+            {
+                $match: {
+                    cliente_id: new ObjectID(cliente_id) 
+                }
+            },
             {
                 $lookup: {
                     from: process.env.COLL_USERS,
@@ -1026,13 +1265,53 @@ app.get('/orders/client/:id', async (req, res) => {
 
     } catch (error) {
         console.error(error);
+
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
 app.patch('/order/:id/review', async (req, res) => {
+    // #swagger.description = 'Salva la recensione numerica di un ordine.<br>La recensione deve essere un numero intero compreso tra <b>1</b> e <b>5</b> e può essere inserita solo quando l\'ordine si trova nello stato <b>Consegnato</b>.'
+    // #swagger.tags = ['Ordine - Cliente']
+    // #swagger.summary = 'Inserimento recensione'
+
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID dell\'ordine da recensire',
+        required: true,
+        type: 'string'
+    } */
+
+    /* #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: 'object',
+                    required: ['recensione'],
+                    properties: {
+                        recensione: {
+                            type: 'integer',
+                            minimum: 1,
+                            maximum: 5,
+                            example: 5,
+                            description: 'Valutazione intera assegnata dal cliente all\'ordine'
+                        }
+                    }
+                }
+            }
+        }
+    } */
+
+    // #swagger.responses[200] = { description: 'Recensione salvata con successo' }
+    // #swagger.responses[400] = { description: 'Recensione non valida' }
+    // #swagger.responses[404] = { description: 'Ordine non trovato oppure ordine non ancora consegnato' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
+
     const ordine_id = req.params.id;
     const recensione = Number(req.body.recensione);
 
@@ -1070,7 +1349,9 @@ app.patch('/order/:id/review', async (req, res) => {
 
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
@@ -1079,12 +1360,19 @@ app.patch('/order/:id/review', async (req, res) => {
 // -----------------------------------------------------------------------------------------------
 
 app.get('/orders/restaurant/:id', async (req, res) => {
-    // #swagger.tags = ['Ordini']
+    // #swagger.description = 'Restituisce tutti gli ordini ricevuti dal ristorante indicato, ordinati dal più recente al più vecchio.<br>Per ogni ordine restituisce i piatti ordinati, il totale, lo stato dell\'ordine, la data di creazione e il nome completo del cliente che ha effettuato l\'acquisto.'
+    // #swagger.tags = ['Ordine - Ristorante']
     // #swagger.summary = 'Lista ordini del ristorante'
-    // #swagger.description = 'Restituisce tutti gli ordini ricevuti dal ristorante ordinati dal più recente al più vecchio, con il nome del cliente.'
-    // #swagger.parameters['ristorante_id'] = { in: 'path', description: 'ID del ristorante', required: true, type: 'string' }
-    /* #swagger.responses[200] = { description: 'Lista ordini del ristorante con nome cliente' } */
-    /* #swagger.responses[500] = { description: 'Errore interno del server' } */
+
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID del ristorante di cui recuperare gli ordini ricevuti',
+        required: true,
+        type: 'string'
+    } */
+
+    // #swagger.responses[200] = { description: 'Lista degli ordini ricevuti dal ristorante' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ristorante_id = req.params.id;
 
@@ -1095,41 +1383,89 @@ app.get('/orders/restaurant/:id', async (req, res) => {
         const db = client.db(process.env.DB_NAME);
 
         const result = await db.collection(process.env.COLL_ORDERS).aggregate([
-        { $match: { ristorante_id: new ObjectID(ristorante_id) } },
-        {
-            $lookup: {
-            from: process.env.COLL_USERS,
-            localField: 'cliente_id',
-            foreignField: '_id',
-            as: 'cliente'
-            }
-        },
-        { $unwind: '$cliente' },
-        {
-            $project: {
-            _id: 1,
-            piatti: 1,
-            stato: 1,
-            totale: 1,
-            createdAt: 1,
-            nome_cliente: '$cliente.nome',
-            cognome_cliente: '$cliente.cognome'
-            }
-        },
-        { $sort: { createdAt: -1 } }
+            {
+                $match: {
+                    ristorante_id: new ObjectID(ristorante_id)
+                }
+            },
+            {
+                $lookup: {
+                    from: process.env.COLL_USERS,
+                    localField: 'cliente_id',
+                    foreignField: '_id',
+                    as: 'cliente'
+                }
+            },
+            { $unwind: '$cliente' },
+            {
+                $project: {
+                    _id: 1,
+                    piatti: 1,
+                    stato: 1,
+                    totale: 1,
+                    createdAt: 1,
+                    nome_cliente: '$cliente.nome',
+                    cognome_cliente: '$cliente.cognome'
+                }
+            },
+            { $sort: { createdAt: -1 } }
         ]).toArray();
 
         res.status(200).json(result);
 
     } catch (error) {
         console.error(error);
+
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
 app.patch('/order/:id/status', async (req, res) => {
+    // #swagger.description = 'Aggiorna lo stato di un ordine esistente.<br>Ad ogni aggiornamento viene modificato automaticamente anche il campo <b>updatedAt</b>.<br>Gli stati ammessi sono: <ul><li>Ordinato</li> <li>In preparazione</li> <li>In consegna</li> <li>Consegnato</li></ul>'
+    // #swagger.tags = ['Ordine - Ristorante']
+    // #swagger.summary = 'Aggiornamento stato ordine'
+
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID dell\'ordine di cui aggiornare lo stato',
+        required: true,
+        type: 'string'
+    } */
+
+    /* #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: 'object',
+                    required: ['stato'],
+                    properties: {
+                        stato: {
+                            type: 'string',
+                            enum: [
+                            'Ordinato',
+                            'In preparazione',
+                            'In consegna',
+                            'Consegnato'
+                            ],
+                            example: 'In preparazione',
+                            description: 'Nuovo stato da assegnare all\'ordine'
+                        }
+                    }
+                }
+            }
+        }
+    } */
+
+    // #swagger.responses[200] = { description: 'Stato dell\'ordine aggiornato con successo' }
+    // #swagger.responses[400] = { description: 'Stato non valido' }
+    // #swagger.responses[404] = { description: 'Ordine non trovato' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
+
     const ordine_id = req.params.id;
     const nuovo_stato = req.body.stato;
 
@@ -1156,15 +1492,15 @@ app.patch('/order/:id/status', async (req, res) => {
         .collection(process.env.COLL_ORDERS);
 
         const result = await coll.updateOne(
-        {
-            _id: new ObjectID(ordine_id)
-        },
-        {
-            $set: {
-            stato: nuovo_stato,
-            updatedAt: new Date()
+            {
+                _id: new ObjectID(ordine_id)
+            },
+            {
+                $set: {
+                stato: nuovo_stato,
+                updatedAt: new Date()
+                }
             }
-        }
         );
 
         if (result.matchedCount === 0) {
@@ -1178,11 +1514,27 @@ app.patch('/order/:id/status', async (req, res) => {
 
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
 app.get('/restaurant/:id/reviews', async (req, res) => {
+    // #swagger.description = 'Calcola la media delle recensioni ricevute dagli ordini di un ristorante.<br>Vengono considerati soltanto gli ordini che possiedono il campo <b>recensione</b>.<br>Se il ristorante non ha ancora ricevuto recensioni, restituisce <b>media: null</b> e <b>numeroRecensioni: 0</b>.'
+    // #swagger.tags = ['Ristorante - Vetrina']
+    // #swagger.summary = 'Media recensioni del ristorante'
+
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID del ristorante di cui calcolare la media delle recensioni',
+        required: true,
+        type: 'string'
+    } */
+
+    // #swagger.responses[200] = { description: 'Media delle recensioni e numero totale di recensioni del ristorante' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
+
     const ristorante_id = req.params.id;
 
     let client;
@@ -1193,25 +1545,25 @@ app.get('/restaurant/:id/reviews', async (req, res) => {
         const coll = client.db(process.env.DB_NAME).collection(process.env.COLL_ORDERS);
 
         const risultato = await coll.aggregate([
-        {
-            $match: {
-            ristorante_id: new ObjectID(ristorante_id),
-            recensione: {
-                $exists: true
-            }
-            }
-        },
-        {
-            $group: {
-            _id: null,
-            media: {
-                $avg: '$recensione'
+            {
+                $match: {
+                    ristorante_id: new ObjectID(ristorante_id),
+                    recensione: {
+                        $exists: true
+                    }
+                }
             },
-            numeroRecensioni: {
-                $sum: 1
+            {
+                $group: {
+                    _id: null,
+                    media: {
+                        $avg: '$recensione'
+                    },
+                    numeroRecensioni: {
+                        $sum: 1
+                    }
+                }
             }
-            }
-        }
         ]).toArray();
 
         if (risultato.length === 0) {
@@ -1225,7 +1577,9 @@ app.get('/restaurant/:id/reviews', async (req, res) => {
 
         res.status(500).json({ error: 'Errore interno del server' });
     } finally {
-        if (client) await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 })
 
@@ -1234,7 +1588,12 @@ app.get('/restaurant/:id/reviews', async (req, res) => {
 // -----------------------------------------------------------------------------------------------
 
 app.get('/meals', async (req, res) => {
-    // #swagger.tags = ['Altro (da verificare)']
+    // #swagger.description = 'Restituisce tutti i piatti presenti nel catalogo comune dell\'applicazione.<br>I piatti del catalogo possono essere selezionati dai ristoratori per creare o aggiornare il proprio menu.'
+    // #swagger.tags = ['Piatti (extra)']
+    // #swagger.summary = 'Lista completa dei piatti'
+
+    // #swagger.responses[200] = { description: 'Lista completa dei piatti del catalogo' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
     
     let client;
 
@@ -1246,6 +1605,8 @@ app.get('/meals', async (req, res) => {
 
         res.status(200).json(result);
     } catch (error) {
+        console.error(error);
+
         res.status(500).json( { error: 'Errore interno del server' } );
     } finally {
         await client.close();
@@ -1253,7 +1614,20 @@ app.get('/meals', async (req, res) => {
 })
 
 app.get('/meals/:id', async (req, res) => {
-    // #swagger.tags = ['Altro (da verificare)']
+    // #swagger.description = 'Restituisce tutte le informazioni di un singolo piatto del catalogo comune, identificato dal relativo ID.<br>La risposta include nome, categoria, area geografica, foto, ingredienti, dosi, tag e istruzioni di preparazione.'
+    // #swagger.tags = ['Piatti (extra)']
+    // #swagger.summary = 'Dettaglio di un piatto'
+
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ID del piatto da recuperare',
+        required: true,
+        type: 'string'
+    } */
+
+    // #swagger.responses[200] = { description: 'Informazioni complete del piatto' }
+    // #swagger.responses[404] = { description: 'Piatto non trovato' }
+    // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const id = req.params.id;
 
@@ -1273,9 +1647,12 @@ app.get('/meals/:id', async (req, res) => {
         }
     } catch (error) {
         console.error(error);
+
         res.status(500).json( { error: 'Errore interno del server' } );
     } finally {
-        await client.close();
+        if (client) {
+            await client.close();
+        }
     }
 
 })

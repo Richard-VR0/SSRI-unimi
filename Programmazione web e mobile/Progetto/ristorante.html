@@ -68,9 +68,9 @@
                 <div class="col-lg-9">
                     <h5 id="nome-ristorante" class="fs-5"></h5>
 
-                    <div class="text-warning">
+                    <div>
                         <div class="my-2">
-                            <h5 id="media-recensioni"></h5>
+                            <h6 id="media-recensioni" class="text-warning"></h6>
                         </div>
 
                         <div class="my-2">
@@ -122,13 +122,63 @@
 
             <div class="row my-3">
                 <div class="col-lg-4">
-                    <div class="input-group flex-nowrap">
-                        <span class="input-group-text" id="addon-wrapping">
-                            Cerca
+                    <div class="input-group mb-1">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
                         </span>
-                        
-                        <input type="text" id="ricerca" class="form-control" placeholder="Cerca qualcosa..." oninput="cercaMenu();">
+
+                        <input type="text" id="ricerca" class="form-control" placeholder="Cerca un piatto..." oninput="cercaMenu()">
                     </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <select id="categoria" class="form-select mb-1" onchange="cercaMenu()">
+                        <option value="">
+                            Tutte le categorie
+                        </option>
+                        <option value="Beef">
+                            Beef
+                        </option>
+                        <option value="Breakfast">
+                            Breakfast
+                        </option>
+                        <option value="Chicken">
+                            Chicken
+                        </option>
+                        <option value="Dessert">
+                            Dessert
+                        </option>
+                        <option value="Goat">
+                            Goat
+                        </option>
+                        <option value="Lamb">
+                            Lamb
+                        </option>
+                        <option value="Miscellaneous">
+                            Miscellaneous
+                        </option>
+                        <option value="Pasta">
+                            Pasta
+                        </option>
+                        <option value="Pork">
+                            Pork
+                        </option>
+                        <option value="Seafood">
+                            Seafood
+                        </option>
+                        <option value="Side">
+                            Side
+                        </option>
+                        <option value="Starter">
+                            Starter
+                        </option>
+                        <option value="Vegan">
+                            Vegan
+                        </option>
+                        <option value="Vegetarian">
+                            Vegetarian
+                        </option>
+                    </select>
                 </div>
             </div>
 

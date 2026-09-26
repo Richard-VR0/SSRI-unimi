@@ -2,8 +2,8 @@ const swaggerAutogen = require('swagger-autogen')({openapi: '3.0.0', autoBody: f
 
 const doc = {
     info: {
-        title: 'PWM API',
-        description: 'Swagger delle api pwm'
+        title: 'PWM - DomiCibo API',
+        description: 'Swagger di DomiCibo'
     },
     host: 'localhost:3000'
 };
