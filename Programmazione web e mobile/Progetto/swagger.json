@@ -14,7 +14,7 @@
     "/user": {
       "post": {
         "tags": [
-          "Utente"
+          "Gestione utente"
         ],
         "summary": "Registrazione",
         "description": "Registra un nuovo utente nel sistema.<br>Il tipo di registrazione varia in base al campo <b>tipologia</b> (cliente e ristorante).<br>I 2 tipi di utenti possiedono dei campi in comune (nome, cognome, email, password), inoltre un <b>cliente</b> deve fornire i dati del metodo di pagamento, mentre un <b>ristorante</b> deve fornire i dati dell\\'attività, l\\'indirizzo e le coordinate geografiche.",
@@ -172,7 +172,7 @@
     "/user/login": {
       "post": {
         "tags": [
-          "Utente"
+          "Gestione utente"
         ],
         "summary": "Login",
         "description": "Autentica un utente tramite email e password.<br>In caso di successo restituisce i dati completi del profilo, altrimenti un errore di credenziali non valide.",
@@ -192,7 +192,7 @@
     "/user/{id}": {
       "put": {
         "tags": [
-          "Utente"
+          "Gestione utente"
         ],
         "summary": "Modifica",
         "description": "Aggiorna i dati di un utente esistente, identificato tramite ID.<br>Accetta lo stesso formato dati previsto in fase di registrazione, in base alla tipologia dell\\'utente (cliente o ristorante).",
@@ -362,7 +362,7 @@
       },
       "delete": {
         "tags": [
-          "Utente"
+          "Gestione utente"
         ],
         "summary": "Cancellazione",
         "description": "Elimina definitivamente un utente dal sistema, identificato tramite ID.",
@@ -381,6 +381,9 @@
           "200": {
             "description": "Dati dell'utente eliminati con successo"
           },
+          "400": {
+            "description": "ID utente non valido"
+          },
           "404": {
             "description": "Utente non trovato"
           },
@@ -391,7 +394,7 @@
       },
       "get": {
         "tags": [
-          "Utente"
+          "Gestione utente"
         ],
         "summary": "Dati utente",
         "description": "Restituisce i dati completi di un singolo utente a partire dal suo ID.",
@@ -410,6 +413,9 @@
           "200": {
             "description": "Dati del cliente"
           },
+          "400": {
+            "description": "ID utente non valido"
+          },
           "404": {
             "description": "Utente non trovato"
           },
@@ -422,7 +428,7 @@
     "/restaurant": {
       "get": {
         "tags": [
-          "Ristorante - Lista"
+          "Lista ristoranti"
         ],
         "summary": "Lista dei ristoranti",
         "description": "Restituisce l\\'elenco di tutti i ristoranti registrati sulla piattaforma, ovvero di tutti gli utenti con il campo tipologia uguale a <b>\"ristorante\"</b>",
@@ -439,7 +445,7 @@
     "/restaurant/search": {
       "get": {
         "tags": [
-          "Ristorante - Lista"
+          "Lista ristoranti"
         ],
         "summary": "Ricerca ristoranti",
         "description": "Cerca tra i ristoranti registrati filtrando per nome del ristorante o città, tramite corrispondenza parziale e case-insensitive.<br>Se il parametro <b>query</b> non viene fornito, restituisce l\\'elenco completo dei ristoranti.",
@@ -467,7 +473,7 @@
     "/restaurant/{id}": {
       "get": {
         "tags": [
-          "Ristorante - Vetrina"
+          "Vetrina ristorante"
         ],
         "summary": "Dati ristorante",
         "description": "Restituisce i dati completi di un singolo ristorante a partire dal suo ID.",
@@ -486,6 +492,9 @@
           "200": {
             "description": "Dati del ristorante"
           },
+          "400": {
+            "description": "ID ristorante non valido"
+          },
           "500": {
             "description": "Errore interno del server"
           }
@@ -495,7 +504,7 @@
     "/restaurant/{id}/menu": {
       "get": {
         "tags": [
-          "Menu - Vetrina"
+          "Vetrina ristorante"
         ],
         "summary": "Lista piatti disponibili",
         "description": "Restituisce tutti i piatti disponibili del menu del ristorante identificato dall\\'ID.<br>Per ogni piatto vengono restituiti il prezzo configurato dal ristoratore e le informazioni del catalogo, come nome, categoria, area, foto, ingredienti, dosi e istruzioni.",
@@ -514,6 +523,9 @@
           "200": {
             "description": "Lista dei piatti disponibili nel menu del ristorante"
           },
+          "400": {
+            "description": "ID ristorante non valido"
+          },
           "500": {
             "description": "Errore interno del server"
           }
@@ -523,7 +535,7 @@
     "/restaurant/{id}/menu/search": {
       "get": {
         "tags": [
-          "Menu - Vetrina"
+          "Vetrina ristorante"
         ],
         "summary": "Ricerca piatti nel menu",
         "description": "Cerca tra i piatti disponibili del menu di un ristorante.<br>La ricerca può filtrare per nome del piatto tramite il parametro <b>query</b>, per categoria tramite il parametro <b>categoria</b>, oppure per entrambi i parametri contemporaneamente.",
@@ -560,6 +572,9 @@
           "200": {
             "description": "Lista dei piatti disponibili che corrispondono ai filtri richiesti"
           },
+          "400": {
+            "description": "ID ristorante non valido"
+          },
           "500": {
             "description": "Errore interno del server"
           }
@@ -569,7 +584,7 @@
     "/restaurant/{id}/menu/gestione": {
       "get": {
         "tags": [
-          "Menu - Gestione"
+          "Gestione menu"
         ],
         "summary": "Gestione menu del ristorante",
         "description": "Restituisce tutti i piatti disponibili nel catalogo comune.<br>Ogni piatto viene arricchito con le informazioni relative al menu del ristorante indicato: <b>inMenu</b> specifica se il piatto è già presente nel menu, <b>prezzo</b> contiene il prezzo definito dal ristoratore e <b>menu_id</b> identifica il documento del piatto nella collezione del menu.<br>Se il piatto non è presente nel menu, i campi <b>prezzo</b> e <b>menu_id</b> sono <b>null</b>.",
@@ -588,6 +603,9 @@
           "200": {
             "description": "Catalogo dei piatti con informazioni sulla presenza nel menu del ristorante"
           },
+          "400": {
+            "description": "ID ristorante non valido"
+          },
           "500": {
             "description": "Errore interno del server"
           }
@@ -597,7 +615,7 @@
     "/restaurant/{id}/menu/save": {
       "post": {
         "tags": [
-          "Menu - Gestione"
+          "Gestione menu"
         ],
         "summary": "Salvataggio menu del ristorante",
         "description": "Salva la configurazione completa del menu di un ristorante.<br>I piatti nuovi senza prezzo valido o con prezzo minore o uguale a zero non vengono inseriti.<br>Per ogni piatto ricevuto gestisce tre casi:<ul><li>Se il piatto è selezionato e non era già nel menu, viene inserito con il prezzo indicato</li><li>Se il piatto è selezionato ed è già nel menu, viene aggiornato il prezzo</li><li>Se il piatto non è selezionato ma è presente nel menu, viene rimosso.</li></ul>",
@@ -693,7 +711,7 @@
     "/order": {
       "post": {
         "tags": [
-          "Ordine - Cliente"
+          "Ordini cliente"
         ],
         "summary": "Creazione ordine",
         "description": "Crea un nuovo ordine per un cliente presso un ristorante.<br>L\\'ordine viene creato nello stato iniziale <b>Ordinato</b>.<br>Il backend calcola automaticamente il <b>tempoStimato</b> considerando il numero di ordini dello stesso ristorante ancora negli stati <b>Ordinato</b> e <b>In preparazione</b>.",
@@ -702,7 +720,7 @@
             "description": "Ordine creato con successo"
           },
           "400": {
-            "description": "Campi obbligatori mancanti oppure carrello vuoto"
+            "description": "Campi obbligatori mancanti, non validi oppure carrello vuoto"
           },
           "500": {
             "description": "Errore interno del server"
@@ -794,7 +812,7 @@
     "/orders/client/{id}": {
       "get": {
         "tags": [
-          "Ordine - Cliente"
+          "Ordini cliente"
         ],
         "summary": "Lista ordini del cliente",
         "description": "Restituisce tutti gli ordini effettuati da un cliente, ordinati dal più recente al più vecchio.<br>Per ogni ordine restituisce anche il nome del ristorante, lo stato di avanzamento, il tempo di attesa stimato e l\\'eventuale recensione inserita dal cliente.",
@@ -813,6 +831,9 @@
           "200": {
             "description": "Lista degli ordini del cliente"
           },
+          "400": {
+            "description": "ID cliente non valido"
+          },
           "500": {
             "description": "Errore interno del server"
           }
@@ -822,7 +843,7 @@
     "/order/{id}/review": {
       "patch": {
         "tags": [
-          "Ordine - Cliente"
+          "Ordini cliente"
         ],
         "summary": "Inserimento recensione",
         "description": "Salva la recensione numerica di un ordine.<br>La recensione deve essere un numero intero compreso tra <b>1</b> e <b>5</b> e può essere inserita solo quando l\\'ordine si trova nello stato <b>Consegnato</b>.",
@@ -878,7 +899,7 @@
     "/orders/restaurant/{id}": {
       "get": {
         "tags": [
-          "Ordine - Ristorante"
+          "Ordini ristorante"
         ],
         "summary": "Lista ordini del ristorante",
         "description": "Restituisce tutti gli ordini ricevuti dal ristorante indicato, ordinati dal più recente al più vecchio.<br>Per ogni ordine restituisce i piatti ordinati, il totale, lo stato dell\\'ordine, la data di creazione e il nome completo del cliente che ha effettuato l\\'acquisto.",
@@ -897,6 +918,9 @@
           "200": {
             "description": "Lista degli ordini ricevuti dal ristorante"
           },
+          "400": {
+            "description": "ID ristorante non valido"
+          },
           "500": {
             "description": "Errore interno del server"
           }
@@ -906,7 +930,7 @@
     "/order/{id}/status": {
       "patch": {
         "tags": [
-          "Ordine - Ristorante"
+          "Ordini ristorante"
         ],
         "summary": "Aggiornamento stato ordine",
         "description": "Aggiorna lo stato di un ordine esistente.<br>Ad ogni aggiornamento viene modificato automaticamente anche il campo <b>updatedAt</b>.<br>Gli stati ammessi sono: <ul><li>Ordinato</li> <li>In preparazione</li> <li>In consegna</li> <li>Consegnato</li></ul>",
@@ -966,7 +990,7 @@
     "/restaurant/{id}/reviews": {
       "get": {
         "tags": [
-          "Ristorante - Vetrina"
+          "Ordini ristorante"
         ],
         "summary": "Media recensioni del ristorante",
         "description": "Calcola la media delle recensioni ricevute dagli ordini di un ristorante.<br>Vengono considerati soltanto gli ordini che possiedono il campo <b>recensione</b>.<br>Se il ristorante non ha ancora ricevuto recensioni, restituisce <b>media: null</b> e <b>numeroRecensioni: 0</b>.",
@@ -984,6 +1008,9 @@
         "responses": {
           "200": {
             "description": "Media delle recensioni e numero totale di recensioni del ristorante"
+          },
+          "400": {
+            "description": "ID ristorante non valido"
           },
           "500": {
             "description": "Errore interno del server"

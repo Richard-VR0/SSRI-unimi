@@ -73,7 +73,6 @@ function datiProfilo() {
         profilo.elements['nome'].value = result.nome;
         profilo.elements['cognome'].value = result.cognome;
         profilo.elements['email'].value = result.email;
-        profilo.elements['password'].value = result.password;
         profilo.elements['tipologia'].value = result.tipologia;
 
         if (result.tipologia == "cliente") {
@@ -724,16 +723,13 @@ function concludiOrdine() {
         return;
     }
 
-    const totale = carrello.reduce((acc, p) => acc + p.prezzo * p.quantita, 0);
-
     const options = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             cliente_id: clienteId,
             ristorante_id: ristoranteId,
-            piatti: carrello,
-            totale: parseFloat(totale.toFixed(2))
+            piatti: carrello
         })
     }
 
@@ -778,7 +774,7 @@ function renderOrdiniInviati(lista) {
         let modello = document.getElementById('ordine');
         let clone = modello.cloneNode(true);
 
-        clone.querySelector('#nome-ristorante-ordine').textContent = ordine.nome_ristorante || 'Ristorante';
+        clone.querySelector('#nome-ristorante-ordine').textContent = ordine.nome_ristorante || 'Ristorante non più disponibile';
 
         const badge = clone.querySelector('#stato-ordine');
         badge.textContent = ordine.stato.replace('_', ' ');
@@ -907,7 +903,7 @@ function renderOrdiniRicevuti(lista) {
         let modello = document.getElementById('ordine');
         let clone = modello.cloneNode(true);
 
-        clone.querySelector('#nome-cliente-ordine').textContent = ordine.nome_cliente + " " + ordine.cognome_cliente;
+        clone.querySelector('#nome-cliente-ordine').textContent = ordine.cognome_cliente && ordine.cognome_cliente ? ordine.nome_cliente + " " + ordine.cognome_cliente : 'Cliente non più disponibile';
 
         const badge = clone.querySelector('#stato-ordine');
         badge.textContent = ordine.stato.replace('_', ' ');

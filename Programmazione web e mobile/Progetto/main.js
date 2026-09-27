@@ -21,12 +21,16 @@ app.use(cors());
 
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+const bcrypt = require('bcrypt');
+
+const BCRYPT_ROUNDS = Number(process.env.BCRYPT_ROUNDS);
+
 // -----------------------------------------------------------------------------------------------
-//                                          FUNZIONI
+//                                      FUNZIONI DI SUPPORTO
 // -----------------------------------------------------------------------------------------------
 
 // FUNZIONE PER IL CONTROLLO VALIDITÀ DEI DATI INSERITI
-function convalida_dati(user) {
+function convalida_dati(user, passwordObbligatoria = true) {
     if (!user.nome || user.nome.length < 2) {
         return 'Nome troppo corto';
     }
@@ -38,9 +42,16 @@ function convalida_dati(user) {
     if (!user.email || !emailRegex.test(user.email)) {
         return 'Email non valida';
     }
-
-    if (!user.password || user.password.length < 8) {
-        return 'Password troppo corta';
+    
+    if (passwordObbligatoria) {
+        if (typeof user.password !== 'string' || user.password.length < 8) {
+            return 'Password troppo corta';
+        }
+    }
+    else {
+        if (user.password !== undefined && user.password !== null && user.password !== '' && (typeof user.password !== 'string' || user.password.length < 8)) {
+            return 'Password troppo corta';
+        }
     }
 
     if (user.tipologia == "cliente") {
@@ -88,6 +99,22 @@ function convalida_dati(user) {
             }
             if (user.ristorante.piva.length > pivaLength) {
                 return 'Partita iva troppo lunga';
+            }
+
+            if (user.ristorante.url_foto) {
+                if (user.ristorante.url_foto.length > urlLength) {
+                    return 'URL della foto troppo lungo';
+                }
+
+                try {
+                    const urlFoto = new URL(user.ristorante.url_foto);
+
+                    if (urlFoto.protocol !== 'http:' && urlFoto.protocol !== 'https:') {
+                        return 'Protocollo URL non valido';
+                    }
+                } catch {
+                    return 'URL della foto non valido';
+                }
             }
 
             const telefonoRegex = /^\+?\d{8,15}$/;
@@ -141,7 +168,7 @@ function convalida_dati(user) {
 
 app.post('/user', async (req, res) => {
     // #swagger.description = 'Registra un nuovo utente nel sistema.<br>Il tipo di registrazione varia in base al campo <b>tipologia</b> (cliente e ristorante).<br>I 2 tipi di utenti possiedono dei campi in comune (nome, cognome, email, password), inoltre un <b>cliente</b> deve fornire i dati del metodo di pagamento, mentre un <b>ristorante</b> deve fornire i dati dell\'attività, l\'indirizzo e le coordinate geografiche.'
-    // #swagger.tags = ['Utente']
+    // #swagger.tags = ['Gestione utente']
     // #swagger.summary = 'Registrazione'
     /* #swagger.requestBody = {
         required: true,
@@ -244,7 +271,7 @@ app.post('/user', async (req, res) => {
                     nome: req.body.ristorante.nome.trim(),
                     descrizione: req.body.ristorante.descrizione.trim(),
                     piva: req.body.ristorante.piva.trim(),
-                    url_foto: req.body.ristorante.url_foto.trim(),
+                    url_foto: req.body.ristorante.url_foto?.trim() || "",
                     telefono: req.body.ristorante.telefono.trim(),
                     indirizzo: {
                         via: req.body.ristorante.indirizzo.via.trim(),
@@ -260,10 +287,12 @@ app.post('/user', async (req, res) => {
         }
     }
 
-    const errore = convalida_dati(user);
+    const errore = convalida_dati(user, true);
     if (errore) {
         return res.status(400).json( { error: errore } );
     }
+
+    user.password = await bcrypt.hash(user.password, BCRYPT_ROUNDS);
 
     let client;
 
@@ -272,8 +301,8 @@ app.post('/user', async (req, res) => {
         const coll = client.db(process.env.DB_NAME).collection(process.env.COLL_USERS);
 
         const result = await coll.insertOne(user);
-
-        res.status(201).json(result);
+        
+        res.status(201).json({ message: 'Utente registrato con successo', id: result.insertedId });
       
     } catch (error) {
         console.error(error);
@@ -294,7 +323,7 @@ app.post('/user', async (req, res) => {
 
 app.post('/user/login', async (req, res) => {
     // #swagger.description = 'Autentica un utente tramite email e password.<br>In caso di successo restituisce i dati completi del profilo, altrimenti un errore di credenziali non valide.'
-    // #swagger.tags = ['Utente']
+    // #swagger.tags = ['Gestione utente']
     // #swagger.summary = 'Login'
     // #swagger.responses[200] = { description: 'Accesso eseguito correttamente' }
     // #swagger.responses[401] = { description: 'Credenziali errate' }
@@ -309,13 +338,22 @@ app.post('/user/login', async (req, res) => {
         client = await MongoClient.connect(process.env.MONGOURL);
         const coll = client.db(process.env.DB_NAME).collection(process.env.COLL_USERS);
 
-        const utente = await coll.findOne( { email: { $eq: cEmail }, password: { $eq: cPassword } } );
+        const utente = await coll.findOne( { email: cEmail } );
 
-        if (utente) {
-            res.status(200).json(utente);
-        } else {
-            res.status(401).json( { error: "Credenziali errate!" } );
+        if (!utente) {
+            return res.status(401).json({ error: 'Credenziali errate!' });
         }
+
+        const passwordCorretta = await bcrypt.compare(cPassword, utente.password);
+
+        if (!passwordCorretta) {
+            return res.status(401).json({ error: 'Credenziali errate!' });
+        }
+
+        const { password, ...utenteSenzaPassword } = utente;
+
+        res.status(200).json(utenteSenzaPassword);
+
     } catch (error) {
         console.error(error);
 
@@ -329,7 +367,7 @@ app.post('/user/login', async (req, res) => {
 
 app.put('/user/:id', async (req, res) => {
     // #swagger.description = 'Aggiorna i dati di un utente esistente, identificato tramite ID.<br>Accetta lo stesso formato dati previsto in fase di registrazione, in base alla tipologia dell\'utente (cliente o ristorante).'
-    // #swagger.tags = ['Utente']
+    // #swagger.tags = ['Gestione utente']
     // #swagger.summary = 'Modifica'
     
     /* #swagger.parameters['id'] = {
@@ -412,6 +450,10 @@ app.put('/user/:id', async (req, res) => {
 
     const id = req.params.id;
 
+    if (!ObjectID.isValid(id)) {
+        return res.status(400).json({ error: 'ID non valido' });
+    }
+
     const type = req.body.tipologia;
 
     let user;
@@ -442,7 +484,7 @@ app.put('/user/:id', async (req, res) => {
                     nome: req.body.ristorante.nome.trim(),
                     descrizione: req.body.ristorante.descrizione.trim(),
                     piva: req.body.ristorante.piva.trim(),
-                    url_foto: req.body.ristorante.url_foto.trim(),
+                    url_foto: req.body.ristorante.url_foto?.trim() || "",
                     telefono: req.body.ristorante.telefono.trim(),
                     indirizzo: {
                         via: req.body.ristorante.indirizzo.via.trim(),
@@ -458,9 +500,16 @@ app.put('/user/:id', async (req, res) => {
         }
     }
 
-    const errore = convalida_dati(user);
+    const errore = convalida_dati(user, false);
     if (errore) {
         return res.status(400).json( { error: errore } );
+    }
+
+    if (typeof user.password === "string" && user.password.length > 0) {
+        user.password = await bcrypt.hash(user.password, BCRYPT_ROUNDS);
+    }
+    else {
+        delete user.password;
     }
 
     let client;
@@ -503,7 +552,7 @@ app.put('/user/:id', async (req, res) => {
 
 app.delete('/user/:id', async (req, res) => {
     // #swagger.description = 'Elimina definitivamente un utente dal sistema, identificato tramite ID.'
-    // #swagger.tags = ['Utente']
+    // #swagger.tags = ['Gestione utente']
     // #swagger.summary = 'Cancellazione'
 
     /* #swagger.parameters['id'] = {
@@ -513,10 +562,15 @@ app.delete('/user/:id', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Dati dell\'utente eliminati con successo' }
+    // #swagger.responses[400] = { description: 'ID utente non valido' }
     // #swagger.responses[404] = { description: 'Utente non trovato' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(400).json({ error: 'ID non valido' });
+    }
 
     let client;
 
@@ -554,7 +608,7 @@ app.delete('/user/:id', async (req, res) => {
 
 app.get('/user/:id', async (req, res) => {
     // #swagger.description = 'Restituisce i dati completi di un singolo utente a partire dal suo ID.'
-    // #swagger.tags = ['Utente']
+    // #swagger.tags = ['Gestione utente']
     // #swagger.summary = 'Dati utente'
 
     /* #swagger.parameters['id'] = {
@@ -564,10 +618,15 @@ app.get('/user/:id', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Dati del cliente' }
+    // #swagger.responses[400] = { description: 'ID utente non valido' }
     // #swagger.responses[404] = { description: 'Utente non trovato' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(400).json({ error: 'ID non valido' });
+    }
 
     let client;
 
@@ -575,7 +634,16 @@ app.get('/user/:id', async (req, res) => {
         client = await MongoClient.connect(process.env.MONGOURL);
         const coll = client.db(process.env.DB_NAME).collection(process.env.COLL_USERS);
 
-        const result = await coll.findOne( { _id: { $eq: new ObjectID(id) } } );
+        const result = await coll.findOne(
+            {
+                _id: { $eq: new ObjectID(id) }
+            },
+            {
+                projection: {
+                    password: 0
+                }
+            }
+        );
 
         if (result) {
             res.status(200).json(result);
@@ -601,7 +669,7 @@ app.get('/user/:id', async (req, res) => {
 
 app.get('/restaurant', async (req, res) => {
     // #swagger.description = 'Restituisce l\'elenco di tutti i ristoranti registrati sulla piattaforma, ovvero di tutti gli utenti con il campo tipologia uguale a <b>"ristorante"</b>'
-    // #swagger.tags = ['Ristorante - Lista']
+    // #swagger.tags = ['Lista ristoranti']
     // #swagger.summary = 'Lista dei ristoranti'
     // #swagger.responses[200] = { description: 'Lista dei ristoranti' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
@@ -628,7 +696,7 @@ app.get('/restaurant', async (req, res) => {
 
 app.get('/restaurant/search', async (req, res) => {
     // #swagger.description = 'Cerca tra i ristoranti registrati filtrando per nome del ristorante o città, tramite corrispondenza parziale e case-insensitive.<br>Se il parametro <b>query</b> non viene fornito, restituisce l\'elenco completo dei ristoranti.'
-    // #swagger.tags = ['Ristorante - Lista']
+    // #swagger.tags = ['Lista ristoranti']
     // #swagger.summary = 'Ricerca ristoranti'
 
     /* #swagger.parameters['query'] = {
@@ -676,7 +744,7 @@ app.get('/restaurant/search', async (req, res) => {
 
 app.get('/restaurant/:id', async (req, res) => {
     // #swagger.description = 'Restituisce i dati completi di un singolo ristorante a partire dal suo ID.'
-    // #swagger.tags = ['Ristorante - Vetrina']
+    // #swagger.tags = ['Vetrina ristorante']
     // #swagger.summary = 'Dati ristorante'
 
     /* #swagger.parameters['id'] = {
@@ -686,11 +754,16 @@ app.get('/restaurant/:id', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Dati del ristorante' }
+    // #swagger.responses[400] = { description: 'ID ristorante non valido' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     let client;
 
-    let id = req.params.id;
+    const id = req.params.id;
+    
+    if (!ObjectID.isValid(id)) {
+        return res.status(400).json({ error: 'ID ristorante non valido' });
+    }
 
     try {
         client = await MongoClient.connect(process.env.MONGOURL);
@@ -712,7 +785,7 @@ app.get('/restaurant/:id', async (req, res) => {
 
 app.get('/restaurant/:id/menu', async (req, res) => {
     // #swagger.description = 'Restituisce tutti i piatti disponibili del menu del ristorante identificato dall\'ID.<br>Per ogni piatto vengono restituiti il prezzo configurato dal ristoratore e le informazioni del catalogo, come nome, categoria, area, foto, ingredienti, dosi e istruzioni.'
-    // #swagger.tags = ['Menu - Vetrina']
+    // #swagger.tags = ['Vetrina ristorante']
     // #swagger.summary = 'Lista piatti disponibili'
 
     /* #swagger.parameters['id'] = {
@@ -723,9 +796,14 @@ app.get('/restaurant/:id/menu', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Lista dei piatti disponibili nel menu del ristorante' }
+    // #swagger.responses[400] = { description: 'ID ristorante non valido' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ristorante_id = req.params.id;
+
+    if (!ObjectID.isValid(ristorante_id)) {
+        return res.status(400).json({ error: 'ID ristorante non valido' });
+    }
 
     let client;
 
@@ -780,7 +858,7 @@ app.get('/restaurant/:id/menu', async (req, res) => {
 
 app.get('/restaurant/:id/menu/search', async (req, res) => {
     // #swagger.description = 'Cerca tra i piatti disponibili del menu di un ristorante.<br>La ricerca può filtrare per nome del piatto tramite il parametro <b>query</b>, per categoria tramite il parametro <b>categoria</b>, oppure per entrambi i parametri contemporaneamente.'
-    // #swagger.tags = ['Menu - Vetrina']
+    // #swagger.tags = ['Vetrina ristorante']
     // #swagger.summary = 'Ricerca piatti nel menu'
 
     /* #swagger.parameters['id'] = {
@@ -805,9 +883,15 @@ app.get('/restaurant/:id/menu/search', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Lista dei piatti disponibili che corrispondono ai filtri richiesti' }
+    // #swagger.responses[400] = { description: 'ID ristorante non valido' }
     // #swagger.responses[500] = { description: 'Errore interno del server' } */
 
     const ristorante_id = req.params.id;
+
+    if (!ObjectID.isValid(ristorante_id)) {
+        return res.status(400).json({ error: 'ID ristorante non valido' });
+    }
+
     const query = req.query.query;
     const categoria = req.query.categoria;
 
@@ -890,7 +974,7 @@ app.get('/restaurant/:id/menu/search', async (req, res) => {
 
 app.get('/restaurant/:id/menu/gestione', async (req, res) => {
     // #swagger.description = 'Restituisce tutti i piatti disponibili nel catalogo comune.<br>Ogni piatto viene arricchito con le informazioni relative al menu del ristorante indicato: <b>inMenu</b> specifica se il piatto è già presente nel menu, <b>prezzo</b> contiene il prezzo definito dal ristoratore e <b>menu_id</b> identifica il documento del piatto nella collezione del menu.<br>Se il piatto non è presente nel menu, i campi <b>prezzo</b> e <b>menu_id</b> sono <b>null</b>.'
-    // #swagger.tags = ['Menu - Gestione']
+    // #swagger.tags = ['Gestione menu']
     // #swagger.summary = 'Gestione menu del ristorante'
 
     /* #swagger.parameters['id'] = {
@@ -901,9 +985,14 @@ app.get('/restaurant/:id/menu/gestione', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Catalogo dei piatti con informazioni sulla presenza nel menu del ristorante' } */
+    // #swagger.responses[400] = { description: 'ID ristorante non valido' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ristorante_id = req.params.id;
+
+    if (!ObjectID.isValid(ristorante_id)) {
+        return res.status(400).json({ error: 'ID ristorante non valido' });
+    }
 
     let client;
     try {
@@ -944,7 +1033,7 @@ app.get('/restaurant/:id/menu/gestione', async (req, res) => {
 
 app.post('/restaurant/:id/menu/save', async (req, res) => {
     // #swagger.description = 'Salva la configurazione completa del menu di un ristorante.<br>I piatti nuovi senza prezzo valido o con prezzo minore o uguale a zero non vengono inseriti.<br>Per ogni piatto ricevuto gestisce tre casi:<ul><li>Se il piatto è selezionato e non era già nel menu, viene inserito con il prezzo indicato</li><li>Se il piatto è selezionato ed è già nel menu, viene aggiornato il prezzo</li><li>Se il piatto non è selezionato ma è presente nel menu, viene rimosso.</li></ul>'
-    // #swagger.tags = ['Menu - Gestione']
+    // #swagger.tags = ['Gestione menu']
     // #swagger.summary = 'Salvataggio menu del ristorante'
 
     /* #swagger.parameters['id'] = {
@@ -1023,6 +1112,11 @@ app.post('/restaurant/:id/menu/save', async (req, res) => {
     // #swagger.responses[500] = { description: 'Errore interno del server' }
     
     const ristorante_id = req.params.id;
+
+    if (!ObjectID.isValid(ristorante_id)) {
+        return res.status(400).json({ error: 'ID non valido' });
+    }
+
     const { menu } = req.body;
 
     if (!ristorante_id || !menu) {
@@ -1080,7 +1174,7 @@ app.post('/restaurant/:id/menu/save', async (req, res) => {
 
 app.post('/order', async (req, res) => {
     // #swagger.description = 'Crea un nuovo ordine per un cliente presso un ristorante.<br>L\'ordine viene creato nello stato iniziale <b>Ordinato</b>.<br>Il backend calcola automaticamente il <b>tempoStimato</b> considerando il numero di ordini dello stesso ristorante ancora negli stati <b>Ordinato</b> e <b>In preparazione</b>.'
-    // #swagger.tags = ['Ordine - Cliente']
+    // #swagger.tags = ['Ordini cliente']
     // #swagger.summary = 'Creazione ordine'
 
     /* #swagger.requestBody = {
@@ -1161,42 +1255,89 @@ app.post('/order', async (req, res) => {
     } */
 
     // #swagger.responses[201] = { description: 'Ordine creato con successo' }
-    // #swagger.responses[400] = { description: 'Campi obbligatori mancanti oppure carrello vuoto' }
+    // #swagger.responses[400] = { description: 'Campi obbligatori mancanti, non validi oppure carrello vuoto' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
-    const { cliente_id, ristorante_id, piatti, totale } = req.body;
+    const { cliente_id, ristorante_id, piatti } = req.body;
 
-    if (!cliente_id || !ristorante_id || !piatti || piatti.length === 0) {
-        return res.status(400).json({ error: 'Campi mancanti' });
+    if (!ObjectID.isValid(cliente_id)) {
+        return res.status(400).json({ error: 'ID cliente non valido' });
     }
 
+    if (!ObjectID.isValid(ristorante_id)) {
+        return res.status(400).json({ error: 'ID ristorante non valido' });
+    }
+
+    if (!Array.isArray(piatti) || piatti.length === 0) {
+        return res.status(400).json({ error: 'Il carrello è vuoto' });
+    }
+
+    for (const piatto of piatti) {
+        if (!ObjectID.isValid(piatto._id)) {
+            return res.status(400).json({
+                error: 'ID piatto non valido',
+                idRicevuto: piatto._id
+            });
+        }
+
+        if (!Number.isInteger(Number(piatto.quantita)) || Number(piatto.quantita) < 1) {
+            return res.status(400).json({ error: 'Quantità piatto non valida' });
+        }
+
+        if (typeof piatto.prezzo !== 'number' || !Number.isFinite(piatto.prezzo) || piatto.prezzo < 0) {
+            return res.status(400).json({ error: 'Prezzo piatto non valido' });
+        }
+    }
+
+    let totaleCentesimi = 0;
+
+    for (const piatto of piatti) {
+        const prezzoCentesimi = Math.round(piatto.prezzo * 100);
+
+        totaleCentesimi += prezzoCentesimi * Number(piatto.quantita);
+    }
+
+    const totale = totaleCentesimi / 100;
+
     let client;
-    
+
     try {
         client = await MongoClient.connect(process.env.MONGOURL);
-        const coll = client.db(process.env.DB_NAME).collection(process.env.COLL_ORDERS);
+
+        const db = client.db(process.env.DB_NAME);
+
+        const coll = db.collection(process.env.COLL_ORDERS);
 
         const numeroOrdiniInCoda = await coll.countDocuments({
             ristorante_id: new ObjectID(ristorante_id),
             stato: {
-                $in: ['Ordinato', 'In preparazione']
+                $in: [
+                    'Ordinato',
+                    'In preparazione'
+                ]
             }
         });
 
-        const tempoStimato = (numeroOrdiniInCoda + 1) * process.env.TEMPO_PER_ORDINE;
+        const tempoStimato = (numeroOrdiniInCoda + 1) * Number(process.env.TEMPO_PER_ORDINE);
 
-        await coll.insertOne({
+        const ordine = {
             cliente_id: new ObjectID(cliente_id),
             ristorante_id: new ObjectID(ristorante_id),
             piatti: piatti,
-            stato: 'Ordinato',
             totale: totale,
+            stato: 'Ordinato',
             tempoStimato: tempoStimato,
             createdAt: new Date(),
             updatedAt: new Date()
-        });
+        };
 
-        res.status(201).json({ message: 'Ordine creato con successo' });
+        const result = await coll.insertOne(ordine);
+
+        res.status(201).json({
+            message: 'Ordine creato con successo',
+            id: result.insertedId,
+            totale: totale
+        });
 
     } catch (error) {
         console.error(error);
@@ -1211,7 +1352,7 @@ app.post('/order', async (req, res) => {
 
 app.get('/orders/client/:id', async (req, res) => {
     // #swagger.description = 'Restituisce tutti gli ordini effettuati da un cliente, ordinati dal più recente al più vecchio.<br>Per ogni ordine restituisce anche il nome del ristorante, lo stato di avanzamento, il tempo di attesa stimato e l\'eventuale recensione inserita dal cliente.'
-    // #swagger.tags = ['Ordine - Cliente']
+    // #swagger.tags = ['Ordini cliente']
     // #swagger.summary = 'Lista ordini del cliente'
 
     /* #swagger.parameters['id'] = {
@@ -1222,19 +1363,26 @@ app.get('/orders/client/:id', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Lista degli ordini del cliente' }
+    // #swagger.responses[400] = { description: 'ID cliente non valido' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const cliente_id = req.params.id;
 
+    if (!ObjectID.isValid(cliente_id)) {
+        return res.status(400).json({ error: 'ID cliente non valido' });
+    }
+
     let client;
+
     try {
         client = await MongoClient.connect(process.env.MONGOURL);
+
         const db = client.db(process.env.DB_NAME);
 
         const result = await db.collection(process.env.COLL_ORDERS).aggregate([
             {
                 $match: {
-                    cliente_id: new ObjectID(cliente_id) 
+                    cliente_id: new ObjectID(cliente_id)
                 }
             },
             {
@@ -1245,7 +1393,12 @@ app.get('/orders/client/:id', async (req, res) => {
                     as: 'ristorante'
                 }
             },
-            { $unwind: '$ristorante' },
+            {
+                $unwind: {
+                    path: '$ristorante',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
             {
                 $project: {
                     _id: 1,
@@ -1253,13 +1406,19 @@ app.get('/orders/client/:id', async (req, res) => {
                     stato: 1,
                     totale: 1,
                     createdAt: 1,
-                    nome_ristorante: '$ristorante.ristorante.nome',
+                    nome_ristorante:
+                        '$ristorante.ristorante.nome',
                     recensione: 1,
                     tempoStimato: 1
                 }
             },
-            { $sort: { createdAt: -1 } }
-        ]).toArray();
+            {
+                $sort: {
+                    createdAt: -1
+                }
+            }
+        ])
+        .toArray();
 
         res.status(200).json(result);
 
@@ -1276,7 +1435,7 @@ app.get('/orders/client/:id', async (req, res) => {
 
 app.patch('/order/:id/review', async (req, res) => {
     // #swagger.description = 'Salva la recensione numerica di un ordine.<br>La recensione deve essere un numero intero compreso tra <b>1</b> e <b>5</b> e può essere inserita solo quando l\'ordine si trova nello stato <b>Consegnato</b>.'
-    // #swagger.tags = ['Ordine - Cliente']
+    // #swagger.tags = ['Ordini cliente']
     // #swagger.summary = 'Inserimento recensione'
 
     /* #swagger.parameters['id'] = {
@@ -1313,6 +1472,11 @@ app.patch('/order/:id/review', async (req, res) => {
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ordine_id = req.params.id;
+
+    if (!ObjectID.isValid(ordine_id)) {
+        return res.status(400).json({ error: 'ID non valido' });
+    }
+
     const recensione = Number(req.body.recensione);
 
     if (!Number.isInteger(recensione) || recensione < 1 || recensione > 5) {
@@ -1361,7 +1525,7 @@ app.patch('/order/:id/review', async (req, res) => {
 
 app.get('/orders/restaurant/:id', async (req, res) => {
     // #swagger.description = 'Restituisce tutti gli ordini ricevuti dal ristorante indicato, ordinati dal più recente al più vecchio.<br>Per ogni ordine restituisce i piatti ordinati, il totale, lo stato dell\'ordine, la data di creazione e il nome completo del cliente che ha effettuato l\'acquisto.'
-    // #swagger.tags = ['Ordine - Ristorante']
+    // #swagger.tags = ['Ordini ristorante']
     // #swagger.summary = 'Lista ordini del ristorante'
 
     /* #swagger.parameters['id'] = {
@@ -1372,20 +1536,27 @@ app.get('/orders/restaurant/:id', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Lista degli ordini ricevuti dal ristorante' }
+    // #swagger.responses[400] = { description: 'ID ristorante non valido' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ristorante_id = req.params.id;
+
+    if (!ObjectID.isValid(ristorante_id)) {
+        return res.status(400).json({ error: 'ID ristorante non valido' });
+    }
 
     let client;
 
     try {
         client = await MongoClient.connect(process.env.MONGOURL);
+
         const db = client.db(process.env.DB_NAME);
 
         const result = await db.collection(process.env.COLL_ORDERS).aggregate([
             {
                 $match: {
-                    ristorante_id: new ObjectID(ristorante_id)
+                    ristorante_id:
+                        new ObjectID(ristorante_id)
                 }
             },
             {
@@ -1396,7 +1567,12 @@ app.get('/orders/restaurant/:id', async (req, res) => {
                     as: 'cliente'
                 }
             },
-            { $unwind: '$cliente' },
+            {
+                $unwind: {
+                    path: '$cliente',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
             {
                 $project: {
                     _id: 1,
@@ -1408,8 +1584,13 @@ app.get('/orders/restaurant/:id', async (req, res) => {
                     cognome_cliente: '$cliente.cognome'
                 }
             },
-            { $sort: { createdAt: -1 } }
-        ]).toArray();
+            {
+                $sort: {
+                    createdAt: -1
+                }
+            }
+        ])
+        .toArray();
 
         res.status(200).json(result);
 
@@ -1426,7 +1607,7 @@ app.get('/orders/restaurant/:id', async (req, res) => {
 
 app.patch('/order/:id/status', async (req, res) => {
     // #swagger.description = 'Aggiorna lo stato di un ordine esistente.<br>Ad ogni aggiornamento viene modificato automaticamente anche il campo <b>updatedAt</b>.<br>Gli stati ammessi sono: <ul><li>Ordinato</li> <li>In preparazione</li> <li>In consegna</li> <li>Consegnato</li></ul>'
-    // #swagger.tags = ['Ordine - Ristorante']
+    // #swagger.tags = ['Ordini ristorante']
     // #swagger.summary = 'Aggiornamento stato ordine'
 
     /* #swagger.parameters['id'] = {
@@ -1467,6 +1648,11 @@ app.patch('/order/:id/status', async (req, res) => {
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ordine_id = req.params.id;
+
+    if (!ObjectID.isValid(ordine_id)) {
+        return res.status(400).json({ error: 'ID non valido' });
+    }
+
     const nuovo_stato = req.body.stato;
 
     const statiValidi = [
@@ -1522,7 +1708,7 @@ app.patch('/order/:id/status', async (req, res) => {
 
 app.get('/restaurant/:id/reviews', async (req, res) => {
     // #swagger.description = 'Calcola la media delle recensioni ricevute dagli ordini di un ristorante.<br>Vengono considerati soltanto gli ordini che possiedono il campo <b>recensione</b>.<br>Se il ristorante non ha ancora ricevuto recensioni, restituisce <b>media: null</b> e <b>numeroRecensioni: 0</b>.'
-    // #swagger.tags = ['Ristorante - Vetrina']
+    // #swagger.tags = ['Ordini ristorante']
     // #swagger.summary = 'Media recensioni del ristorante'
 
     /* #swagger.parameters['id'] = {
@@ -1533,9 +1719,14 @@ app.get('/restaurant/:id/reviews', async (req, res) => {
     } */
 
     // #swagger.responses[200] = { description: 'Media delle recensioni e numero totale di recensioni del ristorante' }
+    // #swagger.responses[400] = { description: 'ID ristorante non valido' }
     // #swagger.responses[500] = { description: 'Errore interno del server' }
 
     const ristorante_id = req.params.id;
+
+    if (!ObjectID.isValid(ristorante_id)) {
+        return res.status(400).json({ error: 'ID ristorante non valido' });
+    }
 
     let client;
 
