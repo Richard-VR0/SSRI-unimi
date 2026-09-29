@@ -1,10 +1,7 @@
 # SSRI-unimi
 
 Projects of the bachelor’s degree in Computer Systems and Networks Security at UniMi
-* Programmazione
-  * C
-  * Java
-  * **Project: Blackjack card counting trainer**
+* Algoritmi e strutture dati
 * Programmazione web e mobile
   * HTML
   * CSS
@@ -13,5 +10,8 @@ Projects of the bachelor’s degree in Computer Systems and Networks Security at
     * Node.js
   * MongoDB
   * **Project: Food delivery web application**
+* Programmazione
+  * C
+  * Java
+  * **Project: Blackjack card counting trainer**
 * Statistica e analisi dei dati
-* Algoritmi e strutture dati
