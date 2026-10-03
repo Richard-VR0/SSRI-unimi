@@ -10,10 +10,10 @@ Ogni cartella principale contiene il materiale relativo al rispettivo corso e di
 
 | Cartella | Descrizione |
 |---|---|
-| [`Algoritmi-e-strutture-dati/L1/`](./Algoritmi-e-strutture-dati/) | Esercizi in C |
+| [`Algoritmi e strutture dati`](./Algoritmi%20e%20strutture%20dati/) | Esercizi in C |
 | [`Programmazione/`](./Programmazione/) | Esercizi in C e Java + Progetto |
-| [`Programmazione-Web-e-Mobile/`](./Programmazione-Web-e-Mobile/) | Esercizi per lo sviluppo web + Progetto |
-| [`Statistica-e-analisi-dei-dati/`](./Statistica-e-analisi-dei-dati/) | Esercizi in python |
+| [`Programmazione web e mobile/`](./Programmazione%20web%20e%20mobile/) | Esercizi per lo sviluppo web + Progetto |
+| [`Statistica e analisi dei dati/`](./Statistica%20e%20analisi%20dei%20dati/) | Esercizi in python |
 
 
 
