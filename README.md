@@ -10,28 +10,11 @@ Ogni cartella principale contiene il materiale relativo al rispettivo corso e di
 
 | Cartella | Descrizione |
 |---|---|
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| [`Algoritmi-e-Strutture-dati/`](./Algoritmi-e-Strutture-dati/) | esercizi in C |
+| [`Programmazione/`](./Programmazione/) | Esercizi in C e Java + Progetto |
+| [`Programmazione-Web-e-Mobile/`](./Programmazione-Web-e-Mobile/) | Esercizi per lo sviluppo web + Progetto |
+| [`Statistica-e-analisi-dei-dati/`](./Statistica-e-analisi-dei-dati/) | esercizi in python |
 
-
-
-- [`Programmazione/`](./Programmazione/) - esercizi e progetti in C e Java
-- [`Programmazione-Web-e-Mobile/`](./Programmazione-Web-e-Mobile/) — esercizi e progetti per lo sviluppo web
-- `nome-insegnamento/` — breve descrizione del relativo materiale.
-
-
-## Tecnologie utilizzate
-
-Le tecnologie variano in base all'insegnamento e al progetto.
-Tra quelle utilizzate sono presenti:
-
-- C
-- Java
-- HTML, CSS e JavaScript
-- Node.js
-- MongoDB
 
 
 ## Note
