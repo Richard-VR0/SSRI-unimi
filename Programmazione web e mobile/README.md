@@ -18,7 +18,7 @@ Ogni sottocartella corrisponde a un esercizio o a un progetto.
 - Esempi
     - `Esempi Bootstrap/`
     - `Esempi HTML/`
-- Progetto fast food
+- Progetto fast food (DomiCibo)
     - `Progetto/`
 
 
@@ -42,6 +42,17 @@ Per i progetti basati su Node.js, dalla cartella dell'esercizio o progetto esegu
 > npm install
 > npm main.js
 ```
+
+
+## Progetto DomiCibo
+
+Il progetto consiste nello sviluppo di un'applicazione web per la gestione degli ordini online all'interno di ristoranti appartenenti a una catena di fast food.
+L'applicazione gestisce due tipologie di utenti: clienti e ristoratori.
+I clienti possono registrarsi, effettuare il login, consultare i ristoranti e i relativi menu, cercare i piatti e effettuare ordini.
+I ristoratori possono invece gestire le informazioni del proprio ristorante e i piatti disponibili nel menu.
+Il sistema comprende inoltre la gestione del carrello, degli ordini e del loro stato, dalla fase di ordinazione fino alla consegna o al ritiro presso il ristorante.
+Il progetto è stato sviluppato utilizzando HTML5, CSS3, Bootstrap e JavaScript per la parte client, mentre il backend è stato realizzato con Node.js e MongoDB.
+Le informazioni vengono gestite tramite API REST e le API implementate sono descritte attraverso la documentazione Swagger.
 
 
 ## Note
