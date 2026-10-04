@@ -40,7 +40,7 @@ Per i progetti basati su Node.js, dalla cartella dell'esercizio o progetto esegu
 
 ```bash
 > npm install
-> npm main.js
+> nodemon main.js
 ```
 
 
