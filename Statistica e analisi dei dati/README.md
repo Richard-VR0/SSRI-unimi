@@ -8,7 +8,7 @@ Questa cartella raccoglie esercizi e progetti sviluppati durante il corso di **S
 La cartella è organizzata per lezioni: ogni sottocartella corrisponde a una lezione e contiene gli esercizi relativi agli argomenti trattati nella rispettiva lezione.
 
 
-## Linguaggi e strumenti
+## Tecnologie utilizzate
 
 | Linguaggio | Librerie |
 |---|---|

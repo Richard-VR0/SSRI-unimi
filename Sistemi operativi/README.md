@@ -1,20 +1,22 @@
-# Sistemi Operativi (FAD003 - FAD0A0)
+# Sistemi Operativi (FAD003 - FAD0A0x)
 
-Questa cartella raccoglie esercizi, laboratori e progetti svolti durante il
-corso di Sistemi Operativi della laurea triennale in Sicurezza dei Sistemi e
-delle Reti Informatiche presso l'Università degli Studi di Milano.
+Questa cartella raccoglie esercizi, laboratori e progetti svolti durante il corso di **Sistemi Operativi**.
+
 
 ## Contenuto
 
-Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un
-progetto relativo agli argomenti trattati durante il corso.
+Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto relativo agli argomenti trattati durante il corso.
+
 
 ## Tecnologie utilizzate
+
+- Assembly
 
 - Linguaggio C
 - Sistema operativo Linux
 - Shell Bash
 - Compilatore GNU Compiler Collection (GCC)
+
 
 ## Compilazione ed esecuzione
 
@@ -25,12 +27,16 @@ gcc main.c -o main
 ./main
 ```
 
-## Nota sul progetto
+## Repository di supporto
+
+Per lo svolgimento di alcuni esercizi teorici viene utilizzata una repository GitHub separata contenente emulatori dedicati alla simulazione di concetti e meccanismi dei sistemi operativi.
+Gli emulatori permettono di svolgere esercizi in modo interattivo e di osservare il comportamento dei meccanismi analizzati durante il corso.
+
+[Remzi Arpaci-Dusseau OS](https://github.com/remzi-arpacidusseau/ostep-homework)
+
+
+## Note
 
 Gli esercizi e i progetti presenti in questa cartella sono stati sviluppati a
 scopo didattico per approfondire il funzionamento dei sistemi operativi e la
 programmazione a basso livello.
-
-Le attività riguardano, a seconda dell'esercizio, la gestione dei processi,
-dei thread, della memoria, dei file, della sincronizzazione e delle chiamate
-di sistema.

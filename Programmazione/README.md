@@ -3,7 +3,7 @@
 Questa cartella raccoglie gli esercizi, i laboratori e i progetti svolti durante il corso di **Programmazione**.
 
 
-## Linguaggi e strumenti
+## Tecnologie utilizzate
 
 | Linguaggio | Compilatore |
 |---|---|

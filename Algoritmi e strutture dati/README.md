@@ -7,7 +7,7 @@ Questa cartella raccoglie esercizi e progetti svolti durante il corso di **Algor
 
 La cartella è organizzata per lezioni: ogni sottocartella corrisponde a una lezione e contiene i relativi esercizi.
 
-## Linguaggi e strumenti
+## Tecnologie utilizzate
 
 | Linguaggio | Compilatore |
 |---|---|
