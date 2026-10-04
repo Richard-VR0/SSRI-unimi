@@ -1,4 +1,4 @@
-# Sistemi Operativi
+# Sistemi Operativi (FAD003 - FAD0A0)
 
 Questa cartella raccoglie esercizi, laboratori e progetti svolti durante il
 corso di Sistemi Operativi della laurea triennale in Sicurezza dei Sistemi e
