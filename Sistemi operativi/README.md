@@ -1,4 +1,4 @@
-# Sistemi Operativi (FAD003 - FAD0A0x)
+# Sistemi Operativi (FAD003 - FAD0A0)
 
 Questa cartella raccoglie esercizi, laboratori e progetti svolti durante il corso di **Sistemi Operativi**.
 
@@ -11,7 +11,6 @@ Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto 
 ## Tecnologie utilizzate
 
 - Assembly
-
 - Linguaggio C
 - Sistema operativo Linux
 - Shell Bash
