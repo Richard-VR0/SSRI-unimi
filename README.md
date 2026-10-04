@@ -20,4 +20,4 @@ Ogni cartella principale contiene il materiale relativo al rispettivo corso e di
 ## Note
 
 Il materiale presente nella repository è stato sviluppato a scopo didattico.
-Le istruzioni specifiche per compilare, avviare o utilizzare ciascun esercizio o progetto sono disponibili nei README delle relative cartelle.
+Le istruzioni specifiche per compilare, avviare o utilizzare ciascun esercizio o progetto sono disponibili nei `README.md` delle relative cartelle.
