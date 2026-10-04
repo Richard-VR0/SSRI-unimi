@@ -11,17 +11,9 @@ Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto 
 ## Tecnologie utilizzate
 
 - Assembly
+- C
 - QEMU
 
-
-## Compilazione ed esecuzione
-
-Dalla cartella dell'esercizio, eseguire:
-
-```bash
-gcc main.c -o main
-./main
-```
 
 ## Repository di supporto
 
