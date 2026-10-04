@@ -36,12 +36,19 @@ Ogni sottocartella corrisponde a un esercizio o a un progetto.
 
 Per gli esercizi statici in HTML, CSS e JavaScript è sufficiente aprire il file `index.html` in un browser.
 
-Per i progetti basati su Node.js, dalla cartella dell'esercizio o progetto eseguire:
+Per i progetti basati su Node.js, dalla cartella dell'esercizio o del progetto è necessario prima eseguire:
 
 ```bash
 > npm install
+```
+per installare le dipendenze e le librerie definite nel file `package.json`.
+
+Per avviare il file principale dell'applicazione eseguire:
+
+```bash
 > nodemon main.js
 ```
+il comando riavvia automaticamente il server quando vengono rilevate modifiche ai file.
 
 
 ## Progetto DomiCibo
