@@ -22,7 +22,7 @@ Ogni sottocartella corrisponde a un esercizio o a un progetto.
     - `Progetto/`
 
 
-## Tecnologie utilizzate
+## Linguaggi e strumenti
 
 - HTML5
 - CSS3
