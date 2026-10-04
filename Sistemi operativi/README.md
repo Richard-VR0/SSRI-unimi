@@ -11,10 +11,7 @@ Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto 
 ## Tecnologie utilizzate
 
 - Assembly
-- Linguaggio C
-- Sistema operativo Linux
-- Shell Bash
-- Compilatore GNU Compiler Collection (GCC)
+- QEMU
 
 
 ## Compilazione ed esecuzione
