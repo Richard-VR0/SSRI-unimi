@@ -15,6 +15,12 @@ Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto 
 - QEMU
 
 
+## Materiale teorico
+
+Per approfondire gli argomenti teorici del corso viene utilizzato il libro online *Operating Systems: Three Easy Pieces* di Remzi H. Arpaci-Dusseau e Andrea C. Arpaci-Dusseau.
+
+[OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/)
+
 ## Repository di supporto
 
 Per lo svolgimento di alcuni esercizi teorici viene utilizzata una repository GitHub separata contenente emulatori dedicati alla simulazione di concetti e meccanismi dei sistemi operativi.
