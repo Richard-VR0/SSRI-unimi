@@ -40,6 +40,7 @@ esercizi incentrati sulle code a feedback multi-livello, gestione delle prioritÃ
 simulazione della traduzione degli indirizzi di memoria, registri base-bound e analisi della frammentazione.
 
 <br>dsaddddddddddddddddddddddddddd
+ddssd
 
 > ðŸ’¡ **Nota**: Per lanciare gli emulatori, clonare la repository ufficiale di supporto e avviare i rispettivi script Python passando i parametri desiderati (es. `python3 <nome_script>.py -h` per visualizzare la guida).
 
