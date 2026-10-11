@@ -21,16 +21,12 @@ Per approfondire gli argomenti teorici del corso viene utilizzato il libro onlin
 
 [OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/)
 
-## Repository di supporto
+## Repository di supporto (con emulatori)
 
 Per lo svolgimento di alcuni esercizi teorici viene utilizzata una repository GitHub separata contenente emulatori dedicati alla simulazione di concetti e meccanismi dei sistemi operativi.
 Gli emulatori permettono di svolgere esercizi in modo interattivo e di osservare il comportamento dei meccanismi analizzati durante il corso.
 
 [Remzi Arpaci-Dusseau OS](https://github.com/remzi-arpacidusseau/ostep-homework)
-
-## Emulatori
-
-Per lo svolgimento degli esercizi pratici e l'approfondimento dei concetti teorici, vengono utilizzati gli emulatori della repository di supporto:
 
 ### Virtualizzazione della CPU
 - CPU Scheduling ([`cpu-sched`](https://github.com/remzi-arpacidusseau/ostep-homework/tree/master/cpu-sched)):
