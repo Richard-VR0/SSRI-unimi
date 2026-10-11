@@ -12,7 +12,7 @@ Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto 
 
 - Assembly
 - C
-- QEMU
+- Python
 
 
 ## Materiale teorico
@@ -27,6 +27,25 @@ Per lo svolgimento di alcuni esercizi teorici viene utilizzata una repository Gi
 Gli emulatori permettono di svolgere esercizi in modo interattivo e di osservare il comportamento dei meccanismi analizzati durante il corso.
 
 [Remzi Arpaci-Dusseau OS](https://github.com/remzi-arpacidusseau/ostep-homework)
+
+## Emulatori
+
+Per lo svolgimento degli esercizi pratici e l'approfondimento dei concetti teorici, vengono utilizzati gli emulatori della repository di supporto:
+
+### Virtualizzazione della CPU
+- CPU Scheduling ([`cpu-sched`](https://github.com/remzi-arpacidusseau/ostep-homework/tree/master/cpu-sched)):
+simula il comportamento dei principali algoritmi di scheduling (FIFO, SJF, RR) per l'analisi delle metriche di performance (turnaround, risposta, attesa).
+
+- Multi-Level Feedback Queue ([`cpu-sched-mlfq`](https://github.com/remzi-arpacidusseau/ostep-homework/tree/master/cpu-sched-mlfq)):
+esercizi incentrati sulle code a feedback multi-livello, gestione delle priorità dinamiche e prevenzione della starvation.
+
+### Virtualizzazione della memoria
+- Segmentazione ([`vm-segmentation`](https://github.com/remzi-arpacidusseau/ostep-homework/tree/master/vm-segmentation)):
+simulazione della traduzione degli indirizzi di memoria, registri base-bound e analisi della frammentazione.
+
+<br>
+
+> 💡 **Nota**: Per lanciare gli emulatori, clonare la repository ufficiale di supporto e avviare i rispettivi script Python passando i parametri desiderati (es. `python3 <nome_script>.py -h` per visualizzare la guida).
 
 
 ## Note
