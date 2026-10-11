@@ -21,7 +21,7 @@ Per approfondire gli argomenti teorici del corso viene utilizzato il libro onlin
 
 [OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/)
 
-## Repository di supporto (con emulatori)
+## Repository di supporto
 
 Per lo svolgimento di alcuni esercizi teorici viene utilizzata una repository GitHub separata contenente emulatori dedicati alla simulazione di concetti e meccanismi dei sistemi operativi.
 Gli emulatori permettono di svolgere esercizi in modo interattivo e di osservare il comportamento dei meccanismi analizzati durante il corso.
