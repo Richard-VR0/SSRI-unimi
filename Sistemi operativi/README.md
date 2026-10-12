@@ -41,7 +41,7 @@ simulazione della traduzione degli indirizzi di memoria, registri base-bound e a
 
 <br>
 
-> **Nota**: Per lanciare gli emulatori, è necessario clonare la repository ufficiale di supporto (`git clone URL_REPO`) e avviare i rispettivi script Python passando i parametri desiderati (es. `python3 <nome_script>.py -h` per visualizzare la guida).
+> **Nota**: Per lanciare gli emulatori, è necessario clonare la repository ufficiale di supporto (`git clone URL_REPO`) e avviare i rispettivi script Python passando i parametri desiderati (es. `python nome.py -h` per visualizzare la guida).
 
 
 ## Note
