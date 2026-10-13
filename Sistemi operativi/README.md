@@ -39,6 +39,9 @@ esercizi incentrati sulle code a feedback multi-livello, gestione delle priorit√
 - Segmentazione ([`vm-segmentation`](https://github.com/remzi-arpacidusseau/ostep-homework/tree/master/vm-segmentation)):
 simulazione della traduzione degli indirizzi di memoria, registri base-bound e analisi della frammentazione.
 
+- Paging ([`vm-paging`](https://github.com/remzi-arpacidusseau/ostep-homework/tree/master/vm-paging)):
+simulazione della traduzione degli indirizzi virtuali in indirizzi fisici tramite l'uso della tabella delle pagine (page table), scomposizione in VPN e offset, e gestione dei riferimenti di memoria.
+
 <br>
 
 > **Nota**: Per lanciare gli emulatori, √® necessario clonare la repository ufficiale di supporto (`git clone URL_REPO`) e avviare i rispettivi script Python passando i parametri desiderati (es. `python nome.py -h` per visualizzare la guida).
