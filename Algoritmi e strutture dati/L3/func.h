@@ -7,3 +7,4 @@ typedef struct tripletta {
 } tripletta;
 
 int leggi_triplette(FILE*, tripletta*, int);
+void stampa_triplette(tripletta*, int);

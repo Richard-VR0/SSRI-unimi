@@ -38,13 +38,8 @@ int main(int argc, char* argv[]) {
         fclose(fp);
         return -1;
     }
-
-    printf("\t\tTriplette lette\n");
-    printf("\tn1\t\tn2\t\tf\n");
-    printf("--------------------------------------------------\n");
-    for (i = 0; i < n; i++) {
-        printf("T%d:\t%u\t\t%u\t\t%.2f\n", i, array_triplette[i].n1, array_triplette[i].n2, array_triplette[i].f);
-    }
+    
+    stampa_triplette(array_triplette, n);
 
     free(array_triplette);
     fclose(fp);
