@@ -5,6 +5,11 @@ Questa cartella raccoglie gli esercizi, i laboratori e i progetti svolti durante
 
 ## Tecnologie utilizzate
 
+<div align="center">
+  <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white">
+  <img src="https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=openjdk&logoColor=white">
+</div>
+
 | Linguaggio | Compilatore |
 |---|---|
 | C | gcc |

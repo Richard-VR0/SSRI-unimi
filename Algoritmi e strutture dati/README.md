@@ -10,6 +10,10 @@ La cartella è organizzata per lezioni: ogni sottocartella corrisponde a una lez
 
 ## Tecnologie utilizzate
 
+<div align="center">
+  <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white">
+</div>
+
 | Linguaggio | Compilatore |
 |---|---|
 | C | gcc |

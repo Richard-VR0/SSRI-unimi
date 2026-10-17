@@ -10,9 +10,11 @@ Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto 
 
 ## Tecnologie utilizzate
 
-- Assembly
-- C
-- Python
+<div align="center">
+  <img src="https://img.shields.io/badge/Assembly-6E4C13?style=flat-square&logo=assemblyscript&logoColor=white">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white">
+</div>
 
 
 ## Materiale teorico
