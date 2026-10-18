@@ -10,8 +10,8 @@ Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto 
 
 ## Tecnologie utilizzate
 
-- C
 - Assembly
+- C
 - Python
 
 
