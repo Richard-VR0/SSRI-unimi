@@ -2,6 +2,17 @@
 
 Repository contenente esercizi, laboratori e progetti sviluppati durante il corso di laurea triennale in sicurezza dei sistemi e delle reti informatiche presso l'Università degli Studi di Milano.
 
+<div align="center">
+    <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white">
+    <img src="https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=openjdk&logoColor=white">
+    <img src="https://img.shields.io/badge/Assembly-6E4C13?style=flat-square&logo=assemblyscript&logoColor=white">
+    <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white">
+    <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white">
+    <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black">
+    <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white">
+    <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=flat-square&logo=mongodb&logoColor=white">
+    <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white">
+</div>
 
 ## Contenuto
 
@@ -29,3 +40,4 @@ Per scaricare l'intera repository in locale tramite terminale:
 
 Il materiale presente nella repository è stato sviluppato a scopo didattico.<br>
 Le istruzioni specifiche per compilare, avviare o utilizzare ciascun esercizio o progetto sono disponibili nei `README.md` delle relative cartelle.
+
