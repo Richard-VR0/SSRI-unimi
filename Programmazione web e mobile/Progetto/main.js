@@ -1581,7 +1581,8 @@ app.get('/orders/restaurant/:id', async (req, res) => {
                     totale: 1,
                     createdAt: 1,
                     nome_cliente: '$cliente.nome',
-                    cognome_cliente: '$cliente.cognome'
+                    cognome_cliente: '$cliente.cognome',
+                    tempoStimato: '$tempoStimato'
                 }
             },
             {

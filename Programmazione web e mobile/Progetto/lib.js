@@ -914,6 +914,17 @@ function renderOrdiniRicevuti(lista) {
 
         clone.querySelector('#totale-ordine').textContent = ordine.totale.toFixed(2) + ' €';
 
+        const tempo = clone.querySelector('#tempo-ordine');
+
+        if (tempo) {
+            if (ordine.tempoStimato) {
+                tempo.innerHTML = 'Tempo stimato: circa <span class="fw-bold text-primary">' + ordine.tempoStimato + ' minuti</span>';
+            }
+            else {
+                tempo.textContent = 'Tempo stimato non disponibile';
+            }
+        }
+
         const data = new Date(ordine.createdAt).toLocaleDateString('it-IT');
         const ora = new Date(ordine.createdAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
