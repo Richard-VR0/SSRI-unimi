@@ -425,7 +425,7 @@
         }
       }
     },
-    "/restaurant": {
+    "/restaurants": {
       "get": {
         "tags": [
           "Lista ristoranti"
@@ -442,7 +442,7 @@
         }
       }
     },
-    "/restaurant/search": {
+    "/restaurants/search": {
       "get": {
         "tags": [
           "Lista ristoranti"
@@ -1020,17 +1020,13 @@
     },
     "/meals": {
       "get": {
-        "tags": [
-          "Piatti (extra)"
-        ],
-        "summary": "Lista completa dei piatti",
-        "description": "Restituisce tutti i piatti presenti nel catalogo comune dell\\'applicazione.<br>I piatti del catalogo possono essere selezionati dai ristoratori per creare o aggiornare il proprio menu.",
+        "description": "",
         "responses": {
           "200": {
-            "description": "Lista completa dei piatti del catalogo"
+            "description": "OK"
           },
           "500": {
-            "description": "Errore interno del server"
+            "description": "Internal Server Error"
           }
         }
       }
