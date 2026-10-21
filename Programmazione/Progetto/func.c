@@ -149,7 +149,7 @@ void trainer(Carta mazzo[]) {
     FILE* in;
 
     #if defined(INPUT_FILE_TXT) && INPUT_FILE_TXT == 1
-        char filename[25];
+        char filename[22];
 
         sprintf(filename, "inputfiles/input%d.txt", N_MAZZI);
 
