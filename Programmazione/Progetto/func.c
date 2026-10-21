@@ -149,9 +149,9 @@ void trainer(Carta mazzo[]) {
     FILE* in;
 
     #if defined(INPUT_FILE_TXT) && INPUT_FILE_TXT == 1
-        char filename[15];
+        char filename[25];
 
-        sprintf(filename, "input%d.txt", N_MAZZI);
+        sprintf(filename, "inputfiles/input%d.txt", N_MAZZI);
 
         in= fopen(filename, "r");
 
