@@ -24,13 +24,13 @@ La cartella è organizzata per lezioni: ogni sottocartella corrisponde a una lez
 Dalla cartella dell'esercizio, eseguire:
 
 ```bash
-python nome_file.py
+> python nome_file.py
 ```
 
 In base alla configurazione del sistema, potrebbe essere necessario utilizzare:
 
 ```bash
-python3 nome_file.py
+> python3 nome_file.py
 ```
 
 
