@@ -43,10 +43,10 @@ Eseguire la classe `Main`:
 ```
 
 
-## Progetto Conteggio nel Blackjack
+## Progetto conteggio nel Blackjack
 
 Il progetto implementa un programma di allenamento per il conteggio nel Blackjack.
-Il programma genera uno o più mazzi di carte, fino a un massimo di otto, e li mescola utilizzando l'algoritmo di **Fisher-Yates**, garantendo un ordine casuale delle carte.
+Il programma genera uno o più mazzi di carte, fino a un massimo di otto, e li mescola utilizzando l'algoritmo di Fisher-Yates, garantendo un ordine casuale delle carte.
 Durante l'allenamento, il programma presenta progressivamente le carte e richiede all'utente di inserire il running count corrente e la puntata consigliata.
 Ogni risposta viene confrontata con il valore atteso e il programma segnala immediatamente se la risposta è corretta o errata.
 Al termine della simulazione vengono mostrate statistiche riepilogative sulle risposte fornite.
