@@ -10,10 +10,6 @@ La cartella è organizzata per lezioni: ogni sottocartella corrisponde a una lez
 
 ## Tecnologie utilizzate
 
-<div align="center">
-  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white">
-</div>
-
 | Linguaggio | Librerie |
 |---|---|
 | Python | pandas, matplotlib, numpy, pathlib |
