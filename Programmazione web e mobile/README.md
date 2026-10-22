@@ -52,6 +52,8 @@ il comando riavvia automaticamente il server quando vengono rilevate modifiche a
 
 ## Progetto DomiCibo
 
+[Relazione](https://typst.app/project/rF4LirVw1uq9dgUyyDKcdN)
+
 Il progetto consiste nello sviluppo di un'applicazione web per la gestione degli ordini online all'interno di ristoranti appartenenti a una catena di fast food.
 L'applicazione gestisce due tipologie di utenti: clienti e ristoratori.
 I clienti possono registrarsi, effettuare il login, consultare i ristoranti e i relativi menu, cercare i piatti e effettuare ordini.
