@@ -52,8 +52,6 @@ il comando riavvia automaticamente il server quando vengono rilevate modifiche a
 
 ## Progetto DomiCibo
 
-[Relazione](https://typst.app/project/rF4LirVw1uq9dgUyyDKcdN)
-
 Il progetto consiste nello sviluppo di un'applicazione web per la gestione degli ordini online all'interno di ristoranti appartenenti a una catena di fast food.
 L'applicazione gestisce due tipologie di utenti: clienti e ristoratori.
 I clienti possono registrarsi, effettuare il login, consultare i ristoranti e i relativi menu, cercare i piatti e effettuare ordini.
@@ -61,6 +59,8 @@ I ristoratori possono invece gestire le informazioni del proprio ristorante e i 
 Il sistema comprende inoltre la gestione del carrello, degli ordini e del loro stato, dalla fase di ordinazione fino alla consegna o al ritiro presso il ristorante.
 Il progetto è stato sviluppato utilizzando HTML5, CSS3, Bootstrap e JavaScript per la parte client, mentre il backend è stato realizzato con Node.js e MongoDB.
 Le informazioni vengono gestite tramite API REST e le API implementate sono descritte attraverso la documentazione Swagger.
+
+[Relazione](https://typst.app/project/rF4LirVw1uq9dgUyyDKcdN)
 
 
 ## Note
