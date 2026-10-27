@@ -49,6 +49,12 @@ Ogni risposta viene confrontata con il valore atteso e il programma segnala imme
 Al termine della simulazione vengono mostrate statistiche riepilogative sulle risposte fornite.
 I risultati vengono inoltre salvati in un file `stats.txt`, in modo da poter consultare in seguito lo storico degli allenamenti, proprio per questo il programma include una funzione che consente di visualizzare il contenuto del file `stats.txt`, con tutte le statistiche relative agli allenamenti svolti.
 
+Dalla cartella del progetto, eseguire:
+```bash
+> make
+> ./main
+```
+
 ## Note
 
 Il codice è stato sviluppato a scopo didattico per il corso.
