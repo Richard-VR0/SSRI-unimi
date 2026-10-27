@@ -3,7 +3,6 @@
 Questa cartella raccoglie esercizi, laboratori e progetti svolti durante il
 corso di **Programmazione web e mobile**.
 
-
 ## Contenuto
 
 Ogni sottocartella corrisponde a un esercizio o a un progetto.
@@ -21,7 +20,6 @@ Ogni sottocartella corrisponde a un esercizio o a un progetto.
 - Progetto fast food (DomiCibo)
     - `Progetto/`
 
-
 ## Tecnologie utilizzate
 
 - HTML5
@@ -29,7 +27,6 @@ Ogni sottocartella corrisponde a un esercizio o a un progetto.
 - JavaScript
 - Node.js
 - MongoDB
-
 
 ## Esecuzione
 
@@ -49,7 +46,6 @@ Per avviare il file principale dell'applicazione eseguire:
 ```
 il comando riavvia automaticamente il server quando vengono rilevate modifiche ai file.
 
-
 ## Progetto DomiCibo
 
 Il progetto consiste nello sviluppo di un'applicazione web per la gestione degli ordini online all'interno di ristoranti appartenenti a una catena di fast food.
@@ -61,7 +57,6 @@ Il progetto è stato sviluppato utilizzando HTML5, CSS3, Bootstrap e JavaScript 
 Le informazioni vengono gestite tramite API REST e le API implementate sono descritte attraverso la documentazione Swagger.
 
 [Relazione](https://typst.app/project/rF4LirVw1uq9dgUyyDKcdN)
-
 
 ## Note
 

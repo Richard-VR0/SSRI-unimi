@@ -2,18 +2,15 @@
 
 Questa cartella raccoglie esercizi e progetti svolti durante il corso di **Algoritmi e strutture dati**.
 
-
 ## Contenuto
 
 La cartella è organizzata per lezioni: ogni sottocartella corrisponde a una lezione e contiene i relativi esercizi.
-
 
 ## Tecnologie utilizzate
 
 | Linguaggio | Compilatore |
 |---|---|
 | C | gcc |
-
 
 ## Compilazione ed esecuzione
 
@@ -24,7 +21,6 @@ Dalla cartella della lezione:
 
 > ./nome_programma
 ```
-
 
 ## Note
 

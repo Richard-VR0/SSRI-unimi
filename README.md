@@ -27,7 +27,6 @@ Ogni cartella principale contiene il materiale relativo al rispettivo corso e di
 | [`Sistemi-operativi/`](./Sistemi%20operativi/) | Esercizi in assembly |
 | [`Statistica-e-analisi-dei-dati/`](./Statistica%20e%20analisi%20dei%20dati/) | Esercizi in python |
 
-
 ## Download della repository
 
 Per scaricare l'intera repository in locale tramite terminale:
@@ -35,7 +34,6 @@ Per scaricare l'intera repository in locale tramite terminale:
 ```bash
 > git clone https://github.com/Richard-VR0/SSRI-unimi
 ```
-
 ## Note e utilizzo
 
 Il materiale presente nella repository è stato sviluppato a scopo didattico.<br>

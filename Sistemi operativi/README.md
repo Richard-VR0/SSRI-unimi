@@ -2,18 +2,15 @@
 
 Questa cartella raccoglie esercizi, laboratori e progetti svolti durante il corso di **Sistemi Operativi**.
 
-
 ## Contenuto
 
 Ogni sottocartella corrisponde a un esercizio, a un laboratorio o a un progetto relativo agli argomenti trattati durante il corso.
-
 
 ## Tecnologie utilizzate
 
 - Assembly
 - C
 - Python
-
 
 ## Materiale teorico
 
@@ -46,6 +43,11 @@ simulazione della traduzione degli indirizzi virtuali in indirizzi fisici tramit
 
 > **Nota**: Per lanciare gli emulatori, è necessario clonare la repository ufficiale di supporto (`git clone URL_REPO`) e avviare i rispettivi script Python passando i parametri desiderati (es. `python nome.py -h` per visualizzare la guida).
 
+## Laboratorio
+
+Cheatsheet con riferimenti alle system call e comandi per la shell Linux.
+
+[Cheatsheet](https://typst.app/project/rQZq6R0xE7mV6WRjaAplBX)
 
 ## Note
 

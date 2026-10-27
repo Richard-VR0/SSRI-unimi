@@ -2,18 +2,15 @@
 
 Questa cartella raccoglie esercizi e progetti sviluppati durante il corso di **Statistica e analisi dei dati**.
 
-
 ## Contenuto
 
 La cartella è organizzata per lezioni: ogni sottocartella corrisponde a una lezione e contiene gli esercizi relativi agli argomenti trattati nella rispettiva lezione.
-
 
 ## Tecnologie utilizzate
 
 | Linguaggio | Librerie |
 |---|---|
 | Python | pandas, matplotlib, numpy, pathlib |
-
 
 ## Esecuzione
 
@@ -28,7 +25,6 @@ In base alla configurazione del sistema, potrebbe essere necessario utilizzare:
 ```bash
 > python3 nome_file.py
 ```
-
 
 ## Note
 

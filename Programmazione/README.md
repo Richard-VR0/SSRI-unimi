@@ -2,14 +2,12 @@
 
 Questa cartella raccoglie gli esercizi, i laboratori e i progetti svolti durante il corso di **Programmazione**.
 
-
 ## Tecnologie utilizzate
 
 | Linguaggio | Compilatore |
 |---|---|
 | C | gcc |
 | Java | javac |
-
 
 ## Contenuto
 ### C
@@ -42,7 +40,6 @@ Eseguire la classe `Main`:
 > java Main
 ```
 
-
 ## Progetto conteggio nel Blackjack
 
 Il progetto implementa un programma di allenamento per il conteggio nel Blackjack.
@@ -51,7 +48,6 @@ Durante l'allenamento, il programma presenta progressivamente le carte e richied
 Ogni risposta viene confrontata con il valore atteso e il programma segnala immediatamente se la risposta è corretta o errata.
 Al termine della simulazione vengono mostrate statistiche riepilogative sulle risposte fornite.
 I risultati vengono inoltre salvati in un file `stats.txt`, in modo da poter consultare in seguito lo storico degli allenamenti, proprio per questo il programma include una funzione che consente di visualizzare il contenuto del file `stats.txt`, con tutte le statistiche relative agli allenamenti svolti.
-
 
 ## Note
 
