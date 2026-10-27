@@ -20,7 +20,7 @@ _start:
     mov ecx, sinput     ; spazio riservato per salvare l'input (buffer)
     mov ebx, 0          ; indicatore file su cui scrivere (stdin)
     mov eax, 3          ; invocazione SYS_READ (kernel opcode 3)
-    int 80h
+    int 80h             ; richiesta di interruzione
 
     ; SYS_EXIT
     mov ebx, 0          ; ritorno del valore d'uscita - 0 = No Errors
