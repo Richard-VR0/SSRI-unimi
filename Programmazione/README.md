@@ -55,6 +55,11 @@ Dalla cartella del progetto, eseguire:
 > ./main
 ```
 
+Per eliminare i file oggetto e l'eseguibile:
+```bash
+> make clean
+```
+
 ## Note
 
 Il codice è stato sviluppato a scopo didattico per il corso.
