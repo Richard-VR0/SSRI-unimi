@@ -47,7 +47,7 @@ simulazione della traduzione degli indirizzi virtuali in indirizzi fisici tramit
 
 Cheatsheet con riferimenti alle system call e comandi per la shell Linux.
 
-[Cheatsheet](https://typst.app/project/rQZq6R0xE7mV6WRjaAplBX)
+[Cheatsheet](https://typst.app/project/rIe12ZmjovjeZg291SV0XO)
 
 ## Note
 
