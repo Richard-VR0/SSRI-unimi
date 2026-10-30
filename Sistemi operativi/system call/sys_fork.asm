@@ -20,7 +20,7 @@ _start:
 
 .child:
     mov edx, 14         ; lunghezza in byte della stringa
-    mov ecx, ch         ; base address della variabile creata in .data
+    mov ecx, strch      ; base address della variabile creata in .data
     mov ebx, 1          ; file su cui stampare (stdout)
     mov eax, 4          ; caricamento in eax del codice della system call sys_write
     int 80h             ; richiesta di interruzione
@@ -30,7 +30,7 @@ _start:
 
 .parent:
     mov edx, 15         ; lunghezza in byte della stringa
-    mov ecx, pr         ; base address della variabile creata in .data
+    mov ecx, strpr      ; base address della variabile creata in .data
     mov ebx, 1          ; file su cui stampare (stdout)
     mov eax, 4          ; caricamento in eax del codice della system call sys_write
     int 80h             ; richiesta di interruzione
