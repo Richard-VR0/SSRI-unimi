@@ -1,6 +1,6 @@
 SECTION .data
-    ch      db      'Child process', 0Ah
-    pr      db      'Parent process', 0Ah
+    strch   db      'Child process', 0Ah
+    strpr   db      'Parent process', 0Ah
 
 SECTION .text
     global _start
